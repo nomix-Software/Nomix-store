@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FiPlusCircle } from "react-icons/fi";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
-import { getCategories, getBrands } from "@/actions";
+import { getCategories, getBrands, createProduct } from "@/actions";
 import { BrandsItem, CategoriesItem } from "@/interfaces";
 
 const AddProductPage = () => {
@@ -48,7 +48,7 @@ const AddProductPage = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formErrors = validate();
     if (Object.keys(formErrors).length > 0) {
@@ -56,7 +56,7 @@ const AddProductPage = () => {
       toast.error("Revisa los errores del formulario.");
       return;
     }
-
+    await createProduct(product);
     toast.success("Producto agregado correctamente.");
     console.log("Producto:", product);
     // Aquí iría la lógica real para guardar el producto

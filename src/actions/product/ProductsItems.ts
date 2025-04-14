@@ -1,6 +1,8 @@
 "use server";
 
+import { RequestProduct } from "@/interfaces";
 import prisma from "@/lib/prisma";
+
 export const getProducts = async () => {
   const productos = await prisma.producto.findMany({
     take: 30,
@@ -31,4 +33,39 @@ export const getProducts = async () => {
       current: p.slug,
     },
   }));
+};
+function generateSlug(nombre: string): string {
+  return nombre
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "")
+    .replace(/\-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+export const createProduct = async ({
+  name,
+  description,
+  price,
+  brand,
+  category,
+  image,
+}: RequestProduct) => {
+  await prisma.producto.create({
+    data: {
+      nombre: name,
+      slug: generateSlug(name),
+      descripcion: description,
+      precio: Number(price),
+      stock: 120,
+      categoriaId: Number(category),
+      marcaId: Number(brand),
+      imagenes: {
+        create: [
+          {
+            url: image,
+          },
+        ],
+      },
+    },
+  });
 };

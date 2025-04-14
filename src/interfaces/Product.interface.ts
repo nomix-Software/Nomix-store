@@ -7,3 +7,12 @@ export interface ProductItem {
   };
   price: number;
 }
+
+export interface RequestProduct {
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  brand: string;
+  image: string;
+}
