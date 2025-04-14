@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FiPlusCircle } from "react-icons/fi";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { getCategories, getBrands } from "@/actions";
+import { BrandsItem, CategoriesItem } from "@/interfaces";
 
 const AddProductPage = () => {
   const [product, setProduct] = useState({
@@ -14,8 +16,17 @@ const AddProductPage = () => {
     brand: "",
     image: "",
   });
-
+  const [categories, setCategories] = useState<CategoriesItem[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [brands, setBrands] = useState<BrandsItem[]>([]);
+  useEffect(() => {
+    (async () => {
+      const categoriesItems = await getCategories();
+      const brandsItems = await getBrands();
+      setCategories(categoriesItems);
+      setBrands(brandsItems);
+    })();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -50,8 +61,8 @@ const AddProductPage = () => {
     console.log("Producto:", product);
     // Aquí iría la lógica real para guardar el producto
   };
-  const categories = ["Pañales", "Higiene", "Accesorios"];
-  const brands = ["Huggies", "Pampers", "Johnson's"];
+  //   const categories = ["Pañales", "Higiene", "Accesorios"];
+  //   const brands = ["Huggies", "Pampers", "Johnson's"];
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -150,9 +161,9 @@ const AddProductPage = () => {
               } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
             >
               <option value="">Selecciona una categoría</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+              {categories.map(({ nombre, id }, index) => (
+                <option key={`${nombre}-${index}`} value={id}>
+                  {nombre}
                 </option>
               ))}
             </select>
@@ -187,9 +198,9 @@ const AddProductPage = () => {
               } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
             >
               <option value="">Selecciona una marca</option>
-              {brands.map((b) => (
-                <option key={b} value={b}>
-                  {b}
+              {brands.map(({ id, nombre }, index) => (
+                <option key={`${nombre}-${index}`} value={id}>
+                  {nombre}
                 </option>
               ))}
             </select>
