@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id          Int         @id @default(autoincrement())
+  nombre      String
+  email       String      @unique
+  password    String
+  rol         RolUsuario  @default(CLIENTE)
+  direcciones Direccion[]
+  carrito     Carrito?
+  ventas      Venta[]
+  creadoEn    DateTime    @default(now())
+}
+
+enum RolUsuario {
+  ADMIN
+  CLIENTE
+}
+
+model Direccion {
+  id            Int      @id @default(autoincrement())
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId     Int
+  calle         String
+  ciudad        String
+  provincia     String
+  codigoPostal  String
+  pais          String
+  principal     Boolean  @default(false)
+}
+
+model Categoria {
+  id       Int        @id @default(autoincrement())
+  nombre   String     @unique
+  productos Producto[]
+}
+
+model Marca {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique
+  productos Producto[]
+}
+
+model Promocion {
+  id          Int        @id @default(autoincrement())
+  descripcion String
+  descuento   Float      // Ej: 0.10 para 10%
+  productos   Producto[]
+}
+
+model Producto {
+  id           Int              @id @default(autoincrement())
+  nombre       String
+  slug         String           @unique
+  descripcion  String
+  precio       Float
+  stock        Int
+  categoria    Categoria        @relation(fields: [categoriaId], references: [id])
+  categoriaId  Int
+  marca        Marca            @relation(fields: [marcaId], references: [id])
+  marcaId      Int
+  promocion    Promocion?       @relation(fields: [promocionId], references: [id])
+  promocionId  Int?
+  imagenes     ImagenProducto[]
+  carritoItems CarritoItem[]
+  ventaItems   VentaProducto[]
+}
+
+
+model ImagenProducto {
+  id          Int      @id @default(autoincrement())
+  url         String
+  producto    Producto @relation(fields: [productoId], references: [id])
+  productoId  Int
+}
+
+model Carrito {
+  id            Int          @id @default(autoincrement())
+  usuario       Usuario      @relation(fields: [usuarioId], references: [id])
+  usuarioId     Int          @unique
+  items         CarritoItem[]
+  actualizadoEn DateTime     @updatedAt
+}
+
+model CarritoItem {
+  id          Int       @id @default(autoincrement())
+  carrito     Carrito   @relation(fields: [carritoId], references: [id])
+  carritoId   Int
+  producto    Producto  @relation(fields: [productoId], references: [id])
+  productoId  Int
+  cantidad    Int
+}
+
+model Venta {
+  id          Int              @id @default(autoincrement())
+  usuario     Usuario          @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+  fecha       DateTime         @default(now())
+  total       Float
+  productos   VentaProducto[]
+  estado      EstadoPedido     @relation(fields: [estadoId], references: [id])
+  estadoId    Int
+  cupon       CuponDescuento?  @relation(fields: [cuponId], references: [id])
+  cuponId     Int?
+}
+
+model VentaProducto {
+  id             Int       @id @default(autoincrement())
+  venta          Venta     @relation(fields: [ventaId], references: [id])
+  ventaId        Int
+  producto       Producto  @relation(fields: [productoId], references: [id])
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+}
+
+model EstadoPedido {
+  id      Int      @id @default(autoincrement())
+  nombre  String   // Ej: Pendiente, Enviado, Entregado
+  ventas  Venta[]
+}
+
+model CuponDescuento {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  descripcion String?
+  porcentaje  Float    // Ej: 0.15 = 15%
+  validoHasta DateTime
+  ventas      Venta[]
+}
+
+model MovimientoFinanciero {
+  id          Int           @id @default(autoincrement())
+  fecha       DateTime      @default(now())
+  tipo        TipoMovimiento
+  monto       Float
+  descripcion String
+}
+
+enum TipoMovimiento {
+  INGRESO
+  EGRESO
+}
