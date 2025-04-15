@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { AiOutlineShopping } from "react-icons/ai";
+import { Sidebar } from "./Sidebar";
 
 // import { useStateContext } from "../store/StateContext";
 // import { Cart } from "./";
@@ -16,16 +17,17 @@ export const Navbar = () => {
           <strong>CYE TECH</strong> Tienda
         </Link>
       </p>
-
-      <button
-        type="button"
-        className="cart-icon"
-        // onClick={() => setShowCart(true)}
-      >
-        <AiOutlineShopping />
-        <span className="cart-item-qty">12</span>
-      </button>
-
+      <div className="w-15">
+        <button
+          type="button"
+          className="cart-icon"
+          // onClick={() => setShowCart(true)}
+        >
+          <AiOutlineShopping />
+          <span className="cart-item-qty">12</span>
+        </button>
+        <Sidebar role="admin" isAuthenticated={true} />
+      </div>
       {/* {showCart && <Cart />} */}
     </div>
   );
