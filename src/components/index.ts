@@ -8,3 +8,4 @@ export * from "./FooterBanner";
 export * from "./ui/TextField";
 export * from "./ui/Select";
 export * from "./ui/Textarea";
+export * from "./ui/Modal";

@@ -1,7 +1,7 @@
 import React from "react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
-import { FiPlusCircle } from "react-icons/fi";
+// import { FiPlusCircle } from "react-icons/fi";
 
 export interface SelectProps {
   name: string;
@@ -12,6 +12,7 @@ export interface SelectProps {
   helperText?: string;
   className?: string;
   options: Array<{ id: string; nombre: string }>;
+  buttonAction?: React.ReactNode;
 }
 export const Select = ({
   label,
@@ -22,6 +23,7 @@ export const Select = ({
   options,
   helperText,
   className,
+  buttonAction,
 }: SelectProps) => {
   return (
     <div>
@@ -29,13 +31,14 @@ export const Select = ({
         <label className="block text-sm font-semibold text-gray-700">
           {label}
         </label>
-        <button
+        {buttonAction}
+        {/* <button
           type="button"
           onClick={() => toast("Abrir modal de nueva marca")}
           className="flex items-center text-indigo-600 hover:underline text-sm"
         >
           <FiPlusCircle size={18} className="mr-1" /> Nueva
-        </button>
+        </button> */}
       </div>
       <select
         name={name}

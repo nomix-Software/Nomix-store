@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { getCategories, getBrands, createProduct } from "@/actions";
+import {
+  getCategories,
+  getBrands,
+  createProduct,
+  setCategorie,
+  setBrand,
+} from "@/actions";
 import { BrandsItem, CategoriesItem } from "@/interfaces";
-import { Select, TextField } from "@/components";
+import { Modal, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 
 const AddProductPage = () => {
@@ -117,6 +123,17 @@ const AddProductPage = () => {
               id: id.toString(),
               nombre,
             }))}
+            buttonAction={
+              <Modal
+                callback={async (value) => {
+                  const newCategory = await setCategorie(value);
+                  setCategories([...categories, newCategory]);
+                  toast.success("Categoría creada correctamente.");
+                }}
+                buttonLabel="Crear nueva categoría"
+                title="Crear nueva categoría"
+              />
+            }
           />
 
           {/* Marca */}
@@ -131,6 +148,17 @@ const AddProductPage = () => {
               id: id.toString(),
               nombre,
             }))}
+            buttonAction={
+              <Modal
+                callback={async (value) => {
+                  const newBrands = await setBrand(value);
+                  setBrands([...brands, newBrands]);
+                  toast.success("Marca creada correctamente.");
+                }}
+                buttonLabel="Crear nueva marca"
+                title="Crear nueva marca"
+              />
+            }
           />
 
           {/* Imagen */}

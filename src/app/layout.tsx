@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import "./globals.css";
 import Head from "next/head";
 import { Footer, Navbar } from "@/components";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Cye Tech",
@@ -25,6 +26,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <Footer />
           </footer>
         </div>
+        <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>
   );
