@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { FiPlusCircle } from "react-icons/fi";
-import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { getCategories, getBrands, createProduct } from "@/actions";
 import { BrandsItem, CategoriesItem } from "@/interfaces";
+import { Select, TextField } from "@/components";
+import Textarea from "@/components/ui/Textarea";
 
 const AddProductPage = () => {
   const [product, setProduct] = useState({
@@ -73,167 +73,76 @@ const AddProductPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Nombre */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Nombre
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={product.name}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="Ej: Pañal Huggies"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Nombre identificatorio del producto.
-            </p>
-            {errors.name && (
-              <p className="text-sm text-red-600 flex items-center mt-1">
-                <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
-                {errors.name}
-              </p>
-            )}
-          </div>
+          <TextField
+            label="Nombre"
+            name="name"
+            value={product.name}
+            onChange={handleChange}
+            errors={errors}
+            helperText="Nombre identificatorio del producto."
+            placeholder="Ej: Pañal Huggies"
+          />
 
           {/* Descripción */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Descripción
-            </label>
-            <textarea
-              name="description"
-              value={product.description}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Breve descripción del producto"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Detalle del producto, presentación, unidades, etc.
-            </p>
-          </div>
+          <Textarea
+            label="Descripción"
+            name="description"
+            value={product.description}
+            onChange={handleChange}
+            placeholder="Breve descripción del producto"
+            helperText="Detalle del producto, presentación, unidades, etc."
+          />
 
           {/* Precio */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Precio ($)
-            </label>
-            <input
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border ${
-                errors.price ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="Ej: 1999.99"
-            />
-            {errors.price && (
-              <p className="text-sm text-red-600 flex items-center mt-1">
-                <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
-                {errors.price}
-              </p>
-            )}
-          </div>
+          <TextField
+            type="number"
+            name="price"
+            label="Precio ($)"
+            helperText="Precio del producto en pesos."
+            value={product.price}
+            onChange={handleChange}
+            placeholder="Ej: 1999.99"
+            errors={errors}
+          />
 
           {/* Categoría */}
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-semibold text-gray-700">
-                Categoría
-              </label>
-              <button
-                type="button"
-                onClick={() => toast("Abrir modal de nueva categoría")}
-                className="flex items-center text-indigo-600 hover:underline text-sm"
-              >
-                <FiPlusCircle size={18} className="mr-1" /> Nueva
-              </button>
-            </div>
-            <select
-              name="category"
-              value={product.category}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border ${
-                errors.category ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            >
-              <option value="">Selecciona una categoría</option>
-              {categories.map(({ nombre, id }, index) => (
-                <option key={`${nombre}-${index}`} value={id}>
-                  {nombre}
-                </option>
-              ))}
-            </select>
-            {errors.category && (
-              <p className="text-sm text-red-600 flex items-center mt-1">
-                <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
-                {errors.category}
-              </p>
-            )}
-          </div>
+          <Select
+            label="Categoría"
+            name="category"
+            value={product.category}
+            onChange={handleChange}
+            helperText="Selecciona una categoría del producto."
+            errors={errors}
+            options={categories.map(({ id, nombre }) => ({
+              id: id.toString(),
+              nombre,
+            }))}
+          />
 
           {/* Marca */}
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-semibold text-gray-700">
-                Marca
-              </label>
-              <button
-                type="button"
-                onClick={() => toast("Abrir modal de nueva marca")}
-                className="flex items-center text-indigo-600 hover:underline text-sm"
-              >
-                <FiPlusCircle size={18} className="mr-1" /> Nueva
-              </button>
-            </div>
-            <select
-              name="brand"
-              value={product.brand}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border ${
-                errors.brand ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            >
-              <option value="">Selecciona una marca</option>
-              {brands.map(({ id, nombre }, index) => (
-                <option key={`${nombre}-${index}`} value={id}>
-                  {nombre}
-                </option>
-              ))}
-            </select>
-            {errors.brand && (
-              <p className="text-sm text-red-600 flex items-center mt-1">
-                <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
-                {errors.brand}
-              </p>
-            )}
-          </div>
+          <Select
+            label="Marca"
+            name="brand"
+            value={product.brand}
+            onChange={handleChange}
+            helperText="Selecciona una marca del producto."
+            errors={errors}
+            options={brands.map(({ id, nombre }) => ({
+              id: id.toString(),
+              nombre,
+            }))}
+          />
 
           {/* Imagen */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              URL Imagen
-            </label>
-            <input
-              type="text"
-              name="image"
-              value={product.image}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border ${
-                errors.image ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-              placeholder="https://..."
-            />
-            {errors.image && (
-              <p className="text-sm text-red-600 flex items-center mt-1">
-                <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
-                {errors.image}
-              </p>
-            )}
-          </div>
+          <TextField
+            label="URL Imagen"
+            type="text"
+            name="image"
+            value={product.image}
+            onChange={handleChange}
+            errors={errors}
+            placeholder="https://..."
+          />
 
           {/* Submit */}
           <button
