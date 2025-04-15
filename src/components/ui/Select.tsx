@@ -7,7 +7,7 @@ export interface SelectProps {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  errors: { [key: string]: string };
+  errors?: { [key: string]: string };
   label?: string;
   helperText?: string;
   className?: string;
@@ -45,7 +45,7 @@ export const Select = ({
         value={value}
         onChange={onChange}
         className={`w-full px-4 py-2 border ${
-          errors.brand ? "border-red-500" : "border-gray-300"
+          errors && errors.brand ? "border-red-500" : "border-gray-300"
         } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${className}`}
       >
         <option value="">{helperText}</option>
@@ -55,7 +55,7 @@ export const Select = ({
           </option>
         ))}
       </select>
-      {errors.brand && (
+      {errors && errors.brand && (
         <p className="text-sm text-red-600 flex items-center mt-1">
           <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
           {errors.brand}

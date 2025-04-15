@@ -14,6 +14,7 @@ export const getProducts = async () => {
       nombre: true,
       precio: true,
       slug: true,
+      stock: true,
       imagenes: {
         select: {
           url: true,
@@ -29,6 +30,7 @@ export const getProducts = async () => {
     image: p.imagenes[0]?.url || "",
     name: p.nombre,
     price: p.precio,
+    stock: p.stock,
     slug: {
       current: p.slug,
     },

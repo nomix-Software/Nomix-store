@@ -5,7 +5,7 @@ export interface TextFieldProps {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  errors: { [key: string]: string };
+  errors?: { [key: string]: string };
   placeholder?: string;
   label?: string;
   type?: string;
@@ -34,11 +34,11 @@ export const TextField = ({
         value={value}
         onChange={onChange}
         className={`w-full px-4 py-2 border ${
-          errors.name ? "border-red-500" : "border-gray-300"
+          errors && errors.name ? "border-red-500" : "border-gray-300"
         } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${className}`}
         placeholder={placeholder}
       />
-      {errors.name ? (
+      {errors && errors.name ? (
         <p className="text-sm text-red-600 flex items-center mt-1">
           <AiOutlineExclamationCircle size={16} className="mr-1" />{" "}
           {errors.name}

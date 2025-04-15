@@ -6,6 +6,7 @@ export interface ProductItem {
     current: string;
   };
   price: number;
+  stock: number;
 }
 
 export interface RequestProduct {

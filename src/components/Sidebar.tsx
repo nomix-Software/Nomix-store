@@ -15,7 +15,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
 
   const adminOptions = [
     { label: "Dashboard", href: "/admin/dashboard" },
-    { label: "Gestionar productos", href: "/admin/productos" },
+    { label: "Gestionar productos", href: "/admin/products" },
     { label: "Finanzas", href: "/admin/finanzas" },
   ];
 
