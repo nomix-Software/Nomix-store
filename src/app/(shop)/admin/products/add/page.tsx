@@ -13,6 +13,8 @@ import {
 import { BrandsItem, CategoriesItem } from "@/interfaces";
 import { ImageInput, Modal, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
+import Image from "next/image";
+import { FiTrash2 } from "react-icons/fi";
 
 const AddProductPage = () => {
   const [product, setProduct] = useState({
@@ -21,7 +23,7 @@ const AddProductPage = () => {
     price: "",
     category: "",
     brand: "",
-    images: [] as unknown as { url: string; id: number },
+    images: [] as unknown as { url: string; id: number }[],
   });
   const [categories, setCategories] = useState<CategoriesItem[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -55,7 +57,11 @@ const AddProductPage = () => {
     if (!product.images) newErrors.image = "La imagen es obligatoria.";
     return newErrors;
   };
-
+  const handleDeleteImage = (fileName: string) => {
+    if (!product) return;
+    const imagenesFiltradas = images.filter((img) => img.name !== fileName);
+    setImages(imagenesFiltradas);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
@@ -187,6 +193,35 @@ const AddProductPage = () => {
             }}
           />
 
+          {/* Carrusel de Imágenes */}
+          <div>
+            <span className="block text-sm font-medium mb-2">
+              Imágenes del producto
+            </span>
+            <div className="flex overflow-x-auto gap-4">
+              {images.map((file, index) => (
+                <div
+                  key={`${index}-${file.name}`}
+                  className="relative w-40 h-40 border rounded-lg overflow-hidden"
+                >
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    width={160}
+                    height={160}
+                    alt="Imagen producto"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={() => handleDeleteImage(file.name)}
+                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full"
+                    title="Eliminar imagen"
+                  >
+                    <FiTrash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
           {/* Submit */}
           <button
             type="submit"
