@@ -33,17 +33,19 @@ export async function uploadImagesToCloudinary(formData: FormData) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const stream = await bufferToStream(buffer);
 
-      return new Promise<{ url: string }>((resolve, reject) => {
-        const upload = cloudinary.uploader.upload_stream(
-          { folder: "productos" },
-          (error, result) => {
-            if (error || !result) return reject(error);
-            resolve({ url: result.secure_url });
-          }
-        );
+      return new Promise<{ url: string; publicId: string }>(
+        (resolve, reject) => {
+          const upload = cloudinary.uploader.upload_stream(
+            { folder: "productos" },
+            (error, result) => {
+              if (error || !result) return reject(error);
+              resolve({ url: result.secure_url, publicId: result.public_id });
+            }
+          );
 
-        stream.pipe(upload);
-      });
+          stream.pipe(upload);
+        }
+      );
     })
   );
 

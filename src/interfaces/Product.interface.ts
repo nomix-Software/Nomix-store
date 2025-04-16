@@ -17,5 +17,6 @@ export interface RequestProduct {
   brand: string;
   images: {
     url: string;
+    publicId: string;
   }[];
 }

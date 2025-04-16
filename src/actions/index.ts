@@ -3,6 +3,8 @@ export * from "./product/ProductDetail";
 export * from "./product/UpdateProduct";
 export * from "./product/UploadImage";
 
+export * from "./product/ProductImage";
+
 export * from "./brand/BrandAbm";
 export * from "./brand/BrandItems";
 

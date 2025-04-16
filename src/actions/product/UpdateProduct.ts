@@ -11,7 +11,7 @@ interface NewProductInput {
   categoriaId: number;
   marcaId: number;
   promocionId?: number;
-  imagenes?: { url: string }[]; // cada imagen se vincula mediante su URL
+  imagenes?: { url: string; publicId: string }[]; // cada imagen se vincula mediante su URL
 }
 
 export async function updateProduct(slug: string, data: NewProductInput) {
@@ -71,6 +71,7 @@ export async function updateProduct(slug: string, data: NewProductInput) {
         data: data.imagenes.map((imgUrl) => ({
           url: imgUrl.url,
           productoId: producto.id,
+          publicId: imgUrl.publicId,
         })),
       });
     }

@@ -79,6 +79,7 @@ model ImagenProducto {
   url         String
   producto    Producto @relation(fields: [productoId], references: [id])
   productoId  Int
+  publicId    String
 }
 
 model Carrito {

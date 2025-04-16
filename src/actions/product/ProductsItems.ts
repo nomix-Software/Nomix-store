@@ -63,6 +63,7 @@ export const createProduct = async ({
     const imagen = await prisma.imagenProducto.create({
       data: {
         url: image.url,
+        publicId: image.publicId, // Add the required publicId field
         producto: {
           connect: {
             id: createdProduct.id, // Connect the image to the created product

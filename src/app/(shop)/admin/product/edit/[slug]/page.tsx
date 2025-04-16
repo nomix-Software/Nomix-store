@@ -9,6 +9,7 @@ import {
   getBrands,
   updateProduct,
   uploadImagesToCloudinary,
+  deleteProductImage,
 } from "@/actions";
 import { ImageInput, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
@@ -24,7 +25,7 @@ type Producto = {
   categoriaId: number;
   marcaId: number;
   promocionId?: number | null;
-  imagenes: { id: number; url: string }[];
+  imagenes: { id: number; url: string; publicId: string }[];
 };
 
 type Opcion = { id: number; nombre: string };
@@ -67,8 +68,11 @@ export default function EditProductPage() {
     setProducto({ ...producto, [name]: value });
   };
 
-  const handleDeleteImage = (id: number) => {
+  const handleDeleteImage = async (id: number) => {
     if (!producto) return;
+    const confirmDelete = confirm("¿Seguro que deseas eliminar esta imagen?");
+    if (!confirmDelete) return;
+    await deleteProductImage(id);
     const imagenesFiltradas = producto.imagenes.filter((img) => img.id !== id);
     setProducto({ ...producto, imagenes: imagenesFiltradas });
   };
@@ -89,7 +93,9 @@ export default function EditProductPage() {
         "producto",
         JSON.stringify({
           ...producto,
-          imagenes: savedImages,
+          imagenes: savedImages
+            ? [...producto.imagenes, ...savedImages]
+            : [...producto.imagenes],
         })
       );
       const createdProduct = await updateProduct(producto?.slug, {
