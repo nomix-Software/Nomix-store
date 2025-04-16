@@ -10,7 +10,7 @@ import {
   updateProduct,
   uploadImagesToCloudinary,
 } from "@/actions";
-import { Select, TextField } from "@/components";
+import { ImageInput, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import Image from "next/image";
 
@@ -218,30 +218,18 @@ export default function EditProductPage() {
           </div>
         </div>
         {/* Agregar nuevas imágenes */}
-        <div className="mt-4">
-          <span className="block text-sm font-medium mb-2">
-            Agregar nueva imagen
-          </span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => {
-              if (!e.target.files?.length) return;
-              setImagenesNuevas([
-                ...imagenesNuevas,
-                ...Array.from(e.target.files),
-              ]);
-              e.target.value = "";
-            }}
-            className="block w-full text-sm text-gray-500
-    file:mr-4 file:py-2 file:px-4
-    file:rounded-full file:border-0
-    file:text-sm file:font-semibold
-    file:bg-violet-50 file:text-violet-700
-    hover:file:bg-violet-100"
-          />
-        </div>
+        <ImageInput
+          multiple
+          label="Agregar nuevas imágenes"
+          onChange={(e) => {
+            if (!e.target.files?.length) return;
+            setImagenesNuevas([
+              ...imagenesNuevas,
+              ...Array.from(e.target.files),
+            ]);
+            e.target.value = "";
+          }}
+        />
         {imagenesNuevas.length > 0 && (
           <div className="mt-4">
             <span className="block text-sm font-medium mb-2">

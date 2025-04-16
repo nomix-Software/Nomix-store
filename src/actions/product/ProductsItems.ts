@@ -44,9 +44,9 @@ export const createProduct = async ({
   price,
   brand,
   category,
-  image,
+  images,
 }: RequestProduct) => {
-  await prisma.producto.create({
+  const createdProduct = await prisma.producto.create({
     data: {
       nombre: name,
       slug: await generateSlug(name),
@@ -55,13 +55,27 @@ export const createProduct = async ({
       stock: 120,
       categoriaId: Number(category),
       marcaId: Number(brand),
-      imagenes: {
-        create: [
-          {
-            url: image,
-          },
-        ],
-      },
     },
   });
+
+  // Paso 2 y 3: Por cada imagen, crearla y luego relacionarla con el producto
+  for (const image of images) {
+    const imagen = await prisma.imagenProducto.create({
+      data: {
+        url: image.url,
+        producto: {
+          connect: {
+            id: createdProduct.id, // Connect the image to the created product
+          },
+        },
+      },
+    });
+    console.log("Imagen creada:", imagen);
+    // await prisma.imagenProducto.create({
+    //   data: {
+    //     productoId: createdProduct.id, // este es el id del producto
+    //     imagenId: imagen.id, // este es el id de la imagen
+    //   },
+    // });
+  }
 };

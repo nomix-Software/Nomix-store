@@ -5,12 +5,13 @@ import { toast } from "react-hot-toast";
 import {
   getCategories,
   getBrands,
-  updateProduct,
   setCategorie,
   setBrand,
+  createProduct,
+  uploadImagesToCloudinary,
 } from "@/actions";
 import { BrandsItem, CategoriesItem } from "@/interfaces";
-import { Modal, Select, TextField } from "@/components";
+import { ImageInput, Modal, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 
 const AddProductPage = () => {
@@ -20,11 +21,12 @@ const AddProductPage = () => {
     price: "",
     category: "",
     brand: "",
-    image: "",
+    images: [] as unknown as { url: string; id: number },
   });
   const [categories, setCategories] = useState<CategoriesItem[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [brands, setBrands] = useState<BrandsItem[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   useEffect(() => {
     (async () => {
       const categoriesItems = await getCategories();
@@ -50,19 +52,32 @@ const AddProductPage = () => {
       newErrors.price = "El precio debe ser mayor a 0.";
     if (!product.category) newErrors.category = "La categoría es obligatoria.";
     if (!product.brand) newErrors.brand = "La marca es obligatoria.";
-    if (!product.image) newErrors.image = "La imagen es obligatoria.";
+    if (!product.images) newErrors.image = "La imagen es obligatoria.";
     return newErrors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData();
+    // Agregamos los archivos nuevos al FormData
+    images.forEach((file) => {
+      formData.append("images", file);
+    });
+    const savedImages = await uploadImagesToCloudinary(formData);
+    console.log("savedImages", savedImages);
+
+    // Agregamos el resto de la data como JSON (producto sin imagenes)
     const formErrors = validate();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       toast.error("Revisa los errores del formulario.");
       return;
     }
-    await updateProduct(product);
+    if (!savedImages) {
+      toast.error("Revisa los errores del formulario.");
+      return;
+    }
+    await createProduct({ ...product, images: savedImages });
     toast.success("Producto agregado correctamente.");
     console.log("Producto:", product);
     // Aquí iría la lógica real para guardar el producto
@@ -162,14 +177,14 @@ const AddProductPage = () => {
           />
 
           {/* Imagen */}
-          <TextField
-            label="URL Imagen"
-            type="text"
-            name="image"
-            value={product.image}
-            onChange={handleChange}
-            errors={errors}
-            placeholder="https://..."
+          <ImageInput
+            multiple
+            label="Agrega una imagen"
+            onChange={(e) => {
+              if (!e.target.files?.length) return;
+              setImages([...images, ...Array.from(e.target.files)]);
+              e.target.value = "";
+            }}
           />
 
           {/* Submit */}

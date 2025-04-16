@@ -15,5 +15,7 @@ export interface RequestProduct {
   price: string;
   category: string;
   brand: string;
-  image: string;
+  images: {
+    url: string;
+  }[];
 }

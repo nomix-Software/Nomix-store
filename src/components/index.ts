@@ -10,3 +10,4 @@ export * from "./ui/Select";
 export * from "./ui/Textarea";
 export * from "./ui/Modal";
 export * from "./Sidebar";
+export * from "./ui/ImageInput";
