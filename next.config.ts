@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       "www.immortalpc.com.ar",
       "www.immortalpc.com",
       "redragon.es",
+      "res.cloudinary.com",
     ],
   },
   /* config options here */

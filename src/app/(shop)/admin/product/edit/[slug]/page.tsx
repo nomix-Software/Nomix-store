@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { FiSave, FiTrash2 } from "react-icons/fi";
-import { getProductDetail, getCategories, getBrands } from "@/actions";
+import {
+  getProductDetail,
+  getCategories,
+  getBrands,
+  updateProduct,
+  uploadImagesToCloudinary,
+} from "@/actions";
 import { Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import Image from "next/image";
@@ -29,13 +35,14 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [marcas, setMarcas] = useState<Opcion[]>([]);
   const [categorias, setCategorias] = useState<Opcion[]>([]);
+  const [imagenesNuevas, setImagenesNuevas] = useState<File[]>([]);
 
   useEffect(() => {
     (async () => {
       const [productDetailDB, marcasDB, categoriasDB] = await Promise.all([
         getProductDetail(slug as string),
-        getCategories(),
         getBrands(),
+        getCategories(),
       ]);
       setProducto(productDetailDB);
       setMarcas(marcasDB);
@@ -68,13 +75,32 @@ export default function EditProductPage() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`/api/productos/${slug}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(producto),
+      if (!producto) return;
+      const formData = new FormData();
+      // Agregamos los archivos nuevos al FormData
+      imagenesNuevas.forEach((file) => {
+        formData.append("images", file);
       });
-      if (res.ok) {
+      const savedImages = await uploadImagesToCloudinary(formData);
+      console.log("savedImages", savedImages);
+
+      // Agregamos el resto de la data como JSON (producto sin imagenes)
+      formData.append(
+        "producto",
+        JSON.stringify({
+          ...producto,
+          imagenes: savedImages,
+        })
+      );
+      const createdProduct = await updateProduct(producto?.slug, {
+        ...JSON.parse(formData.get("producto") as string),
+      });
+      console.log({ createdProduct });
+      setProducto(createdProduct);
+      // Si se subieron imágenes nuevas, las agregamos al producto
+      if (createdProduct) {
         alert("Producto actualizado");
+        setImagenesNuevas([]);
       } else {
         alert("Error al guardar");
       }
@@ -191,6 +217,54 @@ export default function EditProductPage() {
             ))}
           </div>
         </div>
+        {/* Agregar nuevas imágenes */}
+        <div className="mt-4">
+          <span className="block text-sm font-medium mb-2">
+            Agregar nueva imagen
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => {
+              if (!e.target.files?.length) return;
+              setImagenesNuevas([
+                ...imagenesNuevas,
+                ...Array.from(e.target.files),
+              ]);
+              e.target.value = "";
+            }}
+            className="block w-full text-sm text-gray-500
+    file:mr-4 file:py-2 file:px-4
+    file:rounded-full file:border-0
+    file:text-sm file:font-semibold
+    file:bg-violet-50 file:text-violet-700
+    hover:file:bg-violet-100"
+          />
+        </div>
+        {imagenesNuevas.length > 0 && (
+          <div className="mt-4">
+            <span className="block text-sm font-medium mb-2">
+              Nuevas imágenes (aún no subidas)
+            </span>
+            <div className="flex overflow-x-auto gap-4">
+              {imagenesNuevas.map((file, i) => (
+                <div
+                  key={i}
+                  className="relative w-40 h-40 border rounded-lg overflow-hidden"
+                >
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    width={160}
+                    height={160}
+                    alt="Nueva imagen"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <button
           onClick={handleSave}

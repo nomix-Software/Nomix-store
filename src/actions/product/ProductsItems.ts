@@ -2,6 +2,7 @@
 
 import { RequestProduct } from "@/interfaces";
 import prisma from "@/lib/prisma";
+import { generateSlug } from "@/utils";
 
 export const getProducts = async () => {
   const productos = await prisma.producto.findMany({
@@ -36,14 +37,7 @@ export const getProducts = async () => {
     },
   }));
 };
-function generateSlug(nombre: string): string {
-  return nombre
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9\-]/g, "")
-    .replace(/\-+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+
 export const createProduct = async ({
   name,
   description,
@@ -55,7 +49,7 @@ export const createProduct = async ({
   await prisma.producto.create({
     data: {
       nombre: name,
-      slug: generateSlug(name),
+      slug: await generateSlug(name),
       descripcion: description,
       precio: Number(price),
       stock: 120,

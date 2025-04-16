@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import {
   getCategories,
   getBrands,
-  createProduct,
+  updateProduct,
   setCategorie,
   setBrand,
 } from "@/actions";
@@ -62,7 +62,7 @@ const AddProductPage = () => {
       toast.error("Revisa los errores del formulario.");
       return;
     }
-    await createProduct(product);
+    await updateProduct(product);
     toast.success("Producto agregado correctamente.");
     console.log("Producto:", product);
     // Aquí iría la lógica real para guardar el producto
