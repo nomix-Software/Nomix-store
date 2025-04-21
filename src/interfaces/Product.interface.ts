@@ -20,3 +20,30 @@ export interface RequestProduct {
     publicId: string;
   }[];
 }
+
+export interface ProductDetails {
+  categoria: {
+    id: number;
+    nombre: string;
+  };
+  marca: {
+    id: number;
+    nombre: string;
+  };
+  promocion: {
+    id: number;
+    descripcion: string;
+    descuento: number;
+  } | null;
+  imagenes: {
+    id: number;
+    url: string;
+    publicId: string;
+  }[];
+  nombre: string;
+  precio: number;
+  descripcion: string;
+  stock: number;
+  id: number;
+  slug: string;
+}

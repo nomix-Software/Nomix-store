@@ -45,6 +45,7 @@ export async function seedDB() {
         create: [
           {
             url: "https://cdn.sanity.io/images/kyml1h03/production/9fbb62343426e1f157144f26d9b59be1629ef7c1-600x600.webp",
+            publicId: "",
           },
         ],
       },
@@ -55,7 +56,8 @@ export async function seedDB() {
     data: {
       nombre: "Teclado Redragon Kumara K552",
       slug: generateSlug("Teclado Redragon Kumara K552"),
-      descripcion: "Teclado mecánico TKL retroiluminado RGB, ideal para gaming.",
+      descripcion:
+        "Teclado mecánico TKL retroiluminado RGB, ideal para gaming.",
       precio: 19999,
       stock: 70,
       categoriaId: perifericos.id,
@@ -64,6 +66,7 @@ export async function seedDB() {
         create: [
           {
             url: "https://cdn.sanity.io/images/kyml1h03/production/9fbb62343426e1f157144f26d9b59be1629ef7c1-600x600.webp",
+            publicId: "",
           },
         ],
       },
@@ -83,6 +86,7 @@ export async function seedDB() {
         create: [
           {
             url: "https://cdn.sanity.io/images/kyml1h03/production/9fbb62343426e1f157144f26d9b59be1629ef7c1-600x600.webp",
+            publicId: "",
           },
         ],
       },

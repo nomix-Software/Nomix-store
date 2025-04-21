@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AiOutlineMinus,
   AiOutlinePlus,
@@ -9,56 +9,109 @@ import {
 
 // import { client, urlFor } from "../../lib/client";
 // import { useStateContext } from "../../context/StateContext";
-import { Product } from "@/components";
-import { ProductItem } from "@/interfaces";
+import type { ProductDetails } from "@/interfaces";
 import Image from "next/image";
-
+import { getProductDetail } from "@/actions";
+import { notFound, useParams } from "next/navigation";
+import { useCartStore } from "@/store";
+import { Quantity } from "@/components";
+interface Params {
+  [key: string]: string;
+  slug: string;
+}
 const ProductDetails = () => {
-  const { name, details, price } = {
-    name: "Sample Product",
-    details: "Sample details",
-    price: 100,
-  };
-  //   const [index, setIndex] = useState(0);
+  const params = useParams<Params>();
+  const [productDetail, setProductDetail] = useState<ProductDetails>();
+  const [loading, setLoading] = useState(true);
+  const [index, setIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart, setShowCart } = useCartStore((state) => state);
+  // const productDetail = useMemo(async () => await getProductDetail(params.slug), [])
+  if (!loading && !productDetail) notFound();
+
+  useEffect(() => {
+    (async () => {
+      const productDetail = await getProductDetail(params.slug);
+      if (productDetail) {
+        setProductDetail(productDetail);
+      } else {
+        console.error("Product detail not found");
+        notFound();
+      }
+      setLoading(false);
+      console.log(productDetail);
+    })();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  const { nombre, precio, descripcion, imagenes, stock } = productDetail!;
   //   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
 
   const handleBuyNow = () => {
     // onAdd(product, qty);
-    // setShowCart(true);
+    if (!productDetail) return;
+    addToCart({
+      id: productDetail?.id,
+      nombre: productDetail?.nombre,
+      slug: productDetail?.slug,
+      cantidad: quantity,
+      precio: productDetail?.precio,
+      stock: productDetail?.stock,
+      imagen: productDetail?.imagenes[0].url,
+    });
+    setShowCart(true);
   };
-  console.log("asdasd");
+  const handleChageQty = (value: number) => {
+    if (value > stock || value < 0) return;
+    setQuantity(value);
+  };
+
   return (
     <div>
       <div className="product-detail-container">
         <div>
           <div className="image-container">
-            <Image
-              src={"https://picsum.photos/200"}
-              alt="product image"
-              width={500}
-              height={500}
-              className="product-detail-image"
-            />
+            {imagenes.length && (
+              <Image
+                src={imagenes[index].url}
+                alt="product image"
+                width={500}
+                height={500}
+                className="product-detail-image"
+              />
+            )}
           </div>
           <div className="small-images-container">
-            {/* {product?.image?.map((_, i) => (
-              <Image
-                key={i}
-                src={"https://picsum.photos/200"}
-                alt="product image"
-                className={
-                  i === index ? "small-image selected-image" : "small-image"
-                }
-                onMouseEnter={() => setIndex(i)}
-              />
-            ))} */}
+            {imagenes.length > 1 &&
+              imagenes.map((imagen, i) => (
+                <Image
+                  key={`${imagen.id}-${i}`}
+                  width={100}
+                  height={100}
+                  src={imagen.url}
+                  alt="product image"
+                  className={
+                    i === index
+                      ? " cursor-pointer small-image selected-image hover:opacity-50 hover:scale-110"
+                      : "cursor-pointer small-image"
+                  }
+                  onMouseEnter={() => {
+                    setIndex(i);
+                  }}
+                />
+              ))}
           </div>
         </div>
 
         <div className="product-detail-desc">
-          <h1>{name}</h1>
+          <h1 className="font-extrabold ">{nombre}</h1>
           <div className="reviews">
-            <div>
+            <div className="flex flex-row gap-1 items-center">
               <AiFillStar />
               <AiFillStar />
               <AiFillStar />
@@ -67,43 +120,40 @@ const ProductDetails = () => {
             </div>
             <p>(20)</p>
           </div>
-          <h4>Details: </h4>
-          <p>{details}</p>
-          <p className="price">${price}</p>
-          <div className="quantity">
-            <h3>Quantity:</h3>
-            <p className="quantity-desc">
-              <span
-                className="minus"
-                //   onClick={decQty}
-              >
-                <AiOutlineMinus />
-              </span>
-              <span className="num">{2}</span>
-              <span
-                className="plus"
-                //   onClick={incQty}
-              >
-                <AiOutlinePlus />
-              </span>
-            </p>
-          </div>
+          <h4 className="font-bold">Detalle: </h4>
+          <p>{descripcion}</p>
+          <p className="price">${precio}</p>
+          <Quantity
+            quantity={quantity}
+            onChange={(value) => handleChageQty(value)}
+          />
           <div className="buttons">
             <button
               type="button"
               className="add-to-cart"
-              //   onClick={() => onAdd(product, qty)}
+              disabled={stock === 0 || quantity === 0}
+              onClick={() =>
+                addToCart({
+                  id: productDetail?.id,
+                  nombre: productDetail?.nombre,
+                  slug: productDetail?.slug,
+                  cantidad: quantity,
+                  precio: productDetail?.precio,
+                  stock: productDetail?.stock,
+                  imagen: productDetail?.imagenes[0].url,
+                })
+              }
             >
-              Add to Cart
+              Agregar al carrito
             </button>
             <button type="button" className="buy-now" onClick={handleBuyNow}>
-              Buy Now
+              Comprar ahora
             </button>
           </div>
         </div>
       </div>
-
-      <div className="maylike-products-wrapper">
+      {/* tambien te puede gustar */}
+      {/* <div className="maylike-products-wrapper">
         <h2>You may also like</h2>
         <div className="marquee">
           <div className="maylike-products-container track">
@@ -112,52 +162,9 @@ const ProductDetails = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
-const products: ProductItem[] = [
-  {
-    _id: "1",
-    image: "https://picsum.photos/200",
-    name: "Prueba",
-    price: 123,
-    slug: { current: "prueba-1" },
-  },
-]; // Mock data for products, replace with actual data fetching logic
-// export const getStaticPaths = async () => {
-//   const query = `*[_type == "product"] {
-//     slug {
-//       current
-//     }
-//   }`;
-
-// //   const products = await client.fetch(query);
-
-//   const paths = products.map((product) => ({
-//     params: {
-//       slug: product.slug.current,
-//     },
-//   }));
-
-//   return {
-//     paths,
-//     fallback: "blocking",
-//   };
-// };
-
-// export const getStaticProps = async ({ params: { slug } }) => {
-//   const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
-//   const productsQuery = '*[_type == "product"]';
-
-//   const product = await client.fetch(query);
-//   const products = await client.fetch(productsQuery);
-
-//   // console.log(product);
-
-//   return {
-//     props: { products, product },
-//   };
-// };
 
 export default ProductDetails;
