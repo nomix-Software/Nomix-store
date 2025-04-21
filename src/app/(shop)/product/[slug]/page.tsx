@@ -1,20 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  AiOutlineMinus,
-  AiOutlinePlus,
-  AiFillStar,
-  AiOutlineStar,
-} from "react-icons/ai";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 // import { client, urlFor } from "../../lib/client";
 // import { useStateContext } from "../../context/StateContext";
-import type { ProductDetails } from "@/interfaces";
+import type { ProductDetails, ProductItem } from "@/interfaces";
 import Image from "next/image";
-import { getProductDetail } from "@/actions";
+import { getProductDetail, getRelatedProducts } from "@/actions";
 import { notFound, useParams } from "next/navigation";
 import { useCartStore } from "@/store";
-import { Quantity } from "@/components";
+import { Product, Quantity } from "@/components";
 interface Params {
   [key: string]: string;
   slug: string;
@@ -22,7 +17,9 @@ interface Params {
 const ProductDetails = () => {
   const params = useParams<Params>();
   const [productDetail, setProductDetail] = useState<ProductDetails>();
+  const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingRelatedProducts, setLoadingRelatedProducts] = useState(true);
   const [index, setIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addToCart, setShowCart } = useCartStore((state) => state);
@@ -34,6 +31,16 @@ const ProductDetails = () => {
       const productDetail = await getProductDetail(params.slug);
       if (productDetail) {
         setProductDetail(productDetail);
+        const fetchedRelatedProducts = await getRelatedProducts(
+          productDetail.categoriaId,
+          productDetail.marcaId
+        );
+        setRelatedProducts(
+          fetchedRelatedProducts.filter(
+            (item) => item._id !== String(productDetail.id)
+          )
+        );
+        setLoadingRelatedProducts(false);
       } else {
         console.error("Product detail not found");
         notFound();
@@ -153,16 +160,22 @@ const ProductDetails = () => {
         </div>
       </div>
       {/* tambien te puede gustar */}
-      {/* <div className="maylike-products-wrapper">
-        <h2>You may also like</h2>
-        <div className="marquee">
-          <div className="maylike-products-container track">
-            {products.map((item: ProductItem) => (
-              <Product key={item._id} product={item} />
-            ))}
+      {loadingRelatedProducts ? (
+        <div className="flex justify-center items-center h-screen">
+          Loading...
+        </div>
+      ) : (
+        <div className="maylike-products-wrapper">
+          <h2>También te puede interesar</h2>
+          <div className="marquee">
+            <div className="maylike-products-container track">
+              {relatedProducts.map((item: ProductItem) => (
+                <Product key={item._id} product={item} />
+              ))}
+            </div>
           </div>
         </div>
-      </div> */}
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ export * from "./product/UpdateProduct";
 export * from "./product/UploadImage";
 export * from "./product/ProductCart";
 export * from "./product/ProductImage";
+export * from "./product/ProductsRelated";
 
 export * from "./brand/BrandAbm";
 export * from "./brand/BrandItems";
