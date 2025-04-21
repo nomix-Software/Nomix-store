@@ -23,12 +23,14 @@ export default function AdminProductPage() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Productos</h1>
-        <Link href="/dashboard/products/add">
-          <button className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-            <FiPlus size={20} /> Agregar Producto
-          </button>
-        </Link>
+        <h1 className="text-2xl font-bold products-heading">Productos</h1>
+        <div className="buttons">
+          <Link href="/dashboard/products/add">
+            <button className=" flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer">
+              <FiPlus size={20} /> Agregar Producto
+            </button>
+          </Link>
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-lg shadow">

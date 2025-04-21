@@ -42,7 +42,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
     },
   ];
 
-  const options = role === "cliente" ? adminOptions : clientOptions;
+  const options = role === "admin" ? adminOptions : clientOptions;
 
   return (
     <>
