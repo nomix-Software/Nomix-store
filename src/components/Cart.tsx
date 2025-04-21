@@ -12,6 +12,9 @@ import { ItemCart } from "./ItemCart";
 export const Cart = () => {
   const cartRef = useRef(null);
   const { items, setShowCart } = useCartStore((state) => state);
+  const subtotal = useCartStore((state) =>
+    state.items.reduce((total, item) => total + item.precio * item.cantidad, 0)
+  );
 
   const handleCheckout = async () => {
     // const stripe = await getStripe();
@@ -45,8 +48,8 @@ export const Cart = () => {
           onClick={() => setShowCart(false)}
         >
           <AiOutlineLeft />
-          <span className="heading">Your Cart</span>
-          <span className="cart-num-items">({12} items)</span>
+          <span className="heading">Tu carrito</span>
+          <span className="cart-num-items">({items.length} items)</span>
         </button>
 
         {items.length < 1 && (
@@ -73,11 +76,11 @@ export const Cart = () => {
           <div className="cart-bottom">
             <div className="total">
               <h3>Subtotal:</h3>
-              <h3>${84654654}</h3>
+              <h3>${subtotal}</h3>
             </div>
             <div className="btn-container">
               <button type="button" className="btn" onClick={handleCheckout}>
-                Pay with Stripe
+                Pagar ahora
               </button>
             </div>
           </div>

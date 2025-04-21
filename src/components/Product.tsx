@@ -22,7 +22,7 @@ export const Product = ({
       <Link href={`/product/${slug.current}`}>
         <div className="product-card">
           <Image
-            src={image}
+            src={image || ""}
             width={250}
             height={250}
             className="product-image"

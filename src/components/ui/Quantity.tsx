@@ -4,17 +4,17 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
 interface QuantityProps {
   quantity: number;
-  onChange: (value: number) => void;
+  onChange: (value: number, action: "substract" | "add") => void;
 }
 export const Quantity = ({ quantity = 1, onChange }: QuantityProps) => {
   const onValueChanged = (value: number, operation: "add" | "remove") => {
     console.log("value", value);
     if (operation === "remove") {
       if (quantity === 0) return;
-      onChange(quantity - 1);
+      onChange(quantity - 1, "substract");
       return;
     } else {
-      onChange(quantity + 1);
+      onChange(quantity + 1, "add");
     }
   };
 

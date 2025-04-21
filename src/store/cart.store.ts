@@ -1,4 +1,5 @@
 // src/store/cartStore.ts
+
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -19,10 +20,13 @@ type CartState = {
   addToCart: (product: Product) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
+  getSubtotal: () => number;
+  substractOne: (id: number, value: number) => void;
+  addOne: (id: number, value: number) => void;
 };
 
 export const useCartStore = create<CartState>()(
-  devtools((set) => ({
+  devtools((set, get) => ({
     items: [],
     showCart: false,
     setShowCart: (show) => set({ showCart: show }, false, "setShowCart"),
@@ -45,7 +49,30 @@ export const useCartStore = create<CartState>()(
         false,
         "addToCart"
       ),
-
+    substractOne: (id: number, value: number) =>
+      set(
+        (state) => ({
+          items: state.items.map((item) =>
+            item.id === id && value > 0 && value <= item.stock
+              ? { ...item, cantidad: value }
+              : item
+          ),
+        }),
+        false,
+        "substractOne"
+      ),
+    addOne: (id: number, value: number) =>
+      set(
+        (state) => ({
+          items: state.items.map((item) =>
+            item.id === id && value > 0 && value <= item.stock
+              ? { ...item, cantidad: value }
+              : item
+          ),
+        }),
+        false,
+        "addOne"
+      ),
     removeFromCart: (id) =>
       set(
         (state) => ({
@@ -56,5 +83,9 @@ export const useCartStore = create<CartState>()(
       ),
 
     clearCart: () => set({ items: [] }, false, "clearCart"),
+    getSubtotal: () =>
+      get().items.reduce((acc, item) => {
+        return acc + item.precio * item.cantidad;
+      }, 0),
   }))
 );

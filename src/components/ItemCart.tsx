@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Quantity } from "./ui/Quantity";
 import { TiDeleteOutline } from "react-icons/ti";
 import Image from "next/image";
@@ -24,12 +24,20 @@ export const ItemCart = ({
   slug,
   id,
 }: ItemCartProps) => {
-  const [quantity, setQuantity] = useState(cantidad);
-  const { removeFromCart } = useCartStore((state) => state);
+  const { removeFromCart, substractOne, addOne } = useCartStore(
+    (state) => state
+  );
 
-  const handleChageQty = (value: number) => {
+  const handleChageQty = (value: number, action: "substract" | "add") => {
     if (value > stock || value < 0) return;
-    setQuantity(value);
+    if (action === "substract") {
+      substractOne(id, value);
+      return;
+    }
+    if (action === "add") {
+      addOne(id, value);
+      return;
+    }
   };
   return (
     <div className="product">
@@ -49,8 +57,8 @@ export const ItemCart = ({
         </div>
         <div className="flex bottom">
           <Quantity
-            quantity={quantity}
-            onChange={(value) => handleChageQty(value)}
+            quantity={cantidad}
+            onChange={(value, action) => handleChageQty(value, action)}
           />
           <button
             type="button"
