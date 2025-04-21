@@ -24,7 +24,7 @@ export default function AdminProductPage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Productos</h1>
-        <Link href="/admin/products/add">
+        <Link href="/dashboard/products/add">
           <button className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
             <FiPlus size={20} /> Agregar Producto
           </button>
@@ -59,7 +59,9 @@ export default function AdminProductPage() {
                 <td className="px-4 py-2">{product.stock}</td>
                 <td className="px-4 py-2 flex gap-2">
                   <button className=" cursor-pointer text-blue-600 hover:text-blue-800">
-                    <Link href={`/admin/product/edit/${product.slug.current}`}>
+                    <Link
+                      href={`/dashboard/product/edit/${product.slug.current}`}
+                    >
                       <FiEdit2 size={18} />
                     </Link>
                   </button>

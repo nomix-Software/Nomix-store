@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaBoxOpen } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { MdAttachMoney, MdInventory } from "react-icons/md";
+import Link from "next/link";
+import { CgProfile } from "react-icons/cg";
 
 interface SidebarProps {
   role: "admin" | "cliente";
@@ -14,17 +17,32 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
   if (!isAuthenticated) return null;
 
   const adminOptions = [
-    { label: "Dashboard", href: "/admin/dashboard" },
-    { label: "Gestionar productos", href: "/admin/products" },
-    { label: "Finanzas", href: "/admin/finanzas" },
+    {
+      label: "Gestionar productos",
+      href: "/dashboard/products",
+      icon: MdInventory, // 🗃️ ícono de inventario
+    },
+    {
+      label: "Finanzas",
+      href: "/dashboard/finanzas",
+      icon: MdAttachMoney, // 💰 ícono de finanzas
+    },
   ];
 
   const clientOptions = [
-    { label: "Mis pedidos", href: "/cliente/pedidos" },
-    { label: "Perfil", href: "/cliente/perfil" },
+    {
+      label: "Mis pedidos",
+      href: "/cliente/pedidos",
+      icon: FaBoxOpen, // 📦 ícono de pedidos
+    },
+    {
+      label: "Perfil",
+      href: "/cliente/perfil",
+      icon: CgProfile, // 👤 ícono de perfil
+    },
   ];
 
-  const options = role === "admin" ? adminOptions : clientOptions;
+  const options = role === "cliente" ? adminOptions : clientOptions;
 
   return (
     <>
@@ -49,31 +67,34 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
 
             {/* Sidebar */}
             <motion.div
-              className="fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 p-6 flex flex-col gap-4"
+              className="fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 !p-4 flex flex-col gap-4 justify-between"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <h2 className="text-xl font-semibold text-purple-600 mb-4">
-                Menú
-              </h2>
-              <ul className="flex flex-col gap-3">
-                {options.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="text-gray-800 hover:text-purple-600 transition-colors"
+              <div className="flex flex-col gap-4">
+                <h2 className="text-xl font-semibold mb-4 text-[#324d67] text-center">
+                  Menú
+                </h2>
+                <ul className="flex flex-col gap-3">
+                  {options.map(({ label, href, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
                     >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                      <Icon size={20} />
+                      <span>{label}</span>
+                    </Link>
+                  ))}
+                </ul>
+              </div>
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="mt-auto text-sm text-gray-500 hover:text-gray-700"
+                className="cursor-pointer mt-auto text-sm text-gray-500 hover:text-gray-700"
               >
                 Cerrar menú
               </button>
