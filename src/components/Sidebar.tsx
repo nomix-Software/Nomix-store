@@ -47,7 +47,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
   return (
     <>
       <button
-        className=" cursor-pointer fixed top-4 right-4 z-50 text-3xl text-purple-600"
+        className=" cursor-pointer fixed top-4 right-4 z-50 text-3xl text-red-500 hover:text-red-700 transition-colors duration-300"
         onClick={() => setIsOpen(true)}
       >
         <FaBars />

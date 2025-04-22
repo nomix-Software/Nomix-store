@@ -70,7 +70,6 @@ const AddProductPage = () => {
       formData.append("images", file);
     });
     const savedImages = await uploadImagesToCloudinary(formData);
-    console.log("savedImages", savedImages);
 
     // Agregamos el resto de la data como JSON (producto sin imagenes)
     const formErrors = validate();
@@ -85,7 +84,6 @@ const AddProductPage = () => {
     }
     await createProduct({ ...product, images: savedImages });
     toast.success("Producto agregado correctamente.");
-    console.log("Producto:", product);
     // Aquí iría la lógica real para guardar el producto
   };
   //   const categories = ["Pañales", "Higiene", "Accesorios"];

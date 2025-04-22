@@ -86,8 +86,6 @@ export default function EditProductPage() {
         formData.append("images", file);
       });
       const savedImages = await uploadImagesToCloudinary(formData);
-      console.log("savedImages", savedImages);
-
       // Agregamos el resto de la data como JSON (producto sin imagenes)
       formData.append(
         "producto",
@@ -101,7 +99,6 @@ export default function EditProductPage() {
       const createdProduct = await updateProduct(producto?.slug, {
         ...JSON.parse(formData.get("producto") as string),
       });
-      console.log({ createdProduct });
       setProducto(createdProduct);
       // Si se subieron imágenes nuevas, las agregamos al producto
       if (createdProduct) {

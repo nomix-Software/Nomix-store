@@ -46,7 +46,6 @@ const ProductDetails = () => {
         notFound();
       }
       setLoading(false);
-      console.log(productDetail);
     })();
   }, []);
 

@@ -16,7 +16,6 @@ interface ProductProps {
 export const Product = ({
   product: { image, name, slug, price },
 }: ProductProps) => {
-  console.log({ image });
   return (
     <div>
       <Link href={`/product/${slug.current}`}>
