@@ -139,6 +139,7 @@ const ProductDetails = () => {
               className="add-to-cart"
               disabled={stock === 0 || quantity === 0}
               onClick={() =>
+                productDetail &&
                 addToCart({
                   id: productDetail?.id,
                   nombre: productDetail?.nombre,
