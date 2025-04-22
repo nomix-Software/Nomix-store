@@ -53,7 +53,7 @@ const ProductDetails = () => {
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        Cargando...
       </div>
     );
   const { nombre, precio, descripcion, imagenes, stock } = productDetail!;
