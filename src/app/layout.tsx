@@ -4,6 +4,7 @@ import "./globals.css";
 import Head from "next/head";
 import { Footer, Navbar } from "@/components";
 import { Toaster } from "react-hot-toast";
+import { AuthSessionProvider } from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "Cye Tech",
@@ -13,21 +14,23 @@ export const metadata: Metadata = {
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <html>
-      <body>
-        <div className="layout">
-          <Head>
-            <title>CyE Tech</title>
-          </Head>
-          <header>
-            <Navbar />
-          </header>
-          <main className="main-container">{children}</main>
-          <footer>
-            <Footer />
-          </footer>
-        </div>
-        <Toaster position="top-right" reverseOrder={false} />
-      </body>
+      <AuthSessionProvider>
+        <body>
+          <div className="layout">
+            <Head>
+              <title>CyE Tech</title>
+            </Head>
+            <header>
+              <Navbar />
+            </header>
+            <main className="main-container">{children}</main>
+            <footer>
+              <Footer />
+            </footer>
+          </div>
+          <Toaster position="top-right" reverseOrder={false} />
+        </body>
+      </AuthSessionProvider>
     </html>
   );
 };

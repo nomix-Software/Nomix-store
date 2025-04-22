@@ -5,14 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
 import { CgProfile } from "react-icons/cg";
+import { useSession } from "next-auth/react";
 
 interface SidebarProps {
-  role: "admin" | "cliente";
+  role: "ADMIN" | "CLIENTE";
   isAuthenticated: boolean;
 }
 
 export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data } = useSession();
+  console.log("Session data:", data); // Verifica si la sesión está disponible
 
   if (!isAuthenticated) return null;
 
@@ -43,7 +46,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
     },
   ];
 
-  const options = role === "admin" ? adminOptions : clientOptions;
+  const options = data?.user.role === "ADMIN" ? adminOptions : clientOptions;
 
   return (
     <>
