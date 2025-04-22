@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FaBars, FaBoxOpen } from "react-icons/fa";
+import { FaBars, FaBoxOpen, FaChartLine } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
@@ -27,6 +27,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
       href: "/dashboard/finanzas",
       icon: MdAttachMoney, // 💰 ícono de finanzas
     },
+    { label: "Gestionar ventas", href: "/dashboard/ventas", icon: FaChartLine },
   ];
 
   const clientOptions = [
@@ -85,7 +86,7 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
                     >
-                      <Icon size={20} />
+                      <Icon size={20} color="#324d67" />
                       <span>{label}</span>
                     </Link>
                   ))}
