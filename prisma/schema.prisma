@@ -7,16 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id          Int         @id @default(autoincrement())
-  nombre      String
-  email       String      @unique
-  password    String
-  rol         RolUsuario  @default(CLIENTE)
-  direcciones Direccion[]
-  carrito     Carrito?
-  ventas      Venta[]
-  creadoEn    DateTime    @default(now())
+model User {
+  id             String      @id @default(cuid())
+  name           String
+  email          String      @unique
+  password       String?     // Nullable para permitir usuarios de Google sin contraseña
+  rol            RolUsuario  @default(CLIENTE)
+  direcciones    Direccion[]
+  carrito        Carrito?
+  ventas         Venta[]
+  creadoEn       DateTime    @default(now())
+  emailVerified  DateTime?
+  image          String?
+
+  // Relaciones para NextAuth
+  accounts       Account[]
+  sessions       Session[]
 }
 
 enum RolUsuario {
@@ -24,10 +30,46 @@ enum RolUsuario {
   CLIENTE
 }
 
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? 
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model Direccion {
   id            Int      @id @default(autoincrement())
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId     Int
+  usuario       User     @relation(fields: [usuarioId], references: [id])
+  usuarioId     String
   calle         String
   ciudad        String
   provincia     String
@@ -51,7 +93,7 @@ model Marca {
 model Promocion {
   id          Int        @id @default(autoincrement())
   descripcion String
-  descuento   Float      // Ej: 0.10 para 10%
+  descuento   Float
   productos   Producto[]
 }
 
@@ -73,7 +115,6 @@ model Producto {
   ventaItems   VentaProducto[]
 }
 
-
 model ImagenProducto {
   id          Int      @id @default(autoincrement())
   url         String
@@ -84,8 +125,8 @@ model ImagenProducto {
 
 model Carrito {
   id            Int          @id @default(autoincrement())
-  usuario       Usuario      @relation(fields: [usuarioId], references: [id])
-  usuarioId     Int          @unique
+  usuario       User         @relation(fields: [usuarioId], references: [id])
+  usuarioId     String       @unique
   items         CarritoItem[]
   actualizadoEn DateTime     @updatedAt
 }
@@ -101,8 +142,8 @@ model CarritoItem {
 
 model Venta {
   id          Int              @id @default(autoincrement())
-  usuario     Usuario          @relation(fields: [usuarioId], references: [id])
-  usuarioId   Int
+  usuario     User             @relation(fields: [usuarioId], references: [id])
+  usuarioId   String
   fecha       DateTime         @default(now())
   total       Float
   productos   VentaProducto[]
@@ -124,7 +165,7 @@ model VentaProducto {
 
 model EstadoPedido {
   id      Int      @id @default(autoincrement())
-  nombre  String   // Ej: Pendiente, Enviado, Entregado
+  nombre  String
   ventas  Venta[]
 }
 
@@ -132,7 +173,7 @@ model CuponDescuento {
   id          Int      @id @default(autoincrement())
   codigo      String   @unique
   descripcion String?
-  porcentaje  Float    // Ej: 0.15 = 15%
+  porcentaje  Float
   validoHasta DateTime
   ventas      Venta[]
 }

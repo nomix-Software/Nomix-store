@@ -1,7 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import prisma from "./prisma";
 
@@ -9,9 +9,13 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt", // clave para poder editar el token
+    strategy: "jwt", // para incluir info adicional en el token
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -19,11 +23,13 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = await prisma.usuario.findUnique({
-          where: { email: credentials?.email },
+        if (!credentials?.email || !credentials.password) return null;
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
         });
 
-        if (!user || !credentials?.password) return null;
+        if (!user || !user.password) return null;
 
         const validPassword = await bcrypt.compare(
           credentials.password,
@@ -43,7 +49,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Solo al iniciar sesión
+      // Solo al iniciar sesión (primer login)
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -61,6 +67,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth", // tu página personalizada
+    signIn: "/auth", // tu página personalizada de login
   },
 };

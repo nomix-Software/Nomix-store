@@ -25,7 +25,7 @@ export default function AuthPage() {
             await signIn("credentials", {
               email,
               password,
-              callbackUrl: "/",
+              callbackUrl: "/dashboard/products",
             });
           }
         }}
@@ -61,7 +61,11 @@ export default function AuthPage() {
       <div className="my-4 text-center">o</div>
 
       <button
-        onClick={() => signIn("google", { callbackUrl: "/" })}
+        onClick={() =>
+          signIn("google", {
+            callbackUrl: "/",
+          })
+        }
         className="w-full border p-2 rounded hover:bg-gray-100"
       >
         Iniciar con Google
