@@ -90,9 +90,9 @@ const AddProductPage = () => {
   //   const brands = ["Huggies", "Pampers", "Johnson's"];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-2xl">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center ">
+      <div className="bg-white shadow-xl rounded-xl !p-8 w-full max-w-2xl">
+        <h1 className="text-3xl font-bold text-center mb-6 text-[#324d67]">
           Agregar nuevo producto
         </h1>
 

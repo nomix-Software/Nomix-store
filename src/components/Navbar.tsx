@@ -6,14 +6,10 @@ import { Sidebar } from "./Sidebar";
 import { Cart } from "./Cart";
 import { useCartStore } from "@/store";
 
-// import { useStateContext } from "../store/StateContext";
-// import { Cart } from "./";
-
 export const Navbar = () => {
-  // const { showCart, setShowCart, totalQuantities } = useStateContext();
   const { setShowCart, showCart, items } = useCartStore((state) => state);
   return (
-    <div className="navbar-container">
+    <div className="navbar-container !mb-4">
       <p className="logo">
         <Link href="/">
           <strong>CYE TECH</strong> Tienda
@@ -28,7 +24,7 @@ export const Navbar = () => {
           <AiOutlineShopping />
           <span className="cart-item-qty">{items.length}</span>
         </button>
-        <Sidebar role="admin" isAuthenticated={true} />
+        <Sidebar role="ADMIN" isAuthenticated={true} />
       </div>
       {showCart && <Cart />}
     </div>

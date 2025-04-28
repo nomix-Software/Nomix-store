@@ -26,7 +26,10 @@ export default function AdminProductPage() {
         <h1 className="text-2xl font-bold products-heading">Productos</h1>
         <div className="buttons">
           <Link href="/dashboard/products/add">
-            <button className=" flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer">
+            <button className=" flex items-center gap-2 !px-[16px] py-2 
+            rounded-lg cursor-pointer border-1 border-red-500  
+            bg-red-500 text-white text-sm text-bold h-[36px] hover:bg-red-800 
+            transition duration-200 ease-in-out">
               <FiPlus size={20} /> Agregar Producto
             </button>
           </Link>

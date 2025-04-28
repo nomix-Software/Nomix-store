@@ -13,3 +13,4 @@ export * from "./ui/Modal";
 export * from "./Sidebar";
 export * from "./ui/ImageInput";
 export * from "./ui/Quantity";
+export * from "./ui/Label";
