@@ -11,3 +11,5 @@ export * from "./brand/BrandItems";
 
 export * from "./categorie/CategoriesItems";
 export * from "./categorie/CategorieAbm";
+
+export * from "./mercadopago/Payments";

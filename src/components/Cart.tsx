@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useCartStore } from "@/store";
 
 import { ItemCart } from "./ItemCart";
+import { createCheckout } from "@/actions";
 
 export const Cart = () => {
   const cartRef = useRef(null);
@@ -33,9 +34,21 @@ export const Cart = () => {
     // }
 
     // const data = await response.json();
+    const url = await createCheckout(
+      items.map((item) => {
+        return {
+          id: String(item.id),
+          title: item.nombre,
+          unit_price: item.precio,
+          quantity: item.cantidad,
+        };
+      }),
+      "marcosgaliano96@gmail.com"
+    );
+    console.log("url", url);
 
     toast.loading("Redirecting...");
-
+    if (url) window.location.href = url;
     // stripe.redirectToCheckout({ sessionId: data.id });
   };
 
