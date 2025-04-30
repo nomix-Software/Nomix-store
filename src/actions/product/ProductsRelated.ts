@@ -35,8 +35,8 @@ export const getRelatedProducts = async (
       },
     },
     where: {
-      categoriaId: categoriaId,
-      marcaId: marcaId,
+      ...(marcaId && { marcaId }), // solo si existe marcaId
+      ...(categoriaId && { categoriaId }), // solo si existe categoriaId
     },
   });
   return relatedProducts.map((p) => ({

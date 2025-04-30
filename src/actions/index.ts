@@ -5,6 +5,8 @@ export * from "./product/UploadImage";
 export * from "./product/ProductCart";
 export * from "./product/ProductImage";
 export * from "./product/ProductsRelated";
+export * from "./product/ProductMostSale";
+export * from "./product/ProductLatest";
 
 export * from "./brand/BrandAbm";
 export * from "./brand/BrandItems";

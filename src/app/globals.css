@@ -6,7 +6,7 @@ body,
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important;
   box-sizing: border-box;
 }
 ::-webkit-scrollbar {
@@ -174,7 +174,7 @@ span.text-red {
 }
 
 .desc {
-  position: absolute;
+  /* position: absolute; */
   right: 10%;
   bottom: 5%;
   width: 300px;

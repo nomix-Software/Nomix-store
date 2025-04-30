@@ -2,18 +2,7 @@ import { FooterBanner, HeroBanner, Product } from "@/components";
 import React from "react";
 
 import { getProducts } from "@/actions";
-// import { Toaster } from "react-hot-toast";
-// import Layout from "./layout";
-// const products: ProductItem[] = [
-//   {
-//     _id: "1",
-//     image:
-//       "https://cdn.sanity.io/images/kyml1h03/production/7779cbf27cbc8125c28234fde710cb4b2bf34ec0-600x600.webp",
-//     name: "Prueba",
-//     price: 123,
-//     slug: { current: "prueba-1" },
-//   },
-// ];
+
 async function MyApp() {
   const products = await getProducts();
   return (
@@ -29,7 +18,7 @@ async function MyApp() {
             // largeText2: "texto
             midText: "Inhalambrico",
             product: "product-1",
-            smallText: "Mas vendido",
+            smallText: "Novedades",
           }}
         />
         <div className="products-heading">

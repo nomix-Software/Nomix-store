@@ -110,6 +110,7 @@ model Producto {
   marcaId      Int
   promocion    Promocion?       @relation(fields: [promocionId], references: [id])
   promocionId  Int?
+  creadoEn DateTime @default(now())
   imagenes     ImagenProducto[]
   carritoItems CarritoItem[]
   ventaItems   VentaProducto[]

@@ -1,8 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-// import { urlFor } from "../lib/client";
+import { getLatestProduct } from "@/actions";
 
 interface HeroBannerProps {
   heroBanner: {
@@ -16,29 +15,46 @@ interface HeroBannerProps {
   };
 }
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({ heroBanner }) => {
+export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
+  const productLatest = await getLatestProduct();
+  console.log({ productLatest });
   return (
-    <div className="hero-banner-container">
-      <div>
-        <p className="beats-solo">{heroBanner.smallText}</p>
-        <h3>{heroBanner.midText}</h3>
-        <h1>{heroBanner.largeText1}</h1>
+    <div className=" radius-2 bg-[#dcdcdc] p-4 sm:!p-10 ">
+      <div className="flex flex-col md:flex-row items-center justify-around">
+        <div>
+          <p className="beats-solo">{heroBanner.smallText}</p>
+          {productLatest?.categoria && (
+            <h3>
+              {typeof productLatest?.categoria === "object"
+                ? productLatest.categoria.nombre
+                : productLatest?.categoria}
+            </h3>
+          )}
+          <h1 className="text-2xl sm:!text-4xl md:!text-8xl products-heading !text-left">
+            {productLatest?.nombre}
+          </h1>
+        </div>
         <Image
           src={heroBanner.image}
-          width={500}
-          height={500}
+          width={240}
+          height={240}
           alt="headphones"
-          className="hero-banner-image"
+          // className="hero-banner-image"
         />
 
-        <div>
-          <Link href={`/product/${heroBanner.product}`}>
-            <button type="button">{heroBanner.buttonText}</button>
-          </Link>
-          <div className="desc">
+        <div className="flex flex-col justify-between gap-8">
+          <div className="desc mb-5">
             <h5>Descripción</h5>
-            <p>{heroBanner.desc}</p>
+            <p>{productLatest?.descripcion}</p>
           </div>
+          <Link href={`/product/${heroBanner.product}`}>
+            <button
+              type="button"
+              className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[140px]"
+            >
+              {heroBanner.buttonText}
+            </button>
+          </Link>
         </div>
       </div>
     </div>
