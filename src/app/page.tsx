@@ -26,7 +26,7 @@ async function MyApp() {
           <p>Descubrí las diferentes versiones más elegidas.</p>
         </div>
 
-        <div className="products-container">
+        <div className="flex flex-col w-[250px] justify-center items-center !m-auto sm:flex-row gap-4 sm:w-auto ">
           {products?.map((product) => (
             <Product key={product._id} product={product} />
           ))}

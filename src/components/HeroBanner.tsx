@@ -19,18 +19,20 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
   const productLatest = await getLatestProduct();
   console.log({ productLatest });
   return (
-    <div className=" radius-2 bg-[#dcdcdc] p-4 sm:!p-10 ">
+    <div className=" rounded-2xl bg-[#dcdcdc] p-4 sm:!p-10 ">
       <div className="flex flex-col md:flex-row items-center justify-around">
         <div>
-          <p className="beats-solo">{heroBanner.smallText}</p>
+          <p className="beats-solo text-4xl font-extrabold">
+            {heroBanner.smallText}
+          </p>
           {productLatest?.categoria && (
-            <h3>
+            <h3 className="text-2xl text-[#324d67] font-semibold">
               {typeof productLatest?.categoria === "object"
                 ? productLatest.categoria.nombre
                 : productLatest?.categoria}
             </h3>
           )}
-          <h1 className="text-2xl sm:!text-4xl md:!text-8xl products-heading !text-left">
+          <h1 className="text-2xl font-extrabold  sm:!text-4xl md:!text-8xl products-heading !text-left">
             {productLatest?.nombre}
           </h1>
         </div>
