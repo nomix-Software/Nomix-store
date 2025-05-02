@@ -20,8 +20,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
   console.log({ productLatest });
   return (
     <div className=" rounded-2xl bg-[#dcdcdc] p-4 sm:!p-10 ">
-      <div className="flex flex-col md:flex-row items-center justify-around">
-        <div>
+      <div className="flex flex-col md:flex-row items-center justify-around ">
+        <div className="md:w-1/2">
           <p className="beats-solo text-4xl font-extrabold">
             {heroBanner.smallText}
           </p>
@@ -36,15 +36,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
             {productLatest?.nombre}
           </h1>
         </div>
-        <Image
-          src={heroBanner.image}
-          width={240}
-          height={240}
-          alt="headphones"
-          // className="hero-banner-image"
-        />
 
-        <div className="flex flex-col justify-between gap-8">
+        <div className="flex flex-col justify-center gap-2 sm:gap-4  w-full md:w-1/2 md:items-center">
+          <Image
+            src={heroBanner.image}
+            width={300}
+            height={300}
+            alt="headphones"
+            // className="hero-banner-image"
+          />
           <div className="desc mb-5">
             <h5>Descripción</h5>
             <p>{productLatest?.descripcion}</p>
