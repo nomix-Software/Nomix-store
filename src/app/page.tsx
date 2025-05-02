@@ -31,7 +31,14 @@ async function MyApp() {
             <Product key={product._id} product={product} />
           ))}
         </div>
-
+        <div className=" flex w-full justify-center">
+          <button
+            type="button"
+            className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
+          >
+            Ver más productos
+          </button>
+        </div>
         <FooterBanner
           footerBanner={{
             discount: "29% de descuento",
