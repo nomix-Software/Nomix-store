@@ -2,9 +2,11 @@ import { FooterBanner, HeroBanner, Product } from "@/components";
 import React from "react";
 
 import { getProducts } from "@/actions";
+import Link from "next/link";
 
 async function MyApp() {
   const products = await getProducts();
+
   return (
     <>
       <div>
@@ -32,12 +34,14 @@ async function MyApp() {
           ))}
         </div>
         <div className=" flex w-full justify-center">
-          <button
-            type="button"
-            className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
-          >
-            Ver más productos
-          </button>
+          <Link href={"/catalogo"}>
+            <button
+              type="button"
+              className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
+            >
+              Ver más productos
+            </button>
+          </Link>
         </div>
         <FooterBanner
           footerBanner={{
