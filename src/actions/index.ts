@@ -11,6 +11,7 @@ export * from "./product/ProductLatest";
 export * from "./product/filters/ProductByCategorie";
 export * from "./product/filters/ProductsByBrand";
 export * from "./product/filters/ProductsBySearch";
+export * from "./product/filters/ProductsFiltered";
 
 export * from "./brand/BrandAbm";
 export * from "./brand/BrandItems";

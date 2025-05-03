@@ -1,7 +1,7 @@
 import {
   getProductByCategorie,
   getProductsByBrand,
-  getProductsBySearch,
+  getProductsFiltered,
 } from "@/actions";
 import { CollapsibleFilterList, Product } from "@/components";
 import SearchBar from "@/components/ui/SearchBar";
@@ -10,15 +10,22 @@ import React from "react";
 interface Props {
   searchParams: {
     search?: string;
+    brand?: string[];
+    categorie?: string[];
   };
 }
 
 export const CatalogoPage = async ({ searchParams }: Props) => {
-  const search = searchParams.search?.trim() || "";
-  const products = await getProductsBySearch(search);
+  const searchP = await searchParams;
 
-  const filtersCategories = await getProductByCategorie(search);
-  const filtersBrands = await getProductsByBrand();
+  const search = searchP.search || undefined;
+  const marcas = searchP.brand; // múltiples marcas
+  const categorias = searchP.categorie; // múltiples categorías
+
+  const products = await getProductsFiltered({ search, marcas, categorias });
+
+  const filtersCategories = await getProductByCategorie(searchP.search);
+  const filtersBrands = await getProductsByBrand(searchP.search);
   return (
     <div>
       <div className=" flex flex-row justify-around mb-4  items-center">
