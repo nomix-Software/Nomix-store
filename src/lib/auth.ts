@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
       // Solo al iniciar sesión (primer login)
       if (user) {
         token.id = user.id;
-        token.role = user.rol;
+        token.role = "CLIENTE";
         token.nombre = user.name ?? "";
       }
       return token;

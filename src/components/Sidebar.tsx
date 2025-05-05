@@ -12,7 +12,7 @@ interface SidebarProps {
   isAuthenticated: boolean;
 }
 
-export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
+export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data } = useSession();
   console.log("Session data:", data); // Verifica si la sesión está disponible

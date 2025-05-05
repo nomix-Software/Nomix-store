@@ -8,16 +8,16 @@ import SearchBar from "@/components/ui/SearchBar";
 import React from "react";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     brand?: string[];
     categorie?: string[];
-  };
+  }>;
 }
 
 const CatalogoPage = async ({ searchParams }: Props) => {
-  const searchP = await searchParams;
-
+  const searchP = await searchParams; //{ search:'', brand:[''], categorie:['']};
+  console.log({ searchP });
   const search = searchP.search || undefined;
   const marcas = searchP.brand; // múltiples marcas
   const categorias = searchP.categorie; // múltiples categorías

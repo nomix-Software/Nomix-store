@@ -47,7 +47,7 @@ const ProductDetails = () => {
       }
       setLoading(false);
     })();
-  }, []);
+  }, [params.slug]);
 
   if (loading)
     return (
