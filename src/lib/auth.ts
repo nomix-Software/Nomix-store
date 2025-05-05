@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id.toString(),
           email: user.email,
-          nombre: user.nombre,
+          nombre: user.name,
           role: user.rol,
         };
       },
@@ -52,8 +52,8 @@ export const authOptions: NextAuthOptions = {
       // Solo al iniciar sesión (primer login)
       if (user) {
         token.id = user.id;
-        token.role = user.role;
-        token.nombre = user.nombre;
+        token.role = user.rol;
+        token.nombre = user.name ?? "";
       }
       return token;
     },

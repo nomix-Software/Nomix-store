@@ -15,7 +15,7 @@ interface Props {
   };
 }
 
-export const CatalogoPage = async ({ searchParams }: Props) => {
+const CatalogoPage = async ({ searchParams }: Props) => {
   const searchP = await searchParams;
 
   const search = searchP.search || undefined;

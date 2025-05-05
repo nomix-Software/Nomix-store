@@ -46,7 +46,8 @@ export const Sidebar = ({ role, isAuthenticated }: SidebarProps) => {
     },
   ];
 
-  const options = data?.user.role === "ADMIN" ? adminOptions : clientOptions;
+  const options =
+    data?.user.email === "admin@admin.com" ? adminOptions : clientOptions;
 
   return (
     <>

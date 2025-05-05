@@ -4,8 +4,8 @@ import prisma from "@/lib/prisma";
 
 interface FilterParams {
   search?: string;
-  marcas?: string[]; // puede venir de URL como marca=Marca1&marca=Marca2
-  categorias?: string[]; // idem
+  marcas?: string[]; // ej: ["Huggies", "Pampers"]
+  categorias?: string[]; // ej: ["Pañales", "Toallitas"]
 }
 
 export async function getProductsFiltered({
@@ -19,7 +19,7 @@ export async function getProductsFiltered({
       marca:
         marcas && marcas.length > 0
           ? {
-              nombre: { in: marcas },
+              nombre: { in: Array.isArray(marcas) ? marcas : [marcas] },
             }
           : undefined,
       categoria:
@@ -43,6 +43,7 @@ export async function getProductsFiltered({
       },
     },
   });
+
   return products.map((p) => ({
     _id: p.id.toString(),
     image: p.imagenes[0]?.url || "",
