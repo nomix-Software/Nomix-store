@@ -1,7 +1,7 @@
 "use client";
 
 import { registerUser } from "@/actions/auth/AuthRegister";
-import { TextField } from "@/components";
+import { LoadingOverlay, TextField } from "@/components";
 import { signIn } from "next-auth/react";
 // import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -18,6 +18,8 @@ export default function AuthPage() {
     if(isLogin) return 'Ingresar'
     else return 'Crear cuenta'
   }
+
+  if(isLoading) return <LoadingOverlay text={isLogin ? "Obteniendo datos..." : "Registrando usuario..."} />
   return (
     <div className="max-w-md !mx-auto  p-6 h-[70vh]  !my-16">
       <div className="h-fit">
@@ -67,23 +69,22 @@ export default function AuthPage() {
 
         <button
           type="submit"
-          className="w-full bg-[#324d67] text-white !p-2 rounded-2xl hover:bg-[#326567] cursor-pointer"
+          className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
           disabled={isLoading}
         >
           {getTextButton()}
         </button>
       </form>
-{/* 
-      <div className="my-4 text-center">o</div>
+
+      {/* <div className="my-4 text-center">o</div>
 
       <button
-        onClick={async () =>{
-          await signOut({ redirect: false })
+        onClick={() =>
           signIn("google", {
             callbackUrl: "/",
-          })}
+          })
         }
-        className="w-full bg-[#324d67] text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+        className="w-full border p-2 rounded hover:bg-gray-100"
       >
         Iniciar con Google
       </button> */}
