@@ -63,27 +63,31 @@ const AddProductPage = () => {
     setImages(imagenesFiltradas);
   };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData();
-    // Agregamos los archivos nuevos al FormData
-    images.forEach((file) => {
-      formData.append("images", file);
-    });
-    const savedImages = await uploadImagesToCloudinary(formData);
-
-    // Agregamos el resto de la data como JSON (producto sin imagenes)
-    const formErrors = validate();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      toast.error("Revisa los errores del formulario.");
-      return;
+    try {
+      
+      e.preventDefault();
+      const formData = new FormData();
+      // Agregamos los archivos nuevos al FormData
+      images.forEach((file) => {
+        formData.append("images", file);
+      });
+      const savedImages = await uploadImagesToCloudinary(formData);
+      // Agregamos el resto de la data como JSON (producto sin imagenes)
+      const formErrors = validate();
+      if (Object.keys(formErrors).length > 0) {
+        setErrors(formErrors);
+        toast.error("Revisa los errores del formulario.");
+        return;
+      }
+      if (!savedImages) {
+        toast.error("Revisa los errores del formulario.");
+        return;
+      }
+      await createProduct({ ...product, images: savedImages });
+      toast.success("Producto agregado correctamente.");
+    } catch (error) {
+      toast.error("Ocurrio un error, intente de nuevo mas tarde");
     }
-    if (!savedImages) {
-      toast.error("Revisa los errores del formulario.");
-      return;
-    }
-    await createProduct({ ...product, images: savedImages });
-    toast.success("Producto agregado correctamente.");
     // Aquí iría la lógica real para guardar el producto
   };
   //   const categories = ["Pañales", "Higiene", "Accesorios"];
@@ -223,7 +227,7 @@ const AddProductPage = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors"
+            className="text-red-600 underline cursor-pointer"
           >
             Guardar producto
           </button>
