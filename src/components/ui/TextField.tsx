@@ -12,6 +12,7 @@ export interface TextFieldProps {
   type?: string;
   helperText?: string;
   className?: string;
+  required?:boolean
 }
 export const TextField = ({
   name,
@@ -23,6 +24,7 @@ export const TextField = ({
   value,
   type = "text",
   className,
+  required
 }: TextFieldProps) => {
   return (
     <div className=" gap-1 flex flex-col !mb-4">
@@ -36,6 +38,7 @@ export const TextField = ({
           errors && errors.name ? "border-red-500" : "border-gray-300"
         } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 !border-0.5 ${className}`}
         placeholder={placeholder}
+        required={required}
       />
       {errors && errors.name ? (
         <p className="text-sm text-red-600 flex items-center mt-1">
