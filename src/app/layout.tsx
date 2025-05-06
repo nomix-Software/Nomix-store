@@ -16,14 +16,14 @@ const Layout = ({ children }: { children: ReactNode }) => {
     <html>
       <AuthSessionProvider>
         <body>
-          <div className="layout">
+          <div className="min-h-screen flex flex-col">
             <Head>
               <title>CyE Tech</title>
             </Head>
             <header>
               <Navbar />
             </header>
-            <main className="main-container">{children}</main>
+            <main className="flex-1">{children}</main>
             <footer>
               <Footer />
             </footer>
