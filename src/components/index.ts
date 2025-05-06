@@ -6,6 +6,7 @@ export * from "./HeroBanner";
 export * from "./FooterBanner";
 export * from "./ItemCart";
 export * from "./products/RelatedProducts";
+export * from "./products/Catalogue";
 export * from "./product/AddToCart";
 export * from "./product/ImagesDetails";
 
@@ -20,3 +21,4 @@ export * from "./ui/Label";
 export * from "./ui/SearchBar";
 export * from "./ui/CollapsibleFilterList";
 export * from "./ui/Avatar";
+export * from "./ui/LoadingOverlay";

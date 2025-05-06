@@ -4,7 +4,7 @@ import Image from "next/image";
 
 // import { urlFor } from "../lib/client";
 
-interface ProductProps {
+ export interface ProductProps {
   product: {
     image: string;
     name: string;
