@@ -5,6 +5,9 @@ export * from "./Product";
 export * from "./HeroBanner";
 export * from "./FooterBanner";
 export * from "./ItemCart";
+export * from "./products/RelatedProducts";
+export * from "./product/AddToCart";
+export * from "./product/ImagesDetails";
 
 export * from "./ui/TextField";
 export * from "./ui/Select";

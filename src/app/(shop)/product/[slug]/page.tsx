@@ -1,119 +1,26 @@
-"use client";
-import React, { useEffect, useState } from "react";
+"use server";
+import React from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
-import type { ProductDetails, ProductItem } from "@/interfaces";
-import Image from "next/image";
-import { getProductDetail, getRelatedProducts } from "@/actions";
-import { notFound, useParams } from "next/navigation";
-import { useCartStore } from "@/store";
-import { Product, Quantity } from "@/components";
-interface Params {
-  [key: string]: string;
-  slug: string;
-}
-const ProductDetails = () => {
-  const params = useParams<Params>();
-  const [productDetail, setProductDetail] = useState<ProductDetails>();
-  const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingRelatedProducts, setLoadingRelatedProducts] = useState(true);
-  const [index, setIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart, setShowCart } = useCartStore((state) => state);
-  // const productDetail = useMemo(async () => await getProductDetail(params.slug), [])
-  if (!loading && !productDetail) notFound();
+import type { ProductDetails } from "@/interfaces";
 
-  useEffect(() => {
-    (async () => {
-      const productDetail = await getProductDetail(params.slug);
-      if (productDetail) {
-        setProductDetail(productDetail);
-        const fetchedRelatedProducts = await getRelatedProducts(
-          productDetail.categoriaId,
-          productDetail.marcaId
-        );
-        setRelatedProducts(
-          fetchedRelatedProducts.filter(
-            (item) => item._id !== String(productDetail.id)
-          )
-        );
-        setLoadingRelatedProducts(false);
-      } else {
-        console.error("Product detail not found");
-        notFound();
-      }
-      setLoading(false);
-    })();
-  }, [params.slug]);
+import { getProductDetail } from "@/actions";
+import { notFound } from "next/navigation";
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Cargando...
-      </div>
-    );
-  const { nombre, precio, descripcion, imagenes, stock } = productDetail!;
-  //   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
+import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
 
-  const handleBuyNow = () => {
-    // onAdd(product, qty);
-    if (!productDetail) return;
-    addToCart({
-      id: productDetail?.id,
-      nombre: productDetail?.nombre,
-      slug: productDetail?.slug,
-      cantidad: quantity,
-      precio: productDetail?.precio,
-      stock: productDetail?.stock,
-      imagen: productDetail?.imagenes[0].url,
-    });
-    setShowCart(true);
-  };
-  const handleChageQty = (value: number) => {
-    if (value > stock || value < 0) return;
-    setQuantity(value);
-  };
+const ProductDetails = async ({ params }: { params: { slug: string } }) => {
+  const { slug } = await params
+  const productDetail: ProductDetails = await getProductDetail(slug);
+  if (!productDetail) notFound();
 
   return (
     <div>
       <div className="product-detail-container">
-        <div>
-          <div className="image-container">
-            {imagenes.length && (
-              <Image
-                src={imagenes[index].url}
-                alt="product image"
-                width={500}
-                height={500}
-                className="product-detail-image"
-              />
-            )}
-          </div>
-          <div className="small-images-container">
-            {imagenes.length > 1 &&
-              imagenes.map((imagen, i) => (
-                <Image
-                  key={`${imagen.id}-${i}`}
-                  width={100}
-                  height={100}
-                  src={imagen.url}
-                  alt="product image"
-                  className={
-                    i === index
-                      ? " cursor-pointer small-image selected-image hover:opacity-50 hover:scale-110"
-                      : "cursor-pointer small-image"
-                  }
-                  onMouseEnter={() => {
-                    setIndex(i);
-                  }}
-                />
-              ))}
-          </div>
-        </div>
+        <ImagesDetails images={productDetail.imagenes} />
 
         <div className="product-detail-desc">
-          <h1 className="font-extrabold ">{nombre}</h1>
+          <h1 className="font-extrabold ">{productDetail.nombre}</h1>
           <div className="reviews">
             <div className="flex flex-row gap-1 items-center">
               <AiFillStar />
@@ -125,55 +32,12 @@ const ProductDetails = () => {
             <p>(20)</p>
           </div>
           <h4 className="font-bold">Detalle: </h4>
-          <p>{descripcion}</p>
-          <p className="price">${precio}</p>
-          <Quantity
-            quantity={quantity}
-            onChange={(value) => handleChageQty(value)}
-          />
-          <div className="buttons">
-            <button
-              type="button"
-              className="add-to-cart"
-              disabled={stock === 0 || quantity === 0}
-              onClick={() =>
-                productDetail &&
-                addToCart({
-                  id: productDetail?.id,
-                  nombre: productDetail?.nombre,
-                  slug: productDetail?.slug,
-                  cantidad: quantity,
-                  precio: productDetail?.precio,
-                  stock: productDetail?.stock,
-                  imagen: productDetail?.imagenes[0].url,
-                })
-              }
-            >
-              Agregar al carrito
-            </button>
-            <button type="button" className="buy-now" onClick={handleBuyNow}>
-              Comprar ahora
-            </button>
-          </div>
+          <p>{productDetail.descripcion}</p>
+          <AddToCart  {...productDetail} imagenURI={productDetail.imagenes[0].url} />
         </div>
       </div>
       {/* tambien te puede gustar */}
-      {loadingRelatedProducts ? (
-        <div className="flex justify-center items-center h-screen">
-          Loading...
-        </div>
-      ) : (
-        <div className="maylike-products-wrapper">
-          <h2>También te puede interesar</h2>
-          <div className="marquee">
-            <div className="maylike-products-container track">
-              {relatedProducts.map((item: ProductItem) => (
-                <Product key={item._id} product={item} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <RelatedProducts productId={productDetail.id} categoriaId={productDetail.categoria.id} marcaId={productDetail.marca.id} />
     </div>
   );
 };
