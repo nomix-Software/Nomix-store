@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
       "res.cloudinary.com",
     ],
   },
+  experimental:{
+    serverActions:{
+      bodySizeLimit:'10mb'
+    }
+  }
   /* config options here */
 };
 

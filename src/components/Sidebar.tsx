@@ -19,7 +19,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname()
   const { data } = useSession();
-
+console.log({data})
 
   if (!isAuthenticated) return null;
 

@@ -21,7 +21,7 @@ export async function registerUser(form: { email: string; password: string }) {
     data: {
       email: form.email,
       password: hashedPassword,
-      rol: "ADMIN", // o el rol que quieras asignar por defecto
+      rol: "CLIENTE", // o el rol que quieras asignar por defecto
       name: form.email.split("@")[0], // o cualquier lógica para el nombre
     },
   });

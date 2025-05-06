@@ -67,22 +67,23 @@ export default function AuthPage() {
 
         <button
           type="submit"
-          className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+          className="w-full bg-[#324d67] text-white !p-2 rounded-2xl hover:bg-[#326567] cursor-pointer"
           disabled={isLoading}
         >
           {getTextButton()}
         </button>
       </form>
-
-      {/* <div className="my-4 text-center">o</div>
+{/* 
+      <div className="my-4 text-center">o</div>
 
       <button
-        onClick={() =>
+        onClick={async () =>{
+          await signOut({ redirect: false })
           signIn("google", {
             callbackUrl: "/",
-          })
+          })}
         }
-        className="w-full border p-2 rounded hover:bg-gray-100"
+        className="w-full bg-[#324d67] text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
       >
         Iniciar con Google
       </button> */}
