@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
 import { CgProfile } from "react-icons/cg";
-import { signIn, signOut, useSession } from "next-auth/react";
+import {  signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
 

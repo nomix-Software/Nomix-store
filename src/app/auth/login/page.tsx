@@ -1,25 +1,24 @@
-// src/app/auth/page.tsx
 "use client";
 
 import { registerUser } from "@/actions/auth/AuthRegister";
 import { TextField } from "@/components";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AuthPage() {
+  
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const search = useSearchParams()
+  // const search = useSearchParams()
   
   const getTextButton = () : string =>{
     if(isLoading) return 'Cargando...'
     if(isLogin) return 'Ingresar'
     else return 'Crear cuenta'
   }
-console.log({search:search.get('redirect_uri')})
   return (
     <div className="max-w-md !mx-auto  p-6 h-[70vh]  !my-16">
       <div className="h-fit">
@@ -42,7 +41,7 @@ console.log({search:search.get('redirect_uri')})
             await signIn("credentials", {
               email,
               password,
-              callbackUrl: search.get('redirect_uri') || '/',
+              callbackUrl: new URLSearchParams(window.location.search).get('redirect_uri') || '/',
             });
           }
         }}

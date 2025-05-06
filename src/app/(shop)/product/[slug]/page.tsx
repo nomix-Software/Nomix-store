@@ -8,10 +8,13 @@ import { getProductDetail } from "@/actions";
 import { notFound } from "next/navigation";
 
 import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
+interface Props {
+  params : Promise<{ slug: string }>
+}
 
-const ProductDetails = async ({ params }: { params: { slug: string } }) => {
+const ProductDetails = async ({ params }: Props) => {
   const { slug } = await params
-  const productDetail: ProductDetails = await getProductDetail(slug);
+  const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
 
   return (

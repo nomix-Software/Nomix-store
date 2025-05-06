@@ -1,9 +1,8 @@
 import {
   getProductByCategorie,
   getProductsByBrand,
-  getProductsFiltered,
 } from "@/actions";
-import { Catalogue, CollapsibleFilterList, Product } from "@/components";
+import { Catalogue, CollapsibleFilterList } from "@/components";
 import SearchBar from "@/components/ui/SearchBar";
 import React from "react";
 
