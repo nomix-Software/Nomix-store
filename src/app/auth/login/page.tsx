@@ -9,6 +9,13 @@ import { useState } from "react";
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const getTextButton = () : string =>{
+    if(isLoading) return 'Cargando...'
+    if(isLogin) return 'Ingresar'
+    else return 'Crear cuenta'
+  }
 
   return (
     <div className="max-w-md !mx-auto  p-6 h-[70vh]  !my-16">
@@ -20,6 +27,7 @@ export default function AuthPage() {
 
       <form
         action={async (formData) => {
+          setIsLoading(true)
           const email = formData.get("email") as string;
           const password = formData.get("password") as string;
           if (!isLogin) {
@@ -28,7 +36,7 @@ export default function AuthPage() {
             await signIn("credentials", {
               email,
               password,
-              callbackUrl: "/dashboard/products",
+              callbackUrl: "/",
             });
           }
         }}
@@ -56,8 +64,9 @@ export default function AuthPage() {
         <button
           type="submit"
           className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+          disabled={isLoading}
         >
-          {isLogin ? "Ingresar" : "Crear cuenta"}
+          {getTextButton()}
         </button>
       </form>
 
