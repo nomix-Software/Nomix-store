@@ -12,7 +12,6 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  // const search = useSearchParams()
   
   const getTextButton = () : string =>{
     if(isLoading) return 'Cargando...'
