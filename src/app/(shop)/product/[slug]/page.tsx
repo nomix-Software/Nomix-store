@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
-// import { client, urlFor } from "../../lib/client";
-// import { useStateContext } from "../../context/StateContext";
 import type { ProductDetails, ProductItem } from "@/interfaces";
 import Image from "next/image";
 import { getProductDetail, getRelatedProducts } from "@/actions";

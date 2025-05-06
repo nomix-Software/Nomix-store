@@ -17,7 +17,6 @@ interface HeroBannerProps {
 
 export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
   const productLatest = await getLatestProduct();
-  console.log({ productLatest });
   return (
     <div className=" rounded-2xl bg-[#dcdcdc] p-4 sm:!p-10 ">
       <div className="flex flex-col md:flex-row items-center justify-around ">

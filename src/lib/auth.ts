@@ -12,10 +12,10 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt", // para incluir info adicional en el token
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
       // Solo al iniciar sesión (primer login)
       if (user) {
         token.id = user.id;
-        token.role = "CLIENTE";
+        token.role = user.role || 'CLIENTE';
         token.nombre = user.name ?? "";
       }
       return token;

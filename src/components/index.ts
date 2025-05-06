@@ -16,3 +16,4 @@ export * from "./ui/Quantity";
 export * from "./ui/Label";
 export * from "./ui/SearchBar";
 export * from "./ui/CollapsibleFilterList";
+export * from "./ui/Avatar";
