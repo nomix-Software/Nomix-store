@@ -2,6 +2,7 @@
 "use client";
 
 import { registerUser } from "@/actions/auth/AuthRegister";
+import { TextField } from "@/components";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
@@ -10,8 +11,10 @@ export default function AuthPage() {
   const [form, setForm] = useState({ email: "", password: "" });
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">
+    <div className="max-w-md !mx-auto  p-6 h-[70vh]  !my-16">
+      <div className="h-fit">
+
+      <h2 className="text-2xl font-bold !mb-4 text-center">
         {isLogin ? "Iniciar sesión" : "Registrarse"}
       </h2>
 
@@ -31,34 +34,34 @@ export default function AuthPage() {
         }}
         className="space-y-4"
       >
-        <input
+        <TextField
           type="email"
           placeholder="Email"
           value={form.email}
           name="email"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full p-2 border rounded"
+          // className="w-full p-2 border rounded"
           required
         />
-        <input
+        <TextField
           type="password"
           placeholder="Contraseña"
           name="password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="w-full p-2 border rounded"
+          // className="w-full p-2 border rounded"
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700"
+          className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
         >
           {isLogin ? "Ingresar" : "Crear cuenta"}
         </button>
       </form>
 
-      <div className="my-4 text-center">o</div>
+      {/* <div className="my-4 text-center">o</div>
 
       <button
         onClick={() =>
@@ -69,17 +72,18 @@ export default function AuthPage() {
         className="w-full border p-2 rounded hover:bg-gray-100"
       >
         Iniciar con Google
-      </button>
+      </button> */}
 
-      <p className="mt-4 text-sm text-center">
-        {isLogin ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}{" "}
+      <p className="!mt-4 text-sm text-center">
+        {isLogin ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}{"  "}
         <button
           onClick={() => setIsLogin(!isLogin)}
-          className="text-purple-600 underline"
+          className="text-red-600 underline cursor-pointer"
         >
           {isLogin ? "Registrate" : "Iniciar sesión"}
         </button>
       </p>
+      </div>
     </div>
   );
 }
