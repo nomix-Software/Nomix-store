@@ -4,14 +4,17 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 import type { ProductDetails } from "@/interfaces";
 
-import { getProductDetail } from "@/actions";
+import { getProductDetail, getProducts } from "@/actions";
 import { notFound } from "next/navigation";
 
 import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
 interface Props {
   params : Promise<{ slug: string }>
 }
-
+export async function generateStaticParams() {
+  const productos = await getProducts(); // o fetch a tu DB
+  return productos.map((p) => ({ slug: p.slug.current }));
+}
 const ProductDetails = async ({ params }: Props) => {
   const { slug } = await params
   const productDetail: ProductDetails | null = await getProductDetail(slug);
