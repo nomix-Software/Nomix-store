@@ -89,6 +89,7 @@ const AddProductPage = () => {
       await createProduct({ ...product, images: savedImages });
       toast.success("Producto agregado correctamente.");
     } catch (error) {
+      console.log({error})
       toast.error("Ocurrio un error, intente de nuevo mas tarde");
     }
     setIsLoading({loading:false, message:''})
