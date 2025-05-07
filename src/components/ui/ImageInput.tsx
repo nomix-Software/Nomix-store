@@ -7,7 +7,7 @@ interface ImageInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const ImageInput = ({ label, className, ...props }: ImageInputProps) => {
   return (
     <div className="mt-4">
-      <span className="block text-sm font-medium mb-2">{label}</span>
+      <span className="block text-sm font-medium !mb-2">{label}</span>
       <input
         type="file"
         accept="image/*"
@@ -15,8 +15,8 @@ export const ImageInput = ({ label, className, ...props }: ImageInputProps) => {
     file:mr-4 file:py-2 file:px-4
     file:rounded-full file:border-0
     file:text-sm file:font-semibold
-    file:bg-violet-50 file:text-violet-700
-    hover:file:bg-violet-100 ${className}`}
+    file:bg-red-600 file:text-white cursor-pointer
+    hover:file:bg-red-700 ${className}`}
         {...props}
       />
     </div>

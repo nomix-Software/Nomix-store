@@ -11,7 +11,7 @@ import {
   uploadImagesToCloudinary,
 } from "@/actions";
 import { BrandsItem, CategoriesItem } from "@/interfaces";
-import { ImageInput, Modal, Select, TextField } from "@/components";
+import { ImageInput, LoadingOverlay, Modal, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import Image from "next/image";
 import { FiTrash2 } from "react-icons/fi";
@@ -29,12 +29,15 @@ const AddProductPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [brands, setBrands] = useState<BrandsItem[]>([]);
   const [images, setImages] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState<{ loading:boolean, message:string}>({ loading:true, message:'Obteniendo Marcas y Categorías'})
+
   useEffect(() => {
     (async () => {
       const categoriesItems = await getCategories();
       const brandsItems = await getBrands();
       setCategories(categoriesItems);
       setBrands(brandsItems);
+      setIsLoading({loading:false, message:''})
     })();
   }, []);
 
@@ -64,7 +67,7 @@ const AddProductPage = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     try {
-      
+      setIsLoading({loading:true, message: 'Cargando producto...'})
       e.preventDefault();
       const formData = new FormData();
       // Agregamos los archivos nuevos al FormData
@@ -88,13 +91,14 @@ const AddProductPage = () => {
     } catch (error) {
       toast.error("Ocurrio un error, intente de nuevo mas tarde");
     }
+    setIsLoading({loading:false, message:''})
     // Aquí iría la lógica real para guardar el producto
   };
   //   const categories = ["Pañales", "Higiene", "Accesorios"];
   //   const brands = ["Huggies", "Pampers", "Johnson's"];
-
+if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center ">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center !mt-2 ">
       <div className="bg-white shadow-xl rounded-xl !p-8 w-full max-w-2xl">
         <h1 className="text-3xl font-bold text-center mb-6 text-[#324d67]">
           Agregar nuevo producto
@@ -178,7 +182,7 @@ const AddProductPage = () => {
                   setBrands([...brands, newBrands]);
                   toast.success("Marca creada correctamente.");
                 }}
-                buttonLabel="Crear nueva marca"
+                buttonLabel="+"
                 title="Crear nueva marca"
               />
             }
@@ -196,7 +200,7 @@ const AddProductPage = () => {
           />
 
           {/* Carrusel de Imágenes */}
-          <div>
+          <div className="!my-4">
             <span className="block text-sm font-medium mb-2">
               Imágenes del producto
             </span>
@@ -215,7 +219,7 @@ const AddProductPage = () => {
                   />
                   <button
                     onClick={() => handleDeleteImage(file.name)}
-                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full"
+                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full cursor-pointer"
                     title="Eliminar imagen"
                   >
                     <FiTrash2 size={16} />
@@ -227,7 +231,8 @@ const AddProductPage = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="text-red-600 underline cursor-pointer"
+            className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer !mt-8"
+
           >
             Guardar producto
           </button>

@@ -2,6 +2,7 @@
 "use client";
 import { useState } from "react";
 import { TextField } from "./TextField";
+import { FiPlus } from "react-icons/fi";
 
 export interface ModalProps {
   callback: (value: string) => void;
@@ -36,9 +37,11 @@ export const Modal = ({
       <button
         onClick={() => setIsOpen(true)}
         type="button"
-        className="bg-purple-600 text-white px-4 py-2 rounded"
+      className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-md flex items-center justify-center transition duration-200 cursor-pointer"
+      aria-label="Agregar"
       >
-        {buttonLabel}
+        {/* Agregar */}
+        <FiPlus size={24} />
       </button>
 
       {isOpen && (
@@ -62,14 +65,14 @@ export const Modal = ({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="cursor-pointer px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+                className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleSubmit}
-                className=" cursor-pointer px-4 py-2 rounded bg-purple-600 text-white hover:bg-purple-700"
+                className="w-full bg-[#324d67] text-white !p-2 rounded-2xl hover:bg-[#414e7a] cursor-pointer"
               >
                 Crear
               </button>
