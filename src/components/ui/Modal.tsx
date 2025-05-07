@@ -12,7 +12,6 @@ export interface ModalProps {
 
 export const Modal = ({
   callback,
-  buttonLabel = "Crear",
   title = "Crear",
 }: ModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
