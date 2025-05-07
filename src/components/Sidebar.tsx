@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FaBars, FaBoxOpen, FaChartLine } from "react-icons/fa";
+import { FaBars, FaBoxOpen, FaChartLine, FaShoppingBag, FaSignInAlt, FaTags } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import {  signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
+import { FiHelpCircle, FiSearch } from "react-icons/fi";
 
 interface SidebarProps {
   role: "ADMIN" | "CLIENTE";
@@ -25,6 +26,11 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
 
   const adminOptions = [
     {
+      label: "Catálogo",
+      href: "/catalogo",
+      icon: FaShoppingBag, // 🛍️ ícono de catálogo
+    },
+    {
       label: "Gestionar productos",
       href: "/dashboard/products",
       icon: MdInventory, // 🗃️ ícono de inventario
@@ -39,19 +45,47 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
 
   const clientOptions = [
     {
+      label: "Perfil",
+      href: "/cliente/perfil",
+      icon: CgProfile, // 👤 ícono de perfil
+    },
+    {
       label: "Mis pedidos",
       href: "/cliente/pedidos",
       icon: FaBoxOpen, // 📦 ícono de pedidos
     },
     {
-      label: "Perfil",
-      href: "/cliente/perfil",
-      icon: CgProfile, // 👤 ícono de perfil
+      label: "Catálogo",
+      href: "/catalogo",
+      icon: FaShoppingBag, // 🛍️ ícono de catálogo
     },
+
+  ];
+  const guestOptions = [
+    {
+      label: "Catálogo",
+      href: "/catalogo",
+      icon: FaShoppingBag, // 🛍️ ícono de catálogo
+    },
+    {
+      label: "Ofertas",
+      href: "/ofertas",
+      icon: FaTags, // 🏷️ ícono de ofertas
+    },
+    {
+      label: "Ayuda",
+      href: "/ayuda",
+      icon: FiHelpCircle, // ❓ ícono de ayuda
+    },
+    // {
+    //   label: "Iniciar sesión",
+    //   href: "/login",
+    //   icon: FaSignInAlt, // 🔐 ícono de login
+    // },
   ];
 
   const options =
-    data?.user.role === "ADMIN" ? adminOptions : clientOptions;
+    data?.user.role === "ADMIN" ? adminOptions : data?.user.role === "CLIENTE" ? clientOptions : guestOptions;
 
 const getTextButton = ()=>{
   if(data?.user) return 'Cerrar sesión'
@@ -88,11 +122,11 @@ const getTextButton = ()=>{
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <div className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold mb-4 text-[#324d67] text-center">
+                <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center">
                 ¡Hola de nuevo!
                 </h2>
                 {data?.user.email && 
-                <div className="mb-2">
+                <div className="!mb-2">
                   <Avatar  email={data?.user.email} />
                   <br />
                   <hr  className="!h-[1px]"/>
