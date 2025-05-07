@@ -9,6 +9,8 @@ export * from "./products/RelatedProducts";
 export * from "./products/Catalogue";
 export * from "./product/AddToCart";
 export * from "./product/ImagesDetails";
+export * from "./products/TableProduct";
+
 
 export * from "./ui/TextField";
 export * from "./ui/Select";
@@ -22,3 +24,5 @@ export * from "./ui/SearchBar";
 export * from "./ui/CollapsibleFilterList";
 export * from "./ui/Avatar";
 export * from "./ui/LoadingOverlay";
+export * from "./ui/Pagination";
+export * from "./ui/ConfirmModal";

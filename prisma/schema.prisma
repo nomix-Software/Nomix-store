@@ -115,6 +115,7 @@ model Producto {
   imagenes     ImagenProducto[]
   carritoItems CarritoItem[]
   ventaItems   VentaProducto[]
+  activo       Boolean          @default(true)
 }
 
 model ImagenProducto {
