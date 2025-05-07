@@ -1,3 +1,4 @@
+export const revalidate = 60; // en segundos
 import {
   getProductByCategorie,
   getProductsByBrand,
@@ -13,6 +14,7 @@ interface Props {
     categorie?: string[];
   }>;
 }
+
 
 const CatalogoPage = async ({ searchParams }: Props) => {
   const searchP = await searchParams; //{ search:'', brand:[''], categorie:['']};
