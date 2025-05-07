@@ -27,7 +27,7 @@ export async function deleteProduct(id: number) {
 
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
     return { error: "Ocurrió un error al eliminar el producto." };
   }

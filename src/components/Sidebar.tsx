@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FaBars, FaBoxOpen, FaChartLine, FaShoppingBag, FaSignInAlt, FaTags } from "react-icons/fa";
+import { FaBars, FaBoxOpen, FaChartLine, FaShoppingBag,  FaTags } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import {  signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
-import { FiHelpCircle, FiSearch } from "react-icons/fi";
+import { FiHelpCircle } from "react-icons/fi";
 
 interface SidebarProps {
   role: "ADMIN" | "CLIENTE";

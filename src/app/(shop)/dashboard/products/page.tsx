@@ -2,7 +2,7 @@
 
 import { getProductsFiltered } from "@/actions";
 import Link from "next/link";
-import { FiPlus } from "react-icons/fi";
+
 import { Pagination, TableProduct } from "@/components";
 
 interface Props {
