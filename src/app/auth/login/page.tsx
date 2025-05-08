@@ -29,23 +29,32 @@ export default function AuthPage() {
       </h2>
 
       <form
-        action={async (formData) => {
-          setIsLoading(true)
-          const email = formData.get("email") as string;
-          const password = formData.get("password") as string;
-          if (!isLogin) {
-            await registerUser({ email, password });
-            toast.success("Usuario creado con éxito");
-            setIsLogin(true)
-            setIsLoading(false)
-          } else {
-            await signIn("credentials", {
-              email,
-              password,
-              callbackUrl: new URLSearchParams(window.location.search).get('redirect_uri') || '/',
-            });
-          }
-        }}
+  action={async (formData) => {
+    setIsLoading(true);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!isLogin) {
+      await registerUser({ email, password });
+      toast.success("Usuario creado con éxito");
+      setIsLogin(true);
+      setIsLoading(false);
+    } else {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        toast.error("Usuario o contraseña incorrectos");
+        setIsLoading(false);
+      } else {
+        const redirectUrl = new URLSearchParams(window.location.search).get("redirect_uri") || "/";
+        window.location.href = redirectUrl;
+      }
+    }
+  }}
         className="space-y-4"
       >
         <TextField
