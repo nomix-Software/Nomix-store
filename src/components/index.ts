@@ -10,6 +10,7 @@ export * from "./products/Catalogue";
 export * from "./product/AddToCart";
 export * from "./product/ImagesDetails";
 export * from "./products/TableProduct";
+export * from "./products/Filters";
 
 
 export * from "./ui/TextField";

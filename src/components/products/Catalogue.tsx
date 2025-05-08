@@ -2,33 +2,42 @@
 import { notFound, useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Product } from '../Product'
-import { getProductsFiltered } from '@/actions'
+
 import { LoadingOverlay } from '../ui/LoadingOverlay'
 import { Pagination } from '../ui/Pagination'
 import { ProductItem } from '@/interfaces'
+import { useAvailableFilters } from '@/store'
 
 export const Catalogue = () => {
     const searchParams = useSearchParams()
-    const filterName = searchParams.get('search') || undefined
-    const filterBrands = searchParams.getAll('brands') || undefined
-    const filterCategories = searchParams.getAll('categories') || undefined
     const page = searchParams.get('page') || '1'
     const [productsResponse, setProductsResponse] = useState<{ currentPage:number, totalPages:number, products:ProductItem[] }>({ currentPage: Number(page), totalPages:1, products:[]})
     const [loading, setLoading] = useState(false)
-
+     const { setAvailableBrands, setAvailableCategories}= useAvailableFilters(state => state)
     useEffect(() => {
-        (async () => {
-            setLoading(true)
-            try {
-                const productsDB = await getProductsFiltered({ search: filterName, marcas: filterBrands, categorias: filterCategories,  page: page ? parseInt(page) : 1, });
-                setProductsResponse(productsDB)
-            } catch (error) {
-                console.log({ error })
-                notFound()
-            }
-            setLoading(false)
-        })()
-    }, [searchParams])
+        let loadingTimeout: NodeJS.Timeout;
+      
+        const fetchData = async () => {
+          loadingTimeout = setTimeout(() => setLoading(true), 200); // solo si tarda >200ms
+          try {
+            const res = await fetch(`/api/products?${searchParams.toString()}`);
+            const { filtrosDisponibles ,...data} = await res.json();
+            setAvailableBrands(filtrosDisponibles.marcas)
+            setAvailableCategories(filtrosDisponibles.categorias)
+            setProductsResponse(data);
+          } catch (error) {
+            console.error(error);
+            notFound();
+          } finally {
+            clearTimeout(loadingTimeout);
+            setLoading(false);
+          }
+        };
+      
+        fetchData();
+        return () => clearTimeout(loadingTimeout);
+      }, [searchParams]);
+      
     if (loading) return <LoadingOverlay  text='Cargando productos...' />
     return (
         <div className='flex flex-col justify-between items-center'>

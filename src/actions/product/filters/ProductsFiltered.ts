@@ -3,12 +3,11 @@
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
-
 interface FilterParams {
   search?: string;
-  marcas?: string[]; // ej: ["Huggies", "Pampers"]
-  categorias?: string[]; // ej: ["Pañales", "Toallitas"]
-  page?: number; // número de página actual (comienza en 1)
+  marcas?: string[];
+  categorias?: string[];
+  page?: number;
 }
 
 export async function getProductsFiltered({
@@ -19,26 +18,23 @@ export async function getProductsFiltered({
 }: FilterParams) {
   const take = 30;
   const skip = (page - 1) * take;
-console.log('llamando a page nro', page)
+
   const filters = {
     activo: true,
     nombre: search ? { contains: search, mode: Prisma.QueryMode.insensitive } : undefined,
     marca:
       marcas && marcas.length > 0
-        ? {
-            nombre: { in: Array.isArray(marcas) ? marcas : [marcas] },
-          }
+        ? { nombre: { in: Array.isArray(marcas) ? marcas : [marcas] } }
         : undefined,
     categoria:
       categorias && categorias.length > 0
-        ? {
-            nombre: { in: categorias },
-          }
+        ? { nombre: { in: categorias } }
         : undefined,
   };
 
-  const [totalCount, products] = await Promise.all([
+  const [totalCount, products, marcasConCantidad, categoriasConCantidad] = await Promise.all([
     prisma.producto.count({ where: filters }),
+
     prisma.producto.findMany({
       where: filters,
       skip,
@@ -50,14 +46,55 @@ console.log('llamando a page nro', page)
         slug: true,
         stock: true,
         imagenes: {
-          select: {
-            url: true,
-          },
-          take: 1, // Solo una imagen por producto
+          select: { url: true },
+          take: 1,
         },
       },
     }),
+
+    // Cantidad de productos por marca (usando solo search)
+    prisma.producto.groupBy({
+      by: ["marcaId"],
+      where: {
+        activo: true,
+        nombre: search ? { contains: search, mode: "insensitive" } : undefined,
+      },
+      _count: { marcaId: true },
+    }),
+
+    // Cantidad de productos por categoría (usando solo search)
+    prisma.producto.groupBy({
+      by: ["categoriaId"],
+      where: {
+        activo: true,
+        nombre: search ? { contains: search, mode: "insensitive" } : undefined,
+      },
+      _count: { categoriaId: true },
+    }),
   ]);
+
+  // Obtener nombres asociados a los IDs
+  const [marcasData, categoriasData] = await Promise.all([
+    prisma.marca.findMany({
+      where: { id: { in: marcasConCantidad.map((m) => m.marcaId) } },
+      select: { id: true, nombre: true },
+    }),
+    prisma.categoria.findMany({
+      where: { id: { in: categoriasConCantidad.map((c) => c.categoriaId) } },
+      select: { id: true, nombre: true },
+    }),
+  ]);
+
+  // Asociar nombres a cantidades
+  const marcasDisponibles = marcasData.map((m) => {
+    const count = marcasConCantidad.find((mc) => mc.marcaId === m.id)?._count.marcaId || 0;
+    return { nombre: m.nombre, cantidad: count };
+  });
+
+  const categoriasDisponibles = categoriasData.map((c) => {
+    const count = categoriasConCantidad.find((cc) => cc.categoriaId === c.id)?._count.categoriaId || 0;
+    return { nombre: c.nombre, cantidad: count };
+  });
 
   const totalPages = Math.ceil(totalCount / take);
 
@@ -70,9 +107,11 @@ console.log('llamando a page nro', page)
       name: p.nombre,
       price: p.precio,
       stock: p.stock,
-      slug: {
-        current: p.slug,
-      },
+      slug: { current: p.slug },
     })),
+    filtrosDisponibles: {
+      marcas: marcasDisponibles,        // [{ nombre: "Pampers", cantidad: 3 }]
+      categorias: categoriasDisponibles // [{ nombre: "Pañales", cantidad: 7 }]
+    },
   };
 }
