@@ -1,4 +1,6 @@
 "use client";
+
+
 import React from "react";
 import { CollapsibleFilterList } from "../ui/CollapsibleFilterList";
 import { useAvailableFilters } from "@/store";
@@ -19,7 +21,7 @@ export const Filters = () => {
           })}
           title="Categorías"
           onSelect={(label) => {
-            const search = new URLSearchParams(searchParams);
+            const search = new URLSearchParams(searchParams.toString());
             search.set("categorie", label);
             router.push(`/catalogo?${search.toString()}`);
           }}
@@ -31,7 +33,7 @@ export const Filters = () => {
           })}
           title="Marcas"
           onSelect={(label) => {
-            const search = new URLSearchParams(searchParams);
+            const search = new URLSearchParams(searchParams.toString());
             search.set("brand", label);
             router.push(`/catalogo?${search.toString()}`);
           }}

@@ -1,5 +1,7 @@
 'use client'
-import { notFound, useSearchParams } from 'next/navigation'
+
+
+import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Product } from '../Product'
 
@@ -27,7 +29,6 @@ export const Catalogue = () => {
             setProductsResponse(data);
           } catch (error) {
             console.error(error);
-            notFound();
           } finally {
             clearTimeout(loadingTimeout);
             setLoading(false);
