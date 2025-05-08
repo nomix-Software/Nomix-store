@@ -29,13 +29,21 @@ export default function AuthPage() {
       </h2>
 
       <form
-  action={async (formData) => {
-    setIsLoading(true);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+ action={async (formData) => {
+  setIsLoading(true);
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
+  try {
     if (!isLogin) {
-      await registerUser({ email, password });
+      const response = await registerUser({ email, password });
+
+      if (response?.error) {
+        toast.error(response.error.message);
+        setIsLoading(false);
+        return;
+      }
+
       toast.success("Usuario creado con éxito");
       setIsLogin(true);
       setIsLoading(false);
@@ -54,7 +62,12 @@ export default function AuthPage() {
         window.location.href = redirectUrl;
       }
     }
-  }}
+  } catch (err: any) {
+    toast.error("Ocurrió un error inesperado");
+    console.error("Error en autenticación:", err);
+    setIsLoading(false);
+  }
+}}
         className="space-y-4"
       >
         <TextField

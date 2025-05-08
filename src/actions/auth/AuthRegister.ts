@@ -3,7 +3,6 @@
 
 import prisma from "@/lib/prisma";
 import { hash } from "bcryptjs";
-import { revalidatePath } from "next/cache";
 
 export async function registerUser(form: { email: string; password: string }) {
   console.log("Registering user:", form);
@@ -12,7 +11,8 @@ export async function registerUser(form: { email: string; password: string }) {
   });
 
   if (userExists) {
-    throw new Error("Ya existe un usuario con ese email.");
+    // throw new Error("Ya existe un usuario con ese email.");
+    return { error: new Error("Ya existe un usuario con ese email.") };
   }
 
   const hashedPassword = await hash(form.password, 10);
@@ -26,7 +26,6 @@ export async function registerUser(form: { email: string; password: string }) {
     },
   });
 
-  revalidatePath("/auth"); // opcional, por si querés refrescar algo
 
   return { success: true };
 }
