@@ -21,3 +21,6 @@ export * from "./categorie/CategoriesItems";
 export * from "./categorie/CategorieAbm";
 
 export * from "./mercadopago/Payments";
+
+
+export * from "./mis-pedidos/MisPedidos";

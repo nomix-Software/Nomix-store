@@ -51,7 +51,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
     },
     {
       label: "Mis pedidos",
-      href: "/cliente/pedidos",
+      href: "/mis-pedidos",
       icon: FaBoxOpen, // 📦 ícono de pedidos
     },
     {

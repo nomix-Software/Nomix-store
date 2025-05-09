@@ -13,6 +13,9 @@ export * from "./products/TableProduct";
 export * from "./products/Filters";
 
 
+export *from './mis-pedidos/PedidosList'
+
+
 export * from "./ui/TextField";
 export * from "./ui/Select";
 export * from "./ui/Textarea";
