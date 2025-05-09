@@ -3,27 +3,27 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id             String      @id @default(cuid())
-  name           String
-  email          String      @unique
-  password       String?     // Nullable para permitir usuarios de Google sin contraseña
-  rol            RolUsuario  @default(CLIENTE)
-  direcciones    Direccion[]
-  carrito        Carrito?
-  ventas         Venta[]
-  creadoEn       DateTime    @default(now())
-  emailVerified  DateTime?
-  image          String?
+  id            String      @id @default(cuid())
+  name          String
+  email         String      @unique
+  password      String? // Nullable para permitir usuarios de Google sin contraseña
+  rol           RolUsuario  @default(CLIENTE)
+  direcciones   Direccion[]
+  carrito       Carrito?
+  ventas        Venta[]
+  creadoEn      DateTime    @default(now())
+  emailVerified DateTime?
+  image         String?
 
   // Relaciones para NextAuth
-  accounts       Account[]
-  sessions       Session[]
+  accounts Account[]
+  sessions Session[]
 }
 
 enum RolUsuario {
@@ -32,12 +32,12 @@ enum RolUsuario {
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? 
+  refresh_token     String?
   access_token      String?
   expires_at        Int?
   token_type        String?
@@ -68,20 +68,20 @@ model VerificationToken {
 }
 
 model Direccion {
-  id            Int      @id @default(autoincrement())
-  usuario       User     @relation(fields: [usuarioId], references: [id])
-  usuarioId     String
-  calle         String
-  ciudad        String
-  provincia     String
-  codigoPostal  String
-  pais          String
-  principal     Boolean  @default(false)
+  id           Int     @id @default(autoincrement())
+  usuario      User    @relation(fields: [usuarioId], references: [id])
+  usuarioId    String
+  calle        String
+  ciudad       String
+  provincia    String
+  codigoPostal String
+  pais         String
+  principal    Boolean @default(false)
 }
 
 model Categoria {
-  id       Int        @id @default(autoincrement())
-  nombre   String     @unique
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique
   productos Producto[]
 }
 
@@ -111,7 +111,7 @@ model Producto {
   marcaId      Int
   promocion    Promocion?       @relation(fields: [promocionId], references: [id])
   promocionId  Int?
-  creadoEn DateTime @default(now())
+  creadoEn     DateTime         @default(now())
   imagenes     ImagenProducto[]
   carritoItems CarritoItem[]
   ventaItems   VentaProducto[]
@@ -119,57 +119,61 @@ model Producto {
 }
 
 model ImagenProducto {
-  id          Int      @id @default(autoincrement())
-  url         String
-  producto    Producto @relation(fields: [productoId], references: [id])
-  productoId  Int
-  publicId    String
+  id         Int      @id @default(autoincrement())
+  url        String
+  producto   Producto @relation(fields: [productoId], references: [id])
+  productoId Int
+  publicId   String
 }
 
 model Carrito {
-  id            Int          @id @default(autoincrement())
-  usuario       User         @relation(fields: [usuarioId], references: [id])
-  usuarioId     String       @unique
+  id            Int           @id @default(autoincrement())
+  usuario       User          @relation(fields: [usuarioId], references: [id])
+  usuarioId     String        @unique
   items         CarritoItem[]
-  actualizadoEn DateTime     @updatedAt
+  actualizadoEn DateTime      @updatedAt
 }
 
 model CarritoItem {
-  id          Int       @id @default(autoincrement())
-  carrito     Carrito   @relation(fields: [carritoId], references: [id])
-  carritoId   Int
-  producto    Producto  @relation(fields: [productoId], references: [id])
-  productoId  Int
-  cantidad    Int
+  id         Int      @id @default(autoincrement())
+  carrito    Carrito  @relation(fields: [carritoId], references: [id])
+  carritoId  Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+  productoId Int
+  cantidad   Int
 }
 
 model Venta {
-  id          Int              @id @default(autoincrement())
-  usuario     User             @relation(fields: [usuarioId], references: [id])
-  usuarioId   String
-  fecha       DateTime         @default(now())
-  total       Float
-  productos   VentaProducto[]
-  estado      EstadoPedido     @relation(fields: [estadoId], references: [id])
-  estadoId    Int
-  cupon       CuponDescuento?  @relation(fields: [cuponId], references: [id])
-  cuponId     Int?
+  id        Int             @id @default(autoincrement())
+  usuario   User            @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  fecha     DateTime        @default(now())
+  total     Float
+  productos VentaProducto[]
+  estado    EstadoPedido    @relation(fields: [estadoId], references: [id])
+  estadoId  Int
+  cupon     CuponDescuento? @relation(fields: [cuponId], references: [id])
+  cuponId   Int?
+
+  entrega      Entrega? // <- relación uno a uno, opcional
+  metodoPagoId Int
+  metodoPago   MetodoPago @relation(fields: [metodoPagoId], references: [id])
 }
 
 model VentaProducto {
-  id             Int       @id @default(autoincrement())
-  venta          Venta     @relation(fields: [ventaId], references: [id])
+  id             Int      @id @default(autoincrement())
+  venta          Venta    @relation(fields: [ventaId], references: [id])
   ventaId        Int
-  producto       Producto  @relation(fields: [productoId], references: [id])
+  producto       Producto @relation(fields: [productoId], references: [id])
   productoId     Int
   cantidad       Int
   precioUnitario Float
 }
 
 model EstadoPedido {
-  id      Int      @id @default(autoincrement())
-  nombre  String
-  ventas  Venta[]
+  id     Int     @id @default(autoincrement())
+  nombre String
+  ventas Venta[]
 }
 
 model CuponDescuento {
@@ -182,8 +186,8 @@ model CuponDescuento {
 }
 
 model MovimientoFinanciero {
-  id          Int           @id @default(autoincrement())
-  fecha       DateTime      @default(now())
+  id          Int            @id @default(autoincrement())
+  fecha       DateTime       @default(now())
   tipo        TipoMovimiento
   monto       Float
   descripcion String
@@ -192,4 +196,32 @@ model MovimientoFinanciero {
 enum TipoMovimiento {
   INGRESO
   EGRESO
+}
+
+model Entrega {
+  id            Int         @id @default(autoincrement())
+  venta         Venta       @relation(fields: [ventaId], references: [id])
+  ventaId       Int         @unique // 1 entrega por venta
+  tipo          TipoEntrega
+  puntoRetiro   String? // Ej: "Sucursal Av. Siempreviva 742", solo si tipo = RETIRO
+  direccion     String? // Futuro uso: dirección exacta si tipo = ENVIO
+  ciudad        String?
+  provincia     String?
+  codigoPostal  String?
+  pais          String?
+  contacto      String? // Nombre o contacto del receptor
+  telefono      String? // Teléfono para coordinar
+  observaciones String? // Comentarios adicionales
+  creadoEn      DateTime    @default(now())
+}
+
+enum TipoEntrega {
+  RETIRO
+  ENVIO
+}
+
+model MetodoPago {
+  id     Int     @id @default(autoincrement())
+  nombre String
+  ventas Venta[]
 }

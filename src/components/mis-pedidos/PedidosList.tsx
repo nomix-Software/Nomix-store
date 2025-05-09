@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { getMisPedidos } from "@/actions"; // server action importada
+import Link from "next/link";
 
 type Pedido = Awaited<ReturnType<typeof getMisPedidos>>[number];
 
-export default function PedidosList({ initialPedidos }: { initialPedidos: Pedido[] }) {
+export default function PedidosList({
+  initialPedidos,
+}: {
+  initialPedidos: Pedido[];
+}) {
   const [pedidos, setPedidos] = useState(initialPedidos);
   const [cargando, setCargando] = useState(false);
   const [fin, setFin] = useState(false);
@@ -20,16 +25,23 @@ export default function PedidosList({ initialPedidos }: { initialPedidos: Pedido
   }
 
   if (pedidos.length === 0) {
-    return <p className="text-gray-600">Todavía no realizaste ningún pedido.</p>;
+    return (
+      <p className="text-gray-600">Todavía no realizaste ningún pedido.</p>
+    );
   }
 
   return (
     <>
-      <ul className="space-y-6">
+      <ul className="!space-y-6">
         {pedidos.map((pedido) => (
-          <li key={pedido.id} className="border border-gray-200 rounded-2xl !p-4 shadow-sm">
+          <li
+            key={pedido.id}
+            className="border border-gray-200 rounded-2xl !p-4 shadow-sm"
+          >
             <div className="flex items-center justify-between !mb-2">
-              <h2 className="text-lg font-semibold text-gray-800">Pedido #{pedido.id}</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Pedido #{pedido.id}
+              </h2>
               <span className="inline-flex items-center gap-2 text-sm font-medium text-blue-600">
                 {pedido.estado === "Entregado" ? (
                   <>
@@ -67,9 +79,15 @@ export default function PedidosList({ initialPedidos }: { initialPedidos: Pedido
                 </li>
               ))}
             </ul>
-
-            <div className="text-right !mt-4 font-semibold text-gray-800">
-              Total: ${pedido.total.toFixed(2)}
+            <div className="flex flex-row justify-between !px-2">
+              <Link href={`/pedido/${pedido.id}`}>
+              <div className="text-right !mt-4 font-semibold text-gray-800 hover:underline">
+                Ver detalle del pedido
+              </div>
+              </Link>
+              <div className="text-right !mt-4 font-semibold text-gray-800">
+                Total: ${pedido.total.toFixed(2)}
+              </div>
             </div>
           </li>
         ))}
