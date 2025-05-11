@@ -5,6 +5,9 @@ export * from "./Product";
 export * from "./HeroBanner";
 export * from "./FooterBanner";
 export * from "./ItemCart";
+export * from "./ClientWrapper";
+
+
 export * from "./products/RelatedProducts";
 export * from "./products/Catalogue";
 export * from "./product/AddToCart";

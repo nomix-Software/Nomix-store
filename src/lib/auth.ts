@@ -10,6 +10,8 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt", // para incluir info adicional en el token
+    maxAge: 15 * 60, // 15 minutos
+    updateAge: 5 * 60, // se renueva cada 5 minutos si hay actividad
   },
   providers: [
     GoogleProvider({
@@ -52,7 +54,10 @@ export const authOptions: NextAuthOptions = {
       // Solo al iniciar sesión (primer login)
       if (user) {
         token.id = user.id;
-        token.role = user.role === "ADMIN" || user.role === "CLIENTE" ? user.role : "CLIENTE";
+        token.role =
+          user.role === "ADMIN" || user.role === "CLIENTE"
+            ? user.role
+            : "CLIENTE";
         token.nombre = user.name ?? "";
       }
       return token;
@@ -61,7 +66,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
-        session.user.nombre = token.nombre || '';
+        session.user.nombre = token.nombre || "";
       }
       return session;
     },
