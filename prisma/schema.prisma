@@ -24,6 +24,7 @@ model User {
   // Relaciones para NextAuth
   accounts Account[]
   sessions Session[]
+  favoritos Favorito[]
 }
 
 enum RolUsuario {
@@ -115,6 +116,7 @@ model Producto {
   imagenes     ImagenProducto[]
   carritoItems CarritoItem[]
   ventaItems   VentaProducto[]
+  favoritos Favorito[]
   activo       Boolean          @default(true)
 }
 
@@ -224,4 +226,14 @@ model MetodoPago {
   id     Int     @id @default(autoincrement())
   nombre String
   ventas Venta[]
+}
+model Favorito {
+  id         Int      @id @default(autoincrement())
+  usuario    User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId  String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  productoId Int
+  agregadoEn DateTime @default(now())
+
+  @@unique([usuarioId, productoId]) // evita duplicados
 }

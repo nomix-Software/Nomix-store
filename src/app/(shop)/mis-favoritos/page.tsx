@@ -1,0 +1,65 @@
+// app/favoritos/page.tsx
+"use client";
+
+import { useFavorites } from "@/hooks/useFavorites";
+import { FaHeartBroken } from "react-icons/fa";
+import Link from "next/link";
+import { LoadingOverlay, Product } from "@/components";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+
+export default function FavoritosPage() {
+  const { data: session } = useSession();
+  const { favoritos, isLoading, isError } = useFavorites();
+  const router = useRouter();
+  if (!session) {
+    router.push("/auth/login?redirect_uri=mis-favoritos");
+  }
+
+  if (isLoading) {
+    return <LoadingOverlay text="Cargando favoritos..." />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center">
+        <FaHeartBroken className="text-red-500 text-6xl mb-4" />
+        <p className="text-xl font-medium text-gray-700">
+          Ocurrió un error al cargar tus favoritos.
+        </p>
+      </div>
+    );
+  }
+
+  if (favoritos.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center">
+        <FaHeartBroken className="text-gray-400 text-6xl mb-4" />
+        <p className="text-xl font-medium text-gray-600">
+          No tenés productos favoritos todavía.
+        </p>
+        <Link
+          href="/"
+          className="bg-[#f02d34] cursor-pointer !text-white rounded-2xl !py-2.5 !my-8 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
+        >
+          Explorar productos
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col justify-between items-center">
+      <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
+        {favoritos.map((product, index) => (
+          <div key={`${product.slug}-${index}`} className="w-[300px]">
+            <Suspense fallback={'cargando productos'}>
+              <Product product={product} />
+            </Suspense>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

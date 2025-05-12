@@ -45,7 +45,7 @@ export const Catalogue = () => {
         <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
             {productsResponse?.products.map((product, index) => (
                 <div key={`${product.slug}-${index}`} className="w-[300px]">
-                    <Product product={product} />
+                    <Product product={{...product, id: Number(product._id)}} />
                 </div>
             ))} 
         </div>

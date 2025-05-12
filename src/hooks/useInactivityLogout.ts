@@ -11,7 +11,7 @@ export function useInactivityLogout() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
-      signOut({ callbackUrl: "/auth" }); // Redirige al login
+      signOut({ callbackUrl: "/auth/login" }); // Redirige al login
     }, INACTIVITY_LIMIT);
   };
 

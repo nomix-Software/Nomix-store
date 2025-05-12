@@ -30,7 +30,7 @@ async function MyApp() {
 
         <div className="flex flex-col w-[250px] justify-center items-center !m-auto sm:flex-row gap-4 sm:w-auto ">
           {products?.map((product) => (
-            <Product key={product._id} product={product} />
+            <Product key={product._id} product={{...product, id: Number(product._id)}} />
           ))}
         </div>
         <div className=" flex w-full justify-center">

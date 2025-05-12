@@ -46,7 +46,7 @@ export const RelatedProducts = ({ categoriaId, marcaId, productId }: Props) => {
             <div className="marquee">
                 <div className="maylike-products-container track">
                     {relatedProducts.map((item: ProductItem) => (
-                        <Product key={item._id} product={item} />
+                        <Product key={item._id} product={{...item, id: Number(item._id)}} />
                     ))}
                 </div>
             </div>

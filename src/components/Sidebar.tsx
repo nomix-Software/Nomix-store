@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FaBars, FaBoxOpen, FaChartLine, FaShoppingBag,  FaTags } from "react-icons/fa";
+import { FaBars, FaBoxOpen, FaChartLine, FaHeart, FaShoppingBag,  FaTags } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
@@ -43,24 +43,28 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
     { label: "Gestionar ventas", href: "/dashboard/ventas", icon: FaChartLine },
   ];
 
-  const clientOptions = [
-    {
-      label: "Perfil",
-      href: "/cliente/perfil",
-      icon: CgProfile, // 👤 ícono de perfil
-    },
-    {
-      label: "Mis pedidos",
-      href: "/mis-pedidos",
-      icon: FaBoxOpen, // 📦 ícono de pedidos
-    },
-    {
-      label: "Catálogo",
-      href: "/catalogo",
-      icon: FaShoppingBag, // 🛍️ ícono de catálogo
-    },
-
-  ];
+const clientOptions = [
+  {
+    label: "Perfil",
+    href: "/cliente/perfil",
+    icon: CgProfile, // 👤 ícono de perfil
+  },
+  {
+    label: "Mis pedidos",
+    href: "/mis-pedidos",
+    icon: FaBoxOpen, // 📦 ícono de pedidos
+  },
+  {
+    label: "Catálogo",
+    href: "/catalogo",
+    icon: FaShoppingBag, // 🛍️ ícono de catálogo
+  },
+  {
+    label: "Mis favoritos",
+    href: "/mis-favoritos",
+    icon: FaHeart, // ❤️ ícono de favoritos
+  },
+];
   const guestOptions = [
     {
       label: "Catálogo",
