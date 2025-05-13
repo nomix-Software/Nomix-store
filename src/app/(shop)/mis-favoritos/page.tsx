@@ -5,18 +5,25 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { FaHeartBroken } from "react-icons/fa";
 import Link from "next/link";
 import { LoadingOverlay, Product } from "@/components";
-import { useSession } from "next-auth/react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { useSession } from "next-auth/react";
 
 export default function FavoritosPage() {
-  const { data: session } = useSession();
   const { favoritos, isLoading, isError } = useFavorites();
-  const router = useRouter();
-  if (!session) {
-    router.push("/auth/login?redirect_uri=mis-favoritos");
-  }
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
+  useEffect(() => {
+    if (status === 'loading') return // Evitar redirección durante el cargado
+
+    if (!session) {
+      // Redirigir a login si no hay sesión
+      router.push('/auth/login?redirect_uri=/mis-favoritos')
+    }
+  }, [status, session, router])
+
+  if (!session) return null // Puedes mostrar un loader o algo mientras redirige
   if (isLoading) {
     return <LoadingOverlay text="Cargando favoritos..." />;
   }
@@ -51,11 +58,14 @@ export default function FavoritosPage() {
 
   return (
     <div className="flex flex-col justify-between items-center">
+      <h1 className="products-heading w-full !px-6 !text-start font-extrabold text-4xl">
+        Mis favoritos
+      </h1>
       <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
         {favoritos.map((product, index) => (
-          <div key={`${product.slug}-${index}`} className="w-[300px]">
-            <Suspense fallback={'cargando productos'}>
-              <Product product={product} />
+          <div key={`${product.slug}-${index}`}>
+            <Suspense fallback={"cargando productos"}>
+              <Product product={product} size="small" />
             </Suspense>
           </div>
         ))}

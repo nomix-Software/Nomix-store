@@ -108,7 +108,7 @@ export async function DELETE(req: Request) {
     await prisma.favorito.deleteMany({
       where: {
         usuarioId: user.id,
-        productoId,
+        productoId: Number(productoId),
       },
     });
 

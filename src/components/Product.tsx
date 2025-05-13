@@ -41,7 +41,7 @@ export const Product = ({
 
   const toggleFavorito = async (e: React.MouseEvent) => {
     if (!session) {
-      router.push(`/auth/login?redirect_uri=/mis-favoritos`);
+      router.push(`/auth/login?redirect_uri=/`);
       return;
     }
     e.preventDefault();
