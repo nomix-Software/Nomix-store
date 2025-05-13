@@ -4,10 +4,11 @@ import { useState } from "react";
 import { Filters } from "./Filters";
 import { FaFilter, FaTimes } from "react-icons/fa";
 import SearchBar from "../ui/SearchBar";
+import { useSearchParams } from "next/navigation";
 
 export const ModalMobileFilters = () => {
+    const search = useSearchParams()
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
       {/* Botón de apertura visible solo en mobile */}
@@ -45,7 +46,7 @@ export const ModalMobileFilters = () => {
               </div>
                             {/* Barra de búsqueda (adaptada para mobile) */}
               <div className="mb-4">
-                <SearchBar />
+                <SearchBar  defaultValue={search.get('search') || undefined}/>
               </div>
             </div>
           </div>
