@@ -7,6 +7,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 // import { usePathname, useRouter, useSearchParams } from "next/navigation";
 // import { useSWRConfig } from "swr"; // Si usas SWR o React Query
 
@@ -18,10 +19,11 @@ export interface ProductProps {
     price: number;
     id: number; // Id del producto para poder hacer la petición
   };
+  size?: "large" | "small"; // nuevo prop opcional
 }
 
 export const Product = ({
-  product: { image, name, slug, price, id },
+  product: { image, name, slug, price, id }, size
 }: ProductProps) => {
   const { favoritos, add, remove } = useFavorites();
   const [isFavorito, setIsFavorito] = useState(
@@ -38,7 +40,7 @@ export const Product = ({
 
   const toggleFavorito = async (e: React.MouseEvent) => {
     if (!session) {
-      router.push(`/auth/login?redirect_uri=/`);
+      router.push(`/auth/login?redirect_uri=/mis-favoritos`);
       return;
     }
     e.preventDefault();
@@ -55,9 +57,29 @@ export const Product = ({
     // mutate("/api/favoritos"); // Actualiza el cache
   };
 
+const containerClasses = clsx(
+    "product-card relative group cursor-pointer transition-transform duration-300",
+    {
+      "w-[250px]": size === "large",
+      "w-[150px]": size === "small",
+    }
+  );
+
+  const imageSize = size === "large" ? 250 : 150;
+
+  const nameClasses = clsx("mt-2 font-medium", {
+    "text-sm": size === "large",
+    "text-xs": size === "small",
+  });
+
+  const priceClasses = clsx("font-semibold text-purple-600", {
+    "text-lg": size === "large",
+    "text-sm": size === "small",
+  });
+
   return (
     <div className="relative">
-      <div className="product-card relative group w-full h-full">
+      <div className={containerClasses}>
         <button
           onClick={toggleFavorito}
           className="absolute top-2 right-2 text-xl text-red-500 z-10 hover:scale-110 transition-transform cursor-pointer"
@@ -69,15 +91,13 @@ export const Product = ({
         <Link href={`/product/${slug.current}`}>
           <Image
             src={image || ""}
-            width={250}
-            height={250}
+            width={imageSize}
+            height={imageSize}
             className="product-image w-full h-auto object-cover"
             alt="product image"
           />
-          <p className="product-name mt-2 text-sm font-medium">{name}</p>
-          <p className="product-price text-lg font-semibold text-purple-600">
-            ${price}
-          </p>
+          <p className={nameClasses}>{name}</p>
+          <p className={priceClasses}>${price}</p>
         </Link>
       </div>
     </div>
