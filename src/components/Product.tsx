@@ -23,7 +23,8 @@ export interface ProductProps {
 }
 
 export const Product = ({
-  product: { image, name, slug, price, id }, size
+  product: { image, name, slug, price, id },
+  size,
 }: ProductProps) => {
   const { favoritos, add, remove } = useFavorites();
   const [isFavorito, setIsFavorito] = useState(
@@ -32,7 +33,7 @@ export const Product = ({
   const { data: session } = useSession();
   // const pathname = usePathname();
   // const searchParams = useSearchParams();
-   const router = useRouter();
+  const router = useRouter();
 
   // const redirectUri = `${pathname}${
   //   searchParams.toString() ? `?${searchParams.toString()}` : ""
@@ -57,7 +58,7 @@ export const Product = ({
     // mutate("/api/favoritos"); // Actualiza el cache
   };
 
-const containerClasses = clsx(
+  const containerClasses = clsx(
     "product-card relative group cursor-pointer transition-transform duration-300",
     {
       "w-[250px]": size === "large",
@@ -96,7 +97,17 @@ const containerClasses = clsx(
             className="product-image w-full h-auto object-cover"
             alt="product image"
           />
-          <p className={nameClasses}>{name}</p>
+          <div className="mt-2 w-full">
+            <p
+              className={clsx(
+                nameClasses,
+                "line-clamp-1 group-hover:line-clamp-none transition-all duration-200"
+              )}
+            >
+              {name}
+            </p>
+          </div>
+
           <p className={priceClasses}>${price}</p>
         </Link>
       </div>

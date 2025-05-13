@@ -5,7 +5,7 @@ import React, { Suspense } from "react";
 const CatalogoPage = () => {
   return (
     <div>
-      <div className=" flex flex-row justify-around mb-4  items-center">
+      <div className=" flex flex-row justify-around !smb-4  items-center">
         <h1 className="products-heading !text-start font-extrabold text-4xl">
           Catálogo
         </h1>
