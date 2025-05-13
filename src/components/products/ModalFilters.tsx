@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Filters } from "./Filters";
 import { FaFilter, FaTimes } from "react-icons/fa";
 import SearchBar from "../ui/SearchBar";
@@ -42,11 +42,15 @@ export const ModalMobileFilters = () => {
 
               {/* Filtros (adaptados para mobile) */}
               <div>
+                <Suspense fallback={<div>Cargando filtros mobile</div>}>
                 <Filters isMobile />
+                </Suspense>
               </div>
                             {/* Barra de búsqueda (adaptada para mobile) */}
               <div className="mb-4">
+                <Suspense fallback={<div>Cargando Input</div>}>
                 <SearchBar  defaultValue={search.get('search') || undefined}/>
+                </Suspense>
               </div>
             </div>
           </div>
