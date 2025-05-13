@@ -22,7 +22,9 @@ const CatalogoPage = () => {
           <Filters />
         </Suspense>
         {/* filtros mobile  */}
+        <Suspense fallback={<div>Cargando filtros...</div>}>
         <ModalMobileFilters />
+        </Suspense>
         {/* productos */}
         <Suspense fallback={<div>Cargando catálogo...</div>}>
           <Catalogue />

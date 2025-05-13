@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { AiOutlineShopping } from "react-icons/ai";
 import { Sidebar } from "./Sidebar";
@@ -26,7 +26,7 @@ export const Navbar = () => {
         </button>
         <Sidebar role="ADMIN" isAuthenticated={true} />
       </div>
-      {showCart && <Cart />}
+      {showCart && <Suspense fallback={<div>Cargando carrito...</div>}> <Cart /></Suspense>}
     </div>
   );
 };
