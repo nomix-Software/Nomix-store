@@ -72,7 +72,7 @@ const containerClasses = clsx(
     "text-xs": size === "small",
   });
 
-  const priceClasses = clsx("font-semibold text-purple-600", {
+  const priceClasses = clsx("font-semibold product-price", {
     "text-lg": size === "large",
     "text-sm": size === "small",
   });

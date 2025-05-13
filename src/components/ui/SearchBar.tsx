@@ -36,7 +36,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="hidden md:flex justify-end m-2 h-fit"
+      className="flex justify-end m-2 h-fit"
     >
       <div className="flex flex-row items-center gap-2 border-b border-gray-400 focus-within:border-[#f02d34] py-2 px-1">
         <button

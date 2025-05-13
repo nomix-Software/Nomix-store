@@ -14,6 +14,7 @@ export * from "./product/AddToCart";
 export * from "./product/ImagesDetails";
 export * from "./products/TableProduct";
 export * from "./products/Filters";
+export * from "./products/ModalFilters";
 
 
 export *from './mis-pedidos/PedidosList'

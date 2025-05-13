@@ -1,9 +1,8 @@
-
-import { Catalogue, Filters } from "@/components";
+import { Catalogue, Filters, ModalMobileFilters } from "@/components";
 import SearchBar from "@/components/ui/SearchBar";
 import React, { Suspense } from "react";
 
-const CatalogoPage =  () => {
+const CatalogoPage = () => {
   return (
     <div>
       <div className=" flex flex-row justify-around mb-4  items-center">
@@ -11,15 +10,19 @@ const CatalogoPage =  () => {
           Catálogo
         </h1>
         <Suspense fallback={<div>Cargando input...</div>}>
-        <SearchBar />
+          <div className="hidden md:flex">
+            {/* searchBar desktop */}
+            <SearchBar />
+          </div>
         </Suspense>
       </div>
       <div className="flex flex-row w-full sm:gap-10">
-        {/* filtros */}
+        {/* filtros desktop */}
         <Suspense fallback={<div>Cargando filtros...</div>}>
           <Filters />
         </Suspense>
-
+        {/* filtros mobile  */}
+        <ModalMobileFilters />
         {/* productos */}
         <Suspense fallback={<div>Cargando catálogo...</div>}>
           <Catalogue />

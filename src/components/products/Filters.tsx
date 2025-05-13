@@ -6,14 +6,14 @@ import { CollapsibleFilterList } from "../ui/CollapsibleFilterList";
 import { useAvailableFilters } from "@/store";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export const Filters = () => {
+export const Filters = ({isMobile}: {isMobile?:boolean}) => {
   const { availableBrands, availableCategories } = useAvailableFilters(
     (state) => state
   );
   const router = useRouter();
   const searchParams = useSearchParams();
   return (
-    <div className=" hidden md:flex w-[150px]">
+    <div className={`${isMobile ? "block" : "hidden md:flex"} w-full md:w-[150px]`}>
       <ul className=" pl-6">
         <CollapsibleFilterList
           items={availableCategories.map((filter) => {
