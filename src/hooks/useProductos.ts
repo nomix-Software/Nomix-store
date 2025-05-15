@@ -21,7 +21,6 @@ export const useProducts = (FAVORITOS_KEY : string) => {
         setError(err);
     },
   });
-console.log('llamando a => ', FAVORITOS_KEY, {data})
   return {
     isLoading,
     isError: !!error || !!fetchError,
