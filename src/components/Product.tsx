@@ -1,15 +1,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { FavoritoType, useFavorites } from "@/hooks";
+import { useFavorites } from "@/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-// import { usePathname, useRouter, useSearchParams } from "next/navigation";
-// import { useSWRConfig } from "swr"; // Si usas SWR o React Query
 
 export interface ProductProps {
   product: {
@@ -18,26 +16,29 @@ export interface ProductProps {
     slug: { current: string };
     price: number;
     id: number; // Id del producto para poder hacer la petición
+    _id:string
   };
   size?: "large" | "small"; // nuevo prop opcional
 }
 
 export const Product = ({
-  product: { image, name, slug, price, id },
+  product: { image, name, slug, price, id, _id },
   size,
 }: ProductProps) => {
   const { favoritos, add, remove } = useFavorites();
   const [isFavorito, setIsFavorito] = useState(
-    favoritos.some((p: FavoritoType) => p.id === id)
+    false
   );
+
   const { data: session } = useSession();
-  // const pathname = usePathname();
-  // const searchParams = useSearchParams();
   const router = useRouter();
 
-  // const redirectUri = `${pathname}${
-  //   searchParams.toString() ? `?${searchParams.toString()}` : ""
-  // }`;
+  useEffect(() => {
+    if(!isFavorito){
+      setIsFavorito(favoritos.some( fav => fav.productID == Number(_id)))
+    }
+  }, [favoritos.length])
+
 
   const toggleFavorito = async (e: React.MouseEvent) => {
     if (!session) {
@@ -49,13 +50,11 @@ export const Product = ({
 
     // Enviar la acción al backend
     if (!isFavorito) {
-      await add(id.toString());
+      await add({ image, name, slug, price, id, _id });
     } else {
-      await remove(id.toString());
+      await remove(_id.toString());
     }
 
-    // // Refrescar la lista de favoritos en el frontend (si usas SWR o React Query)
-    // mutate("/api/favoritos"); // Actualiza el cache
   };
 
   const containerClasses = clsx(

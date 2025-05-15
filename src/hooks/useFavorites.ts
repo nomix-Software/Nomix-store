@@ -1,4 +1,5 @@
 "use client";
+import { ProductProps } from "@/components";
 import { fetcher } from "@/lib/utils/fetcher";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -7,7 +8,7 @@ import useSWR, { mutate } from "swr";
 const FAVORITOS_KEY = "/api/favorites";
 
 export interface FavoritoType {
-      productId: number;
+      productID: number;
       name: string;
       price: number;
       slug:{current: string};
@@ -46,10 +47,10 @@ export const useFavorites = () => {
     }
   }, [fetchError]);
 
-  const add = async (productoId: string) => {
+  const add = async (product: ProductProps['product']) => {
     const res = await fetch("/api/favorites", {
       method: "POST",
-      body: JSON.stringify({ productoId }),
+      body: JSON.stringify({ productId: product.id }),
       headers: { "Content-Type": "application/json" },
     });
 
@@ -58,7 +59,8 @@ export const useFavorites = () => {
       return;
     }
 
-    const nuevoFavorito = await res.json();
+     const nuevoFavorit = await res.json();
+    const nuevoFavorito = {...product, productID: product.id}
 
     mutate(
       FAVORITOS_KEY,
@@ -82,14 +84,14 @@ export const useFavorites = () => {
     mutate(
       FAVORITOS_KEY,
       (current: FavoritoType[] = []) =>
-        current.filter((item) => item.id !== Number(productoId)),
+        current.filter((item) => item.productID !== Number(productoId)),
       false
     );
   };
 
   return {
     favoritos: (data || []) as {
-      productId: number;
+      productID: number;
       name: string;
       price: number;
       slug:{current: string};

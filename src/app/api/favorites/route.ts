@@ -52,18 +52,30 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body: { productoId: string } = await req.json();
-  const { productoId } = body;
+  const body: { productId: string } = await req.json();
 
+  console.log({body})
+  const { productId } = body;
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+const existe = await prisma.favorito.findUnique({
+  where: {
+    usuarioId_productoId: {
+      usuarioId: session.user.id,
+      productoId: Number(productId),
+    }
+  }
+});
 
+if (existe) {
+  return NextResponse.json({ message: "Ya existe el favorito" }, { status: 200 });
+}
   try {
     const favorito = await prisma.favorito.create({
       data: {
-        productoId: Number(productoId),
+        productoId: Number(productId),
         usuarioId: session.user.id
       },
     });
@@ -80,11 +92,16 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
+  
+  const body: { productoId: string } = await req.json();
+  const {productoId } = body
+  console.log('delete ',{productoId})
+
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { productoId } = await req.json();
+
 
   if (!productoId) {
     return NextResponse.json(

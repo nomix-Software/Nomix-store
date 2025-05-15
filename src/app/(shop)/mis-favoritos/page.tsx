@@ -13,7 +13,7 @@ export default function FavoritosPage() {
   const { favoritos, isLoading, isError } = useFavorites();
   const { data: session, status } = useSession()
   const router = useRouter()
-
+  console.log({favoritos})
   useEffect(() => {
     if (status === 'loading') return // Evitar redirección durante el cargado
 
@@ -65,7 +65,7 @@ export default function FavoritosPage() {
         {favoritos.map((product, index) => (
           <div key={`${product.slug}-${index}`}>
             <Suspense fallback={"cargando productos"}>
-              <Product product={product} size="small" />
+              <Product product={{...product, _id: product.productID.toString()}} size="small" />
             </Suspense>
           </div>
         ))}
