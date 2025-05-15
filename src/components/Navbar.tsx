@@ -15,7 +15,7 @@ export const Navbar = () => {
           <strong>CYE TECH</strong> Tienda
         </Link>
       </p>
-      <div className="w-20 flex gap-2 ">
+      <div className="w-20 flex justify-between ">
         <button
           type="button"
           className="cart-icon"
