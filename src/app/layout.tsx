@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <AuthSessionProvider>
          <ClientWrapper />
         <body>
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col !mt-20">
             <Head>
               <title>CyE Tech</title>
             </Head>

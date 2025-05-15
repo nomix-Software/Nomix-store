@@ -9,13 +9,13 @@ import { useCartStore } from "@/store";
 export const Navbar = () => {
   const { setShowCart, showCart, items } = useCartStore((state) => state);
   return (
-    <div className="navbar-container !mb-4">
+    <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md !px-6 !py-3 flex justify-between items-center !mb-4">
       <p className="logo">
         <Link href="/">
           <strong>CYE TECH</strong> Tienda
         </Link>
       </p>
-      <div className="w-15">
+      <div className="w-20 flex gap-2 ">
         <button
           type="button"
           className="cart-icon"
@@ -26,7 +26,11 @@ export const Navbar = () => {
         </button>
         <Sidebar role="ADMIN" isAuthenticated={true} />
       </div>
-      {showCart && <Suspense fallback={<div>Cargando carrito...</div>}> <Cart /></Suspense>}
+      {showCart && (
+        <Suspense fallback={<div>Cargando carrito...</div>}>
+          <Cart />
+        </Suspense>
+      )}
     </div>
   );
 };
