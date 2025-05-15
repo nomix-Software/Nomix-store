@@ -13,7 +13,6 @@ export default function FavoritosPage() {
   const { favoritos, isLoading, isError } = useFavorites();
   const { data: session, status } = useSession()
   const router = useRouter()
-  console.log({favoritos})
   useEffect(() => {
     if (status === 'loading') return // Evitar redirección durante el cargado
 
