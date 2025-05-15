@@ -43,7 +43,7 @@ async function MyApp() {
             </button>
           </Link>
         </div>
-        <FooterBanner
+        {/* <FooterBanner
           footerBanner={{
             discount: "29% de descuento",
             buttonText: "Comprar ahora",
@@ -57,7 +57,7 @@ async function MyApp() {
             saleTime: "29 de abril al 29 de mayo",
             smallText: "Beats Solo Air",
           }}
-        />
+        /> */}
       </div>
     </>
   );

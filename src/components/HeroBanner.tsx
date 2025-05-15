@@ -25,13 +25,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
             {heroBanner.smallText}
           </p>
           {productLatest?.categoria && (
-            <h3 className="text-2xl text-[#324d67] font-semibold">
+            <h3 className="text-[18px] sm:!text-2xl text-[#324d67] font-semibold">
               {typeof productLatest?.categoria === "object"
                 ? productLatest.categoria.nombre
                 : productLatest?.categoria}
             </h3>
           )}
-          <h1 className="text-2xl font-extrabold  sm:!text-4xl md:!text-8xl products-heading !text-left">
+          <h1 className="text-2xl font-extrabold  sm:!text-4xl md:!text-8xl !my-2 sm:!mt-3 products-heading !text-left">
             {productLatest?.nombre}
           </h1>
         </div>
@@ -44,14 +44,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
             alt="headphones"
             // className="hero-banner-image"
           />
-          <div className="desc mb-5">
+          <div className="desc mb-5 !px-2 !w-full  flex flex-col gap-1 justify-end !items-end">
             <h5>Descripción</h5>
             <p>{productLatest?.descripcion}</p>
           </div>
-          <Link href={`/product/${heroBanner.product}`}>
+          <Link href={`/product/${heroBanner.product}`} className=" flex justify-center !mb-2">
             <button
               type="button"
-              className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[140px]"
+              className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[140px] transform transition-transform duration-300 hover:scale-110"
             >
               {heroBanner.buttonText}
             </button>
