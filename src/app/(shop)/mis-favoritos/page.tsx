@@ -46,7 +46,7 @@ export default function FavoritosPage() {
           No tenés productos favoritos todavía.
         </p>
         <Link
-          href="/"
+          href="/catalogo"
           className="bg-[#f02d34] cursor-pointer !text-white rounded-2xl !py-2.5 !my-8 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
         >
           Explorar productos
