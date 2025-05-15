@@ -18,15 +18,15 @@ const CatalogoPage = () => {
       </div>
       <div className="flex flex-row w-full sm:gap-10">
         {/* filtros desktop */}
-        <Suspense fallback={<div>Cargando filtros...</div>}>
+        <Suspense fallback={<div></div>}>
           <Filters />
         </Suspense>
         {/* filtros mobile  */}
-        <Suspense fallback={<div>Cargando filtros...</div>}>
+        <Suspense fallback={<div></div>}>
         <ModalMobileFilters />
         </Suspense>
         {/* productos */}
-        <Suspense fallback={<div>Cargando catálogo...</div>}>
+        <Suspense fallback={<div></div>}>
           <Catalogue />
         </Suspense>
       </div>

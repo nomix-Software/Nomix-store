@@ -9,50 +9,48 @@ import { LoadingOverlay } from '../ui/LoadingOverlay'
 import { Pagination } from '../ui/Pagination'
 import { ProductItem } from '@/interfaces'
 import { useAvailableFilters } from '@/store'
+import { useProducts } from '@/hooks'
+import { FaHeartBroken } from 'react-icons/fa'
+import { MdBuild } from 'react-icons/md'
 
 export const Catalogue = () => {
-    const searchParams = useSearchParams()
-    const page = searchParams.get('page') || '1'
-    const [productsResponse, setProductsResponse] = useState<{ currentPage:number, totalPages:number, products:ProductItem[] }>({ currentPage: Number(page), totalPages:1, products:[]})
-    const [loading, setLoading] = useState(false)
-     const { setAvailableBrands, setAvailableCategories}= useAvailableFilters(state => state)
-    useEffect(() => {
-        let loadingTimeout: NodeJS.Timeout;
-      
-        const fetchData = async () => {
-          loadingTimeout = setTimeout(() => setLoading(true), 200); // solo si tarda >200ms
-          try {
-            const res = await fetch(`/api/products?${searchParams.toString()}`);
-            const { filtrosDisponibles ,...data} = await res.json();
-            setAvailableBrands(filtrosDisponibles.marcas)
-            setAvailableCategories(filtrosDisponibles.categorias)
-            setProductsResponse(data);
-          } catch (error) {
-            console.error(error);
-          } finally {
-            clearTimeout(loadingTimeout);
-            setLoading(false);
-          }
-        };
-      
-        fetchData();
-        return () => clearTimeout(loadingTimeout);
-      }, [searchParams]);
-      
-    if (loading) return <LoadingOverlay  text='Cargando productos...' />
-    return (
-        <div className='flex flex-col justify-between items-center'>
-        <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
-            {productsResponse?.products.map((product, index) => (
-                <div key={`${product.slug}-${index}`} >
-                    <Product product={{...product, id: Number(product._id)}} size='small' />
-                </div>
-            ))} 
+  const searchParams = useSearchParams()
+  const page = searchParams.get('page') || '1'
+  const { setAvailableBrands, setAvailableCategories } = useAvailableFilters(state => state)
+  const { productos: productsResponse, isLoading, isError } = useProducts(`/api/products?${searchParams.toString()}`)
+  useEffect(() => {
+    if (!isLoading) {
+      setAvailableBrands(productsResponse.filtrosDisponibles.marcas)
+      setAvailableCategories(productsResponse.filtrosDisponibles.categorias)
+    }
+  }, [isLoading])
+
+
+  if (isLoading) return <LoadingOverlay text='Cargando productos...' />
+
+    if (isError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-96 text-center w-full">
+          <MdBuild  className="text-gray-500 text-6xl mb-4" />
+          <p className="text-xl font-medium text-gray-700">
+            Ocurrió un error al cargar los resultados.
+          </p>
         </div>
-            {productsResponse?.totalPages >1 && 
-            <Pagination currentPage={productsResponse?.currentPage} totalPages={productsResponse?.totalPages} />
-            }
-        </div>
-    )
+      );
+    }
+  return (
+    <div className='flex flex-col justify-between items-center'>
+      <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
+        {productsResponse?.products.map((product, index) => (
+          <div key={`${product.slug}-${index}`} >
+            <Product product={{ ...product, id: Number(product._id) }} size='small' />
+          </div>
+        ))}
+      </div>
+      {productsResponse?.totalPages > 1 &&
+        <Pagination currentPage={productsResponse?.currentPage} totalPages={productsResponse?.totalPages} />
+      }
+    </div>
+  )
 }
 

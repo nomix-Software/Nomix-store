@@ -63,7 +63,7 @@ export default function FavoritosPage() {
       <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
         {favoritos.map((product, index) => (
           <div key={`${product.slug}-${index}`}>
-            <Suspense fallback={"cargando productos"}>
+            <Suspense fallback={""}>
               <Product product={{...product, _id: product.productID.toString()}} size="small" />
             </Suspense>
           </div>
