@@ -59,7 +59,7 @@ export const useFavorites = () => {
       return;
     }
 
-     const nuevoFavorit = await res.json();
+
     const nuevoFavorito = {...product, productID: product.id}
 
     mutate(

@@ -2,20 +2,17 @@
 
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Product } from '../Product'
 
 import { LoadingOverlay } from '../ui/LoadingOverlay'
 import { Pagination } from '../ui/Pagination'
-import { ProductItem } from '@/interfaces'
 import { useAvailableFilters } from '@/store'
 import { useProducts } from '@/hooks'
-import { FaHeartBroken } from 'react-icons/fa'
 import { MdBuild } from 'react-icons/md'
 
 export const Catalogue = () => {
   const searchParams = useSearchParams()
-  const page = searchParams.get('page') || '1'
   const { setAvailableBrands, setAvailableCategories } = useAvailableFilters(state => state)
   const { productos: productsResponse, isLoading, isError } = useProducts(`/api/products?${searchParams.toString()}`)
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { FooterBanner, HeroBanner, Product } from "@/components";
+import { HeroBanner, Product } from "@/components";
 import React from "react";
 
 import { getProducts } from "@/actions";
