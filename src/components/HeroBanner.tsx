@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getLatestProduct } from "@/actions";
-
+import notFoundImage from '../../public/not-found-image.png'
 interface HeroBannerProps {
   heroBanner: {
     smallText: string;
@@ -38,7 +38,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
 
         <div className="flex flex-col justify-center gap-2 sm:gap-4  w-full md:w-1/2 md:items-center">
           <Image
-            src={heroBanner.image}
+            src={productLatest?.imagenes[0].url || notFoundImage}
             width={300}
             height={300}
             alt="headphones"
