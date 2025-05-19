@@ -9,7 +9,7 @@ import { useCartStore } from "@/store";
 export const Navbar = () => {
   const { setShowCart, showCart, items } = useCartStore((state) => state);
   return (
-    <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md !px-6 !py-3 flex justify-between items-center !mb-4">
+    <div className="fixed top-0 left-0 w-full z-50 bg-white  !px-6 !py-3 flex justify-between items-center !mb-4">
       <p className="logo">
         <Link href="/">
           <strong>CYE TECH</strong> Tienda
