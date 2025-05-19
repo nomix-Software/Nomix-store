@@ -45,6 +45,7 @@ export const createProduct = async ({
   brand,
   category,
   images,
+  stock
 }: RequestProduct) => {
   const createdProduct = await prisma.producto.create({
     data: {
@@ -52,7 +53,7 @@ export const createProduct = async ({
       slug: await generateSlug(name),
       descripcion: description,
       precio: Number(price),
-      stock: 120,
+      stock: Number(stock),
       categoriaId: Number(category),
       marcaId: Number(brand),
     },

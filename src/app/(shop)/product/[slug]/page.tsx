@@ -39,7 +39,7 @@ const ProductDetails = async ({ params }: Props) => {
             <p>(20)</p>
           </div>
           <h4 className="font-bold">Detalle: </h4>
-          <p>{productDetail.descripcion}</p>
+          <p className="whitespace-pre-line">{productDetail.descripcion}</p>
           <AddToCart  {...productDetail} imagenURI={productDetail.imagenes[0].url} />
         </div>
       </div>

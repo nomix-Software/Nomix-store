@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import { HeroBanner, Product } from "@/components";
 import React from "react";
 

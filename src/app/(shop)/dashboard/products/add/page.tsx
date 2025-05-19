@@ -23,6 +23,7 @@ const AddProductPage = () => {
     price: "",
     category: "",
     brand: "",
+    stock:"",
     images: [] as unknown as { url: string; id: number }[],
   });
   const [categories, setCategories] = useState<CategoriesItem[]>([]);
@@ -55,6 +56,8 @@ const AddProductPage = () => {
     if (!product.name) newErrors.name = "El nombre es obligatorio.";
     if (!product.price || parseFloat(product.price) <= 0)
       newErrors.price = "El precio debe ser mayor a 0.";
+    if (!product.stock || parseFloat(product.stock) <= 0)
+      newErrors.stock = "El stock debe ser mayor a 0.";
     if (!product.category) newErrors.category = "La categoría es obligatoria.";
     if (!product.brand) newErrors.brand = "La marca es obligatoria.";
     if (!product.images) newErrors.image = "La imagen es obligatoria.";
@@ -136,6 +139,17 @@ if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
             value={product.price}
             onChange={handleChange}
             placeholder="Ej: 1999.99"
+            errors={errors}
+          />
+          {/* Stock */}
+          <TextField
+            type="number"
+            name="stock"
+            label="Stock"
+            helperText="Stock inicial"
+            value={product.stock}
+            onChange={handleChange}
+            placeholder="3"
             errors={errors}
           />
 
