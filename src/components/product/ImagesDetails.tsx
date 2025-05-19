@@ -18,9 +18,9 @@ export const ImagesDetails = ({ images }: Props) => {
                     <Image
                         src={images[index].url}
                         alt="product image"
-                        width={500}
+                        width={700}
                         height={500}
-                        className="product-detail-image"
+                        className="product-detail-image sm:min-w-[400px] sm:min-h-auto"
                     />
                 )}
             </div>
