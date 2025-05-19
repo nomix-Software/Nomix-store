@@ -6,12 +6,13 @@ import { signIn } from "next-auth/react";
 // import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const getTextButton = (): string => {
     if (isLoading) return "Cargando...";
     if (isLogin) return "Ingresar";
@@ -86,13 +87,18 @@ export default function AuthPage() {
             required
           />
           <TextField
-            type="password"
-            placeholder="Contraseña"
             name="password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            // className="w-full p-2 border rounded"
-            required
+            label="Contraseña"
+            type={showPassword ? "text" : "password"}
+            endIcon={
+              showPassword ? (
+                <AiFillEyeInvisible onClick={() => setShowPassword(false)} />
+              ) : (
+                <AiFillEye onClick={() => setShowPassword(true)} />
+              )
+            }
           />
 
           <button

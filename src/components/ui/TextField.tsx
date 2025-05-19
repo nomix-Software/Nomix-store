@@ -12,8 +12,10 @@ export interface TextFieldProps {
   type?: string;
   helperText?: string;
   className?: string;
-  required?:boolean
+  required?: boolean;
+  endIcon?: React.ReactNode; // NUEVA PROP
 }
+
 export const TextField = ({
   name,
   onChange,
@@ -24,26 +26,36 @@ export const TextField = ({
   value,
   type = "text",
   className,
-  required
+  required,
+  endIcon,
 }: TextFieldProps) => {
+  const hasError = errors && errors[name];
+
   return (
-    <div className=" gap-1 flex flex-col !mb-4">
+    <div className="gap-1 flex flex-col !mb-4">
       <Label label={label} />
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        className={` h-[36px] !px-4  w-full  py-2 border ${
-          errors && errors.name ? "border-red-500" : "border-gray-300"
-        } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 !border-0.5 ${className}`}
-        placeholder={placeholder}
-        required={required}
-      />
-      {errors && errors.name ? (
+      <div className="relative">
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          className={`h-[36px] !px-4 w-full pr-10 py-2 border ${
+            hasError ? "border-red-500" : "border-gray-300"
+          } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 !border-0.5 ${className}`}
+          placeholder={placeholder}
+          required={required}
+        />
+        {endIcon && (
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+            {endIcon}
+          </div>
+        )}
+      </div>
+      {hasError ? (
         <p className="text-sm text-red-600 flex items-center mt-1">
           <AiOutlineExclamationCircle size={16} className="!mx-2" />
-          {errors.name}
+          {errors[name]}
         </p>
       ) : (
         <p className="text-xs text-gray-500 mt-1 !px-4">{helperText}</p>
