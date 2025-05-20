@@ -26,7 +26,7 @@ export default function AuthPage() {
       />
     );
   return (
-    <div className="max-w-md !mx-auto  p-6 h-[70vh]  !my-16">
+    <div className="max-w-md !mx-auto  !p-6 h-[70vh]  !my-16">
       <div className="h-fit">
         <h2 className="text-2xl font-bold !mb-4 text-center">
           {isLogin ? "Iniciar sesión" : "Registrarse"}
