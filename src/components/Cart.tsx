@@ -92,9 +92,11 @@ export const Cart = () => {
               <h3>${subtotal}</h3>
             </div>
             <div className="btn-container">
-              <button type="button" className="btn" onClick={handleCheckout}>
+              <Link href={'/checkout'}>
+              <button type="button" className="btn" >
                 Pagar ahora
               </button>
+              </Link>
             </div>
           </div>
         )}
