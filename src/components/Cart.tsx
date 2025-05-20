@@ -3,12 +3,12 @@ import React, { useRef } from "react";
 import Link from "next/link";
 import { AiOutlineLeft, AiOutlineShopping } from "react-icons/ai";
 
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 import { useCartStore } from "@/store";
 
 import { ItemCart } from "./ItemCart";
-import { createCheckout } from "@/actions";
+// import { createCheckout } from "@/actions";
 
 export const Cart = () => {
   const cartRef = useRef(null);
@@ -17,40 +17,40 @@ export const Cart = () => {
     state.items.reduce((total, item) => total + item.precio * item.cantidad, 0)
   );
 
-  const handleCheckout = async () => {
-    // const stripe = await getStripe();
+  // const handleCheckout = async () => {
+  //   // const stripe = await getStripe();
 
-    // const response = await fetch("/api/stripe", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(cartItems),
-    // });
+  //   // const response = await fetch("/api/stripe", {
+  //   //   method: "POST",
+  //   //   headers: {
+  //   //     "Content-Type": "application/json",
+  //   //   },
+  //   //   body: JSON.stringify(cartItems),
+  //   // });
 
-    // if (response.status !== 200) {
-    //   toast.error(`Failed to Proceed because of ${response.status}`);
-    //   return;
-    // }
+  //   // if (response.status !== 200) {
+  //   //   toast.error(`Failed to Proceed because of ${response.status}`);
+  //   //   return;
+  //   // }
 
-    // const data = await response.json();
-    const url = await createCheckout(
-      items.map((item) => {
-        return {
-          id: String(item.id),
-          title: item.nombre,
-          unit_price: item.precio,
-          quantity: item.cantidad,
-        };
-      }),
-      "marcosgaliano96@gmail.com"
-    );
-    console.log("url", url);
+  //   // const data = await response.json();
+  //   const url = await createCheckout(
+  //     items.map((item) => {
+  //       return {
+  //         id: String(item.id),
+  //         title: item.nombre,
+  //         unit_price: item.precio,
+  //         quantity: item.cantidad,
+  //       };
+  //     }),
+  //     "marcosgaliano96@gmail.com"
+  //   );
+  //   console.log("url", url);
 
-    toast.loading("Redirecting...");
-    if (url) window.location.href = url;
-    // stripe.redirectToCheckout({ sessionId: data.id });
-  };
+  //   toast.loading("Redirecting...");
+  //   if (url) window.location.href = url;
+  //   // stripe.redirectToCheckout({ sessionId: data.id });
+  // };
 
   return (
     <div className="cart-wrapper" ref={cartRef}>
