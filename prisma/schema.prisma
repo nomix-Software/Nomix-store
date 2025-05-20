@@ -170,6 +170,8 @@ model VentaProducto {
   productoId     Int
   cantidad       Int
   precioUnitario Float
+  descuento      Float?   // Porcentaje o monto aplicado (lo que uses)
+  total          Float    // precioUnitario * cantidad - descuento
 }
 
 model EstadoPedido {

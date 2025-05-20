@@ -1,15 +1,14 @@
-
-import { PrismaClient } from '@prisma/client';
-import { generateSlug } from './generateSlug';
+import { PrismaClient } from "@prisma/client";
+import { generateSlug } from "./generateSlug";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // LIMPIAR BASE DE DATOS (orden correcto)
-  await prisma.entrega.deleteMany();  // Eliminar entregas antes de las ventas
+  await prisma.entrega.deleteMany(); // Eliminar entregas antes de las ventas
   await prisma.ventaProducto.deleteMany();
   await prisma.carritoItem.deleteMany();
-  await prisma.venta.deleteMany();  // Luego elimina las ventas
+  await prisma.venta.deleteMany(); // Luego elimina las ventas
   await prisma.carrito.deleteMany();
   await prisma.direccion.deleteMany();
   await prisma.imagenProducto.deleteMany(); // <-- mover esto antes que producto
@@ -23,7 +22,6 @@ async function main() {
   await prisma.session.deleteMany();
   await prisma.account.deleteMany();
   // await prisma.user.deleteMany();
-  
 
   // Crear usuario
   // const usuario = await prisma.user.create({
@@ -37,30 +35,29 @@ async function main() {
 
   // 🏷 Crear categorías
   //@typescript-eslint/no-unused-vars
-  const [ perifericos,  sonido, iluminacion] =
-    await Promise.all([
-      // prisma.categoria.create({ data: { nombre: "Accesorios" } }),
-      prisma.categoria.create({ data: { nombre: "Periféricos" } }),
-      // prisma.categoria.create({ data: { nombre: "Almacenamiento" } }),
-      prisma.categoria.create({ data: { nombre: "Sonido" } }),
-      prisma.categoria.create({ data: { nombre: "Iluminación" } }),
-    ]);
+  const [perifericos, sonido, iluminacion] = await Promise.all([
+    // prisma.categoria.create({ data: { nombre: "Accesorios" } }),
+    prisma.categoria.create({ data: { nombre: "Periféricos" } }),
+    // prisma.categoria.create({ data: { nombre: "Almacenamiento" } }),
+    prisma.categoria.create({ data: { nombre: "Sonido" } }),
+    prisma.categoria.create({ data: { nombre: "Iluminación" } }),
+  ]);
 
   // 🏢 Crear marcas
   //@typescript-eslint/no-unused-vars
-  const [ redragon,  dinax] = await Promise.all([
+  const [redragon, dinax] = await Promise.all([
     // prisma.marca.create({ data: { nombre: "Logitech" } }),
     prisma.marca.create({ data: { nombre: "Redragon" } }),
     // prisma.marca.create({ data: { nombre: "Kingston" } }),
     prisma.marca.create({ data: { nombre: "Dinax" } }),
   ]);
- //crear metodo de pago
- // 💳 Crear métodos de pago
-const [efectivo, transferencia, mercadoPago] = await Promise.all([
-  prisma.metodoPago.create({ data: { nombre: 'Efectivo' } }),
-  prisma.metodoPago.create({ data: { nombre: 'Transferencia bancaria' } }),
-  prisma.metodoPago.create({ data: { nombre: 'Mercado Pago' } }),
-]);
+  //crear metodo de pago
+  // 💳 Crear métodos de pago
+  const [efectivo, transferencia, mercadoPago] = await Promise.all([
+    prisma.metodoPago.create({ data: { nombre: "Efectivo" } }),
+    prisma.metodoPago.create({ data: { nombre: "Transferencia bancaria" } }),
+    prisma.metodoPago.create({ data: { nombre: "Mercado Pago" } }),
+  ]);
 
   // 📦 Crear productos
   const producto1 = await prisma.producto.create({
@@ -91,7 +88,7 @@ const [efectivo, transferencia, mercadoPago] = await Promise.all([
     },
   });
 
- const producto2= await prisma.producto.create({
+  const producto2 = await prisma.producto.create({
     data: {
       nombre: "Kit Destornillador Recargable Eléctrico",
       slug: await generateSlug("Kit Destornillador Recargable Eléctrico"),
@@ -134,8 +131,8 @@ const [efectivo, transferencia, mercadoPago] = await Promise.all([
   // Estado del pedido
   const estadoProcesando = await prisma.estadoPedido.create({
     data: {
-      nombre: 'Procesando'
-    }
+      nombre: "Procesando",
+    },
   });
 
   // Venta del usuario
@@ -144,93 +141,103 @@ const [efectivo, transferencia, mercadoPago] = await Promise.all([
       usuarioId: "cmagcyxl70000mmdoo18azt8n",
       total: producto1.precio + producto2.precio * 2,
       estadoId: estadoProcesando.id,
-      metodoPagoId:efectivo.id,
+      metodoPagoId: efectivo.id,
       productos: {
         create: [
           {
             productoId: producto1.id,
             cantidad: 2,
-            precioUnitario: producto1.precio
+            precioUnitario: producto1.precio,
+            descuento: 0,
+            total: producto1.precio * 2,
           },
           {
             productoId: producto2.id,
             cantidad: 2,
-            precioUnitario: producto2.precio
-          }
-        ]
-      }
-    }
+            precioUnitario: producto2.precio,
+            descuento: 0,
+            total: producto1.precio * 2,
+          },
+        ],
+      },
+    },
   });
-// Venta con entrega tipo ENVIO
-const ventaEnvio = await prisma.venta.create({
-  data: {
-    usuarioId: "cmagcyxl70000mmdoo18azt8n",
-    total: producto1.precio + producto2.precio * 2,
-    estadoId: estadoProcesando.id,
-    metodoPagoId: mercadoPago.id,
-    productos: {
-      create: [
-        {
-          productoId: producto1.id,
-          cantidad: 1,
-          precioUnitario: producto1.precio
-        },
-        {
-          productoId: producto2.id,
-          cantidad: 2,
-          precioUnitario: producto2.precio
-        }
-      ]
-    }
-  }
-});
+  // Venta con entrega tipo ENVIO
+  const ventaEnvio = await prisma.venta.create({
+    data: {
+      usuarioId: "cmagcyxl70000mmdoo18azt8n",
+      total: producto1.precio + producto2.precio * 2,
+      estadoId: estadoProcesando.id,
+      metodoPagoId: mercadoPago.id,
+      productos: {
+        create: [
+          {
+            productoId: producto1.id,
+            cantidad: 1,
+            precioUnitario: producto1.precio,
+            descuento: 0,
+            total: producto1.precio * 1,
+          },
+          {
+            productoId: producto2.id,
+            cantidad: 2,
+            precioUnitario: producto2.precio,
+            descuento: 0,
+            total: producto2.precio * 2,
+          },
+        ],
+      },
+    },
+  });
 
-await prisma.entrega.create({
-  data: {
-    ventaId: ventaEnvio.id,
-    tipo: 'ENVIO',
-    direccion: 'Calle Falsa 123',
-    ciudad: 'Buenos Aires',
-    provincia: 'Buenos Aires',
-    codigoPostal: '1001',
-    pais: 'Argentina',
-    contacto: 'Lucía Fernández',
-    telefono: '+54 911 1234 5678',
-    observaciones: 'Tocar timbre 3B',
-  }
-});
+  await prisma.entrega.create({
+    data: {
+      ventaId: ventaEnvio.id,
+      tipo: "ENVIO",
+      direccion: "Calle Falsa 123",
+      ciudad: "Buenos Aires",
+      provincia: "Buenos Aires",
+      codigoPostal: "1001",
+      pais: "Argentina",
+      contacto: "Lucía Fernández",
+      telefono: "+54 911 1234 5678",
+      observaciones: "Tocar timbre 3B",
+    },
+  });
 
-// Venta con entrega tipo RETIRO
-const ventaRetiro = await prisma.venta.create({
-  data: {
-    usuarioId: "cmagcyxl70000mmdoo18azt8n",
-    total: producto2.precio,
-    estadoId: estadoProcesando.id,
-    metodoPagoId:transferencia.id,
-    productos: {
-      create: [
-        {
-          productoId: producto2.id,
-          cantidad: 1,
-          precioUnitario: producto2.precio
-        }
-      ]
-    }
-  }
-});
+  // Venta con entrega tipo RETIRO
+  const ventaRetiro = await prisma.venta.create({
+    data: {
+      usuarioId: "cmagcyxl70000mmdoo18azt8n",
+      total: producto2.precio,
+      estadoId: estadoProcesando.id,
+      metodoPagoId: transferencia.id,
+      productos: {
+        create: [
+          {
+            productoId: producto2.id,
+            cantidad: 1,
+            precioUnitario: producto2.precio,
+            descuento: 0,
+            total: producto2.precio * 1,
+          },
+        ],
+      },
+    },
+  });
 
-await prisma.entrega.create({
-  data: {
-    ventaId: ventaRetiro.id,
-    tipo: 'RETIRO',
-    puntoRetiro: 'Sucursal Av. Siempreviva 742',
-    contacto: 'Lucía Fernández',
-    telefono: '+54 911 8765 4321',
-    observaciones: 'Retira su esposo con DNI',
-  }
-});
+  await prisma.entrega.create({
+    data: {
+      ventaId: ventaRetiro.id,
+      tipo: "RETIRO",
+      puntoRetiro: "Sucursal Av. Siempreviva 742",
+      contacto: "Lucía Fernández",
+      telefono: "+54 911 8765 4321",
+      observaciones: "Retira su esposo con DNI",
+    },
+  });
 
-  console.log('Seed limpio y cargado con productos electrónicos.');
+  console.log("Seed limpio y cargado con productos electrónicos.");
 }
 
 main()
