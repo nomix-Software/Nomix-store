@@ -10,7 +10,7 @@ export default function OrderSummary() {
   const total = products.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
   return (
-    <div className="border rounded-2xl !p-4 shadow-md bg-red-50">
+    <div className="border rounded-2xl !p-4  bg-red-50">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Resumen del pedido</h2>
         <button

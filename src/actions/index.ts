@@ -26,3 +26,4 @@ export * from "./mercadopago/Payments";
 export * from "./mis-pedidos/MisPedidos";
 
 export * from './cart/saveCart'
+export * from './cart/getCart'

@@ -8,11 +8,12 @@ import { AiOutlineLeft, AiOutlineShopping } from "react-icons/ai";
 import { useCartStore } from "@/store";
 
 import { ItemCart } from "./ItemCart";
+import Promotions from "./checkout/Promotion";
 // import { createCheckout } from "@/actions";
 
 export const Cart = () => {
   const cartRef = useRef(null);
-  const { items, setShowCart } = useCartStore((state) => state);
+  const { items, setShowCart, getSubtotal } = useCartStore((state) => state);
   const subtotal = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.precio * item.cantidad, 0)
   );
@@ -90,6 +91,9 @@ export const Cart = () => {
             <div className="total">
               <h3>Subtotal:</h3>
               <h3>${subtotal}</h3>
+            </div>
+            <div className="w-fit !m-auto">
+              <Promotions total={getSubtotal()}/>
             </div>
             <div className="btn-container">
               <Link href={'/checkout'} onClick={()=> setShowCart(false)}>

@@ -1,8 +1,9 @@
 'use client'
 
-import { createCheckout, saveCart } from "@/actions";
+import { createCheckout, getCartByUser, saveCart } from "@/actions";
 import { TextField } from "@/components";
 import OrderSummary from "@/components/checkout/OrderSummary";
+import Promotions from "@/components/checkout/Promotion";
 import { useCartStore } from "@/store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -35,9 +36,10 @@ export default function SeleccionEntregaPage() {
   const [contacto, setContacto] = useState("");
   const [telefono, setTelefono] = useState("");
   const [observaciones, setObservaciones] = useState("");
-  const items = useCartStore(state => state.items)
+  const {items , addToCart } = useCartStore(state => state)
   const {data, status} = useSession()
   const router = useRouter()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (sucursalSeleccionada === null) return alert("Selecciona una sucursal");
@@ -80,15 +82,27 @@ if(!(Boolean(data?.user.email))){
   
   };
 useEffect(() => {
-  console.log({data},!Boolean(data?.user.id ))
-  if(!Boolean(data?.user.id ) && status !== 'loading') {router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)}
-
-}, [data, status])
+  (async ()=>{
+    console.log({data},!Boolean(data?.user.id ))
+    if(!Boolean(data?.user.id ) && status !== 'loading') {router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)}
+    if(Boolean(data?.user.id) && status == 'authenticated' && items.length === 0){
+      try {
+        const userCart = await getCartByUser()
+        userCart.carrito?.items.forEach(item => {
+          addToCart({cantidad: item.cantidad, imagen: item.producto.imagenes[0].url, nombre: item.producto.nombre, id: item.producto.id, precio: item.producto.precio, slug: item.producto.slug, stock: item.producto.stock})
+        })
+      } catch (error) {
+        
+      }
+    }
+  })()
+}, [data, status, items.length])
 
   return (
     <div className="max-w-2xl !mx-auto !p-4">
-        <OrderSummary />
-      <h1 className="text-2xl font-bold !mb-4">Elegí cómo querés recibir tu pedido</h1>
+        <h1 className="products-heading !text-start font-extrabold text-4xl">
+          Confirmá tu orden
+        </h1>        <OrderSummary />
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <p className="text-lg font-semibold !mb-2">Puntos de retiro disponibles:</p>
@@ -152,10 +166,9 @@ useEffect(() => {
             placeholder="Ej: Retirar por la tarde"
           />
         </div>
-
         <button
           type="submit"
-         className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+         className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer !mt-2"
          disabled={items.length === 0}
         >
           Continuar con el pago
