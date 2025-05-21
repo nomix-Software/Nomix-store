@@ -23,12 +23,12 @@ export async function createCheckout(items: Item[], email: string) {
   const response = await preference.create({
     body: {
       items,
-      // back_urls: {
-      //   success: "https://swtjvsvv-3000.brs.devtunnels.ms/checkout/success",
-      //   failure: "https://swtjvsvv-3000.brs.devtunnels.ms/checkout/failure",
-      //   pending: "https://swtjvsvv-3000.brs.devtunnels.ms/checkout/pending",
-      // },
-      // auto_return: "approved",
+      back_urls: {
+        success: "https://cye-tech.vercel.app/checkout/success",
+        failure: "https://cye-tech.vercel.app/checkout/failure",
+        pending: "https://cye-tech.vercel.app/checkout/pending",
+      },
+      auto_return: "approved",
       payer: {
         email,
       },

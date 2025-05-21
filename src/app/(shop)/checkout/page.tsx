@@ -1,8 +1,13 @@
 'use client'
 
+import { createCheckout, saveCart } from "@/actions";
 import { TextField } from "@/components";
 import OrderSummary from "@/components/checkout/OrderSummary";
-import { useState } from "react";
+import { useCartStore } from "@/store";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const opcionesRetiro = [
   {
@@ -30,27 +35,55 @@ export default function SeleccionEntregaPage() {
   const [contacto, setContacto] = useState("");
   const [telefono, setTelefono] = useState("");
   const [observaciones, setObservaciones] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const items = useCartStore(state => state.items)
+  const {data, status} = useSession()
+  const router = useRouter()
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (sucursalSeleccionada === null) return alert("Selecciona una sucursal");
+if(!(Boolean(data?.user.email))){
+  alert('se venció tu sesión')
+  router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)
+  return
+ }
+    // const datosEntrega = {
+    //   tipo: "RETIRO",
+    //   puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
+    //   direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
+    //   ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
+    //   provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
+    //   codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
+    //   pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
+    //   contacto,
+    //   telefono,
+    //   observaciones,
+    // };
 
-    const datosEntrega = {
-      tipo: "RETIRO",
-      puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
-      direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
-      ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
-      provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
-      codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
-      pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
-      contacto,
-      telefono,
-      observaciones,
-    };
-
-    console.log("Datos de entrega:", datosEntrega);
     // Aquí se puede continuar con el flujo de generación de la orden
+
+    await saveCart(items. map(product => ({ cantidad : product.cantidad, productoId: product.id})))
+        const url = await createCheckout(
+      items.map((item) => {
+        return {
+          id: String(item.id),
+          title: item.nombre,
+          unit_price: item.precio,
+          quantity: item.cantidad,
+        };
+      }),
+      data?.user.email as string
+    );
+    console.log("url", url);
+
+    toast.loading("Redirecting...");
+    if (url) window.location.href = url
+  
   };
+useEffect(() => {
+  console.log({data},!Boolean(data?.user.id ))
+  if(!Boolean(data?.user.id ) && status !== 'loading') {router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)}
+
+}, [data, status])
 
   return (
     <div className="max-w-2xl !mx-auto !p-4">
@@ -123,6 +156,7 @@ export default function SeleccionEntregaPage() {
         <button
           type="submit"
          className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+         disabled={items.length === 0}
         >
           Continuar con el pago
         </button>

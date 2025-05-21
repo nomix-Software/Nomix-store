@@ -92,7 +92,7 @@ export const Cart = () => {
               <h3>${subtotal}</h3>
             </div>
             <div className="btn-container">
-              <Link href={'/checkout'}>
+              <Link href={'/checkout'} onClick={()=> setShowCart(false)}>
               <button type="button" className="btn" >
                 Pagar ahora
               </button>
