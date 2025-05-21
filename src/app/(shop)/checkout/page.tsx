@@ -3,7 +3,6 @@
 import { createCheckout, getCartByUser, saveCart } from "@/actions";
 import { TextField } from "@/components";
 import OrderSummary from "@/components/checkout/OrderSummary";
-import Promotions from "@/components/checkout/Promotion";
 import { useCartStore } from "@/store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -14,9 +13,9 @@ const opcionesRetiro = [
   {
     id: 1,
     nombre: "Sucursal Centro",
-    direccion: "Emilio Salgari 1234",
-    ciudad: "Springfield",
-    provincia: "Buenos Aires",
+    direccion: "Emilio Salgari 1181",
+    ciudad: "Córdoba",
+    provincia: "Córdoba",
     codigoPostal: "1000",
     pais: "Argentina",
   },
@@ -24,9 +23,9 @@ const opcionesRetiro = [
     id: 2,
     nombre: "Sucursal Norte",
     direccion: "Calfucir 1058",
-    ciudad: "Springfield",
-    provincia: "Buenos Aires",
-    codigoPostal: "1001",
+    ciudad: "Córdoba",
+    provincia: "Córdoba",
+    codigoPostal: "5002",
     pais: "Argentina",
   },
 ];
