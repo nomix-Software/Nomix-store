@@ -91,7 +91,7 @@ useEffect(() => {
           addToCart({cantidad: item.cantidad, imagen: item.producto.imagenes[0].url, nombre: item.producto.nombre, id: item.producto.id, precio: item.producto.precio, slug: item.producto.slug, stock: item.producto.stock})
         })
       } catch (error) {
-        
+        console.log('error',error)
       }
     }
   })()
