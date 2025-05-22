@@ -11,7 +11,7 @@ export default function PedidosPage() {
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  console.log({pedido})
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
