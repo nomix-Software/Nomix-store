@@ -39,4 +39,5 @@ export async function getPedidoById(id: number) {
     console.error("Error al obtener el pedido:", error);
     return null;
   }
-}
+};
+export type Pedido = Awaited<ReturnType<typeof getPedidoById>>;

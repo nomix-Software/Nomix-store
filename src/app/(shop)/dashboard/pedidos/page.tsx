@@ -3,11 +3,11 @@
 import { useState, FormEvent } from "react";
 // import { markPedidoEntregado } from "@/actions/markPedidoEntregado"; // Simulado más abajo
 import { MdSearch, MdCheckCircle } from "react-icons/md";
-import { getPedidoById } from "@/actions";
+import { getPedidoById, Pedido } from "@/actions";
 
 export default function PedidosPage() {
   const [pedidoId, setPedidoId] = useState("");
-  const [pedido, setPedido] = useState<any>(null);
+  const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -25,11 +25,11 @@ export default function PedidosPage() {
     if (!pedido) return;
     setLoading(true);
     // await markPedidoEntregado(pedido.id); // Simulado
-    setPedido({ ...pedido, estado: "entregado" });
+    setPedido({ ...pedido, estado: { ...pedido.estado, nombre :"entregado"} });
     setStatusMessage("✅ Pedido marcado como entregado.");
     setLoading(false);
   };
- function dateFormate(fechaStr: string): string {
+ function dateFormate(fechaStr: Date): string {
   const fecha = new Date(fechaStr);
 
   const opciones: Intl.DateTimeFormatOptions = {
@@ -73,7 +73,7 @@ export default function PedidosPage() {
           <p><strong>Estado:</strong> <span className={pedido.estado.nombre === "entregado" ? "text-green-600 font-semibold" : "text-yellow-600 font-semibold"}>{pedido.estado.nombre}</span></p>
           <p><strong>Productos:</strong></p>
           <ul className="list-disc !ml-6">
-            {pedido.productos.map((prod: any, i: number) => (
+            {pedido.productos.map((prod, i: number) => (
               <li key={i}>
                 {prod.producto.nombre} x {prod.cantidad}
               </li>
@@ -81,7 +81,7 @@ export default function PedidosPage() {
           </ul>
           <p><strong>Metodo de pago:</strong> {pedido.metodoPago.nombre}</p>
           <p><strong>Total:</strong> ${pedido.total}</p>
-          {pedido.estado !== "entregado" && (
+          {pedido.estado.nombre !== "entregado" && (
             <button
               onClick={handleEntregar}
               className="!mt-4 inline-flex items-center gap-2 !px-4 !py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
