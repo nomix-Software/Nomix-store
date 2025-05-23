@@ -1,11 +1,19 @@
 "use client";
 import { useState } from "react";
-import { FaBars, FaBoxOpen, FaChartLine, FaHeart, FaShoppingBag,  FaTags } from "react-icons/fa";
+import {
+  FaBars,
+  FaBoxOpen,
+  FaChartLine,
+  FaClipboardCheck,
+  FaHeart,
+  FaShoppingBag,
+  FaTags,
+} from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdAttachMoney, MdInventory } from "react-icons/md";
 import Link from "next/link";
 import { CgProfile } from "react-icons/cg";
-import {  signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
 import { FiHelpCircle } from "react-icons/fi";
@@ -18,9 +26,8 @@ interface SidebarProps {
 export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname()
+  const pathname = usePathname();
   const { data } = useSession();
-
 
   if (!isAuthenticated) return null;
 
@@ -41,30 +48,35 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       icon: MdAttachMoney, // 💰 ícono de finanzas
     },
     { label: "Gestionar ventas", href: "/dashboard/ventas", icon: FaChartLine },
+    {
+      label: "Pedidos",
+      href: "/dashboard/pedidos",
+      icon: FaClipboardCheck, // ✅ ícono de pedidos / entrega
+    },
   ];
 
-const clientOptions = [
-  {
-    label: "Perfil",
-    href: "/cliente/perfil",
-    icon: CgProfile, // 👤 ícono de perfil
-  },
-  {
-    label: "Mis pedidos",
-    href: "/mis-pedidos",
-    icon: FaBoxOpen, // 📦 ícono de pedidos
-  },
-  {
-    label: "Catálogo",
-    href: "/catalogo",
-    icon: FaShoppingBag, // 🛍️ ícono de catálogo
-  },
-  {
-    label: "Mis favoritos",
-    href: "/mis-favoritos",
-    icon: FaHeart, // ❤️ ícono de favoritos
-  },
-];
+  const clientOptions = [
+    {
+      label: "Perfil",
+      href: "/cliente/perfil",
+      icon: CgProfile, // 👤 ícono de perfil
+    },
+    {
+      label: "Mis pedidos",
+      href: "/mis-pedidos",
+      icon: FaBoxOpen, // 📦 ícono de pedidos
+    },
+    {
+      label: "Catálogo",
+      href: "/catalogo",
+      icon: FaShoppingBag, // 🛍️ ícono de catálogo
+    },
+    {
+      label: "Mis favoritos",
+      href: "/mis-favoritos",
+      icon: FaHeart, // ❤️ ícono de favoritos
+    },
+  ];
   const guestOptions = [
     {
       label: "Catálogo",
@@ -89,12 +101,16 @@ const clientOptions = [
   ];
 
   const options =
-    data?.user.role === "ADMIN" ? adminOptions : data?.user.role === "CLIENTE" ? clientOptions : guestOptions;
+    data?.user.role === "ADMIN"
+      ? adminOptions
+      : data?.user.role === "CLIENTE"
+      ? clientOptions
+      : guestOptions;
 
-const getTextButton = ()=>{
-  if(data?.user) return 'Cerrar sesión'
-  else return 'Iniciar Sesión'
-}
+  const getTextButton = () => {
+    if (data?.user) return "Cerrar sesión";
+    else return "Iniciar Sesión";
+  };
 
   return (
     <>
@@ -127,15 +143,15 @@ const getTextButton = ()=>{
             >
               <div className="flex flex-col gap-4">
                 <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center">
-                ¡Hola de nuevo!
+                  ¡Hola de nuevo!
                 </h2>
-                {data?.user.email && 
-                <div className="!mb-2">
-                  <Avatar  email={data?.user.email} />
-                  <br />
-                  <hr  className="!h-[1px]"/>
-                </div>
-                }
+                {data?.user.email && (
+                  <div className="!mb-2">
+                    <Avatar email={data?.user.email} />
+                    <br />
+                    <hr className="!h-[1px]" />
+                  </div>
+                )}
                 <ul className="flex flex-col gap-3">
                   {options.map(({ label, href, icon: Icon }) => (
                     <Link
@@ -153,16 +169,18 @@ const getTextButton = ()=>{
 
               <button
                 onClick={async () => {
-                  if(data?.user){
-                    signOut({callbackUrl:'/'})
-                  }else{
-                    setIsOpen(false)
-                    router.push(`/auth/login?redirect_uri=${encodeURIComponent(pathname)}`)
+                  if (data?.user) {
+                    signOut({ callbackUrl: "/" });
+                  } else {
+                    setIsOpen(false);
+                    router.push(
+                      `/auth/login?redirect_uri=${encodeURIComponent(pathname)}`
+                    );
                   }
                 }}
                 className="cursor-pointer mt-auto text-sm text-gray-500 hover:text-gray-700"
               >
-               {getTextButton()}
+                {getTextButton()}
               </button>
             </motion.div>
           </>

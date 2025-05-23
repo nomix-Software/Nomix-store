@@ -148,7 +148,9 @@ const DetallePedido = () => {
                 <Image
                   src={producto.imagen}
                   alt={producto.nombre}
-                  className="w-16 h-16 object-cover rounded-md"
+                  width={200}
+                  height={200}
+                  className="!w-16 !h-16 object-cover rounded-md"
                 />
                 <div>
                   <p className="font-medium text-gray-800">{producto.nombre}</p>

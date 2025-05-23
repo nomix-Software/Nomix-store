@@ -15,7 +15,7 @@ interface Props {
 export const AddToCart = ({ stock, id, nombre, slug, precio, imagenURI }: Props) => {
     const [priceByQuantity, setPriceByQuantity] = useState(precio)
     const [quantity, setQuantity] = useState(1)
-    const { addToCart, setShowCart } = useCartStore((state) => state);
+    const { addToCart, setShowCart, items } = useCartStore((state) => state);
 
     const handleChageQty = (value: number) => {
         if (value > stock || value < 0) return;
@@ -26,15 +26,17 @@ export const AddToCart = ({ stock, id, nombre, slug, precio, imagenURI }: Props)
     const handleBuyNow = () => {
         // onAdd(product, qty);
         if (!stock) return;
-        addToCart({
-            id: id,
-            nombre: nombre,
-            slug: slug,
-            cantidad: quantity,
-            precio: precio,
-            stock: stock,
-            imagen: imagenURI,
-        });
+        if(!Boolean(items.find( item => item.id === id))){            
+            addToCart({
+                id: id,
+                nombre: nombre,
+                slug: slug,
+                cantidad: quantity,
+                precio: precio,
+                stock: stock,
+                imagen: imagenURI,
+            });
+        }
         setShowCart(true);
     };
 

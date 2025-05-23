@@ -23,6 +23,8 @@ export * from "./categorie/CategorieAbm";
 export * from "./mercadopago/Payments";
 
 
-export * from "./mis-pedidos/MisPedidos";
+export * from "./pedidos/mis-pedidos";
+export * from "./pedidos/pedido";
 
 export * from './cart/saveCart'
+export * from './cart/getCart'
