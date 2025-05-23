@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const {  status,  } = await req.json();
+  const {  status, estadoPedido = ''  } = await req.json();
 
   if (status !== "approved") {
     return NextResponse.json({ error: "Pago no aprobado" }, { status: 400 });
@@ -46,15 +46,15 @@ export async function POST(req: Request) {
 
   try {
     let estadoInicial = await prisma.estadoPedido.findFirst({
-      where: { nombre: "Listo para retirar" },
+      where: { nombre: estadoPedido  || "Listo para retirar" },
     });
     if (!estadoInicial) {
       estadoInicial = await prisma.estadoPedido.create({
-        data: { nombre: "Listo para retirar" },
+        data: { nombre: estadoPedido  || "Listo para retirar" },
       });
     }
-    let metodoPago = await prisma.metodoPago.create({
-      data: { nombre: "Mercado Pago" },
+    let metodoPago = await prisma.metodoPago.findFirst({
+      where: { nombre: "Mercado Pago" },
     });
     if (!metodoPago) {
       metodoPago = await prisma.estadoPedido.create({
