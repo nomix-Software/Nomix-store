@@ -1,10 +1,10 @@
 "use client";
+import { updatePedidoEstado } from "@/actions";
 import { LoadingOverlay } from "@/components";
 import type { DetallePedido } from "@/interfaces";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { FaCheckCircle } from "react-icons/fa";
 import { ImSpinner2 } from "react-icons/im";
 
 const estadosDisponibles = ["PENDIENTE", "EN PREPARACIÓN", "ENVIADO", "ENTREGADO", "CANCELADO"];
@@ -41,23 +41,10 @@ const DetallePedido = () => {
     return <div>Error: {error}</div>;
   }
     const handleEstadoChange = async () => {
-    setLoading(false);
-    setGuardado(false);
-    // try {
-    //   // Reemplazá esta llamada por tu API real
-    //   await fetch(`/api/pedidos/${pedido.id}`, {
-    //     method: "PUT",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ estado: estadoActual }),
-    //   });
-
-    //   setGuardado(true);
-    //   setTimeout(() => setGuardado(false), 3000);
-    // } catch (err) {
-    //   console.error("Error al actualizar estado:", err);
-    // } finally {
-    //   setLoading(false);
-    // }
+    setLoading(true);
+    await updatePedidoEstado(Number(id), estadoActual)
+    setGuardado(true);
+    setLoading(false)
   };
 
   if (!pedido) {
@@ -103,9 +90,9 @@ const DetallePedido = () => {
                   "Guardar"
                 )}
               </button>
-              {guardado && (
+              {/* {guardado && (
                 <FaCheckCircle className="inline-block text-green-500 ml-2" />
-              )}
+              )} */}
             </span>
           </p>
 
