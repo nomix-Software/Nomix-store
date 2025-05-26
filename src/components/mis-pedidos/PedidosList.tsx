@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaCheckCircle, FaClock } from "react-icons/fa";
 import { getMisPedidos } from "@/actions"; // server action importada
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { PedidoCard } from "./PedidoCard";
 
@@ -41,7 +39,7 @@ export default function PedidosList({
     <>
       <ul className="!space-y-6">
         {pedidos.map((pedido) => (
-          <PedidoCard {...pedido} />
+          <PedidoCard key={pedido.id} {...pedido} />
         ))}
       </ul>
 

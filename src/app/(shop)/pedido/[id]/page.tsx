@@ -13,7 +13,6 @@ const DetallePedido = () => {
   const [pedido, setPedido] = useState<DetallePedido | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [guardado, setGuardado] = useState(false);
     const [estadoActual, setEstadoActual] = useState<DetallePedido['estado'] | string>('');
   useEffect(() => {
     if (!id) return; // Esperamos a que el parámetro esté disponible
@@ -43,7 +42,6 @@ const DetallePedido = () => {
     const handleEstadoChange = async () => {
     setLoading(true);
     await updatePedidoEstado(Number(id), estadoActual)
-    setGuardado(true);
     setLoading(false)
   };
 
@@ -177,7 +175,7 @@ const DetallePedido = () => {
       <div>
         <h3 className="text-lg font-semibold text-[#324d67] !mb-2">Productos</h3>
         <ul className="!space-y-4">
-          {pedido.productos.map((producto: any, index: number) => (
+          {pedido.productos.map((producto, index: number) => (
             <li
               key={index}
               className="flex items-center gap-4 bg-gray-50 !p-4 rounded-lg shadow-sm"
