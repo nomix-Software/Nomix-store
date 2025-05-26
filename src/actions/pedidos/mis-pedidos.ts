@@ -6,24 +6,21 @@ import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
 
-export async function getMisPedidos({ skip = 0, take = 30, email }: {skip:number, take:number, email:string}) {
+export async function getMisPedidos({ skip = 0, take = 30, email, pedidoId }: {skip:number, take:number, email:string, pedidoId?:number}) {
   const session = await getServerSession(authOptions);
-
+  const isAdmin = session?.user.role === 'ADMIN'
   if (!email) {
     redirect("/auth/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    redirect("/auth/login");
-  }
+  const where = isAdmin
+  ? pedidoId
+    ? { id: pedidoId } // Si es admin y hay un pedidoId, filtra por ID
+    : undefined         // Si es admin pero no hay pedidoId, trae todos
+  : { usuarioId: session?.user.id }; // Si no es admin, filtra por usuario
 
   const ventas = await prisma.venta.findMany({
-    where: session?.user.role === 'ADMIN' ? undefined : { usuarioId: session?.user.id },
+    where,
     orderBy: { fecha: "desc" },
     skip, // cuánto salteo
     take, // cuántos traigo
