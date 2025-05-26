@@ -8,7 +8,7 @@ export default async function MisPedidosPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return notFound();
 
-  const pedidosIniciales = await getMisPedidos({ skip: 0, take: 10 });
+  const pedidosIniciales = await getMisPedidos({ skip: 0, take: 10, email:session.user.email });
 
   return (
     <main className="max-w-4xl mx-auto !p-2 sm:!p-6">

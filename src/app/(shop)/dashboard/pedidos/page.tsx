@@ -1,16 +1,31 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 // import { markPedidoEntregado } from "@/actions/markPedidoEntregado"; // Simulado más abajo
 import { MdSearch, MdCheckCircle } from "react-icons/md";
-import { getPedidoById, Pedido } from "@/actions";
+import { getMisPedidos, getPedidoById, Pedido, PedidoById } from "@/actions";
+import { useSession } from "next-auth/react";
+import { PedidoCard } from "@/components";
 
 export default function PedidosPage() {
   const [pedidoId, setPedidoId] = useState("");
-  const [pedido, setPedido] = useState<Pedido | null>(null);
+  const [pedido, setPedido] = useState<PedidoById | null>(null);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
-
+  const [pedidos, setPedidos] = useState<Pedido[] | null>(null);
+  const session = useSession();
+  useEffect(() => {
+    (async () => {
+      if (session.status !== "authenticated" || !session.data.user.email)
+        return;
+      const misPedidos = await getMisPedidos({
+        skip: 0,
+        take: 30,
+        email: session.data.user.email,
+      });
+      setPedidos(misPedidos);
+    })();
+  }, [session.status]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,22 +40,22 @@ export default function PedidosPage() {
     if (!pedido) return;
     setLoading(true);
     // await markPedidoEntregado(pedido.id); // Simulado
-    setPedido({ ...pedido, estado: { ...pedido.estado, nombre :"entregado"} });
+    setPedido({ ...pedido, estado: { ...pedido.estado, nombre: "entregado" } });
     setStatusMessage("✅ Pedido marcado como entregado.");
     setLoading(false);
   };
- function dateFormate(fechaStr: Date): string {
-  const fecha = new Date(fechaStr);
+  function dateFormate(fechaStr: Date): string {
+    const fecha = new Date(fechaStr);
 
-  const opciones: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  };
+    const opciones: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    };
 
-  // Formatea en español
-  return fecha.toLocaleDateString('es-ES', opciones);
-}
+    // Formatea en español
+    return fecha.toLocaleDateString("es-ES", opciones);
+  }
 
   return (
     <div className="max-w-2xl !mx-auto !p-6">
@@ -68,10 +83,27 @@ export default function PedidosPage() {
       {pedido && (
         <div className="border !p-4 rounded-lg shadow-md bg-white !space-y-4">
           <h2 className="text-lg font-semibold">Pedido #{pedido.id}</h2>
-          <p><strong>Fecha de compra:</strong> {dateFormate(pedido.fecha)}</p>
-          <p><strong>Cliente:</strong> {pedido.usuario.email}</p>
-          <p><strong>Estado:</strong> <span className={pedido.estado.nombre === "entregado" ? "text-green-600 font-semibold" : "text-yellow-600 font-semibold"}>{pedido.estado.nombre}</span></p>
-          <p><strong>Productos:</strong></p>
+          <p>
+            <strong>Fecha de compra:</strong> {dateFormate(pedido.fecha)}
+          </p>
+          <p>
+            <strong>Cliente:</strong> {pedido.usuario.email}
+          </p>
+          <p>
+            <strong>Estado:</strong>{" "}
+            <span
+              className={
+                pedido.estado.nombre === "entregado"
+                  ? "text-green-600 font-semibold"
+                  : "text-yellow-600 font-semibold"
+              }
+            >
+              {pedido.estado.nombre}
+            </span>
+          </p>
+          <p>
+            <strong>Productos:</strong>
+          </p>
           <ul className="list-disc !ml-6">
             {pedido.productos.map((prod, i: number) => (
               <li key={i}>
@@ -79,8 +111,12 @@ export default function PedidosPage() {
               </li>
             ))}
           </ul>
-          <p><strong>Metodo de pago:</strong> {pedido.metodoPago.nombre}</p>
-          <p><strong>Total:</strong> ${pedido.total}</p>
+          <p>
+            <strong>Metodo de pago:</strong> {pedido.metodoPago.nombre}
+          </p>
+          <p>
+            <strong>Total:</strong> ${pedido.total}
+          </p>
           {pedido.estado.nombre !== "entregado" && (
             <button
               onClick={handleEntregar}
@@ -92,7 +128,9 @@ export default function PedidosPage() {
           )}
         </div>
       )}
-
+      {pedidos?.map((pedido) => (
+        <PedidoCard {...pedido} />
+      ))}
       {statusMessage && (
         <p className="mt-4 text-green-700 font-medium">{statusMessage}</p>
       )}

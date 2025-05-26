@@ -6,15 +6,15 @@ import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
 
-export async function getMisPedidos({ skip = 0, take = 30 }) {
+export async function getMisPedidos({ skip = 0, take = 30, email }: {skip:number, take:number, email:string}) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!email) {
     redirect("/auth/login");
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email },
     select: { id: true },
   });
 
@@ -23,7 +23,7 @@ export async function getMisPedidos({ skip = 0, take = 30 }) {
   }
 
   const ventas = await prisma.venta.findMany({
-    where: { usuarioId: user.id },
+    where: session?.user.role === 'ADMIN' ? undefined : { usuarioId: session?.user.id },
     orderBy: { fecha: "desc" },
     skip, // cuánto salteo
     take, // cuántos traigo
@@ -60,3 +60,4 @@ export async function getMisPedidos({ skip = 0, take = 30 }) {
     })),
   }));
 }
+export type Pedido = Awaited<ReturnType<typeof getMisPedidos>>[number];

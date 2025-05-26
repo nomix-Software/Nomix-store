@@ -40,4 +40,4 @@ export async function getPedidoById(id: number) {
     return null;
   }
 };
-export type Pedido = Awaited<ReturnType<typeof getPedidoById>>;
+export type PedidoById = Awaited<ReturnType<typeof getPedidoById>>;

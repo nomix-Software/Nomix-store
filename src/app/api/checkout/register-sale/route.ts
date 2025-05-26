@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     });
     if (!metodoPago) {
       metodoPago = await prisma.estadoPedido.create({
-        data: { nombre: "Listo para retirar" },
+        data: { nombre: "Mercado Pago" },
       });
     }
     const venta = await prisma.venta.create({
