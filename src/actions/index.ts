@@ -25,6 +25,7 @@ export * from "./mercadopago/Payments";
 
 export * from "./pedidos/mis-pedidos";
 export * from "./pedidos/pedido";
+export * from "./pedidos/estado";
 
 export * from './cart/saveCart'
 export * from './cart/getCart'

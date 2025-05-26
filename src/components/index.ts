@@ -18,6 +18,7 @@ export * from "./products/ModalFilters";
 
 
 export *from './mis-pedidos/PedidosList'
+export *from './mis-pedidos/PedidoCard'
 
 
 export * from "./ui/TextField";

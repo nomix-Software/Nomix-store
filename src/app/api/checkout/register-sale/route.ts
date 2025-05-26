@@ -46,11 +46,11 @@ export async function POST(req: Request) {
 
   try {
     let estadoInicial = await prisma.estadoPedido.findFirst({
-      where: { nombre: estadoPedido  || "Listo para retirar" },
+      where: { nombre: estadoPedido  || "PENDIENTE" },
     });
     if (!estadoInicial) {
       estadoInicial = await prisma.estadoPedido.create({
-        data: { nombre: estadoPedido  || "Listo para retirar" },
+        data: { nombre: estadoPedido  || "PENDIENTE" },
       });
     }
     let metodoPago = await prisma.metodoPago.findFirst({
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     });
     if (!metodoPago) {
       metodoPago = await prisma.estadoPedido.create({
-        data: { nombre: "Listo para retirar" },
+        data: { nombre: "Mercado Pago" },
       });
     }
     const venta = await prisma.venta.create({

@@ -6,24 +6,21 @@ import { getServerSession } from "next-auth";
 
 import { redirect } from "next/navigation";
 
-export async function getMisPedidos({ skip = 0, take = 30 }) {
+export async function getMisPedidos({ skip = 0, take = 30, email, pedidoId }: {skip:number, take:number, email:string, pedidoId?:number}) {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
+  const isAdmin = session?.user.role === 'ADMIN'
+  if (!email) {
     redirect("/auth/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    redirect("/auth/login");
-  }
+  const where = isAdmin
+  ? pedidoId
+    ? { id: pedidoId } // Si es admin y hay un pedidoId, filtra por ID
+    : undefined         // Si es admin pero no hay pedidoId, trae todos
+  : { usuarioId: session?.user.id }; // Si no es admin, filtra por usuario
 
   const ventas = await prisma.venta.findMany({
-    where: { usuarioId: user.id },
+    where,
     orderBy: { fecha: "desc" },
     skip, // cuánto salteo
     take, // cuántos traigo
@@ -60,3 +57,4 @@ export async function getMisPedidos({ skip = 0, take = 30 }) {
     })),
   }));
 }
+export type Pedido = Awaited<ReturnType<typeof getMisPedidos>>[number];
