@@ -93,7 +93,7 @@ export const Product = ({
             src={image || ""}
             width={imageSize}
             height={imageSize}
-            className="product-image w-full h-auto object-cover"
+            className="product-image w-[250px] h-[250px] object-cover"
             alt="product image"
           />
           <div className="mt-2 w-full">

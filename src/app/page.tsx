@@ -25,15 +25,24 @@ async function MyApp() {
             smallText: "Novedades",
           }}
         />
+
         <div className="products-heading">
           <h2>Productos más vendidos</h2>
           <p>Descubrí las diferentes versiones más elegidas.</p>
         </div>
-
-        <div className="flex flex-col w-[250px] justify-center items-center !m-auto sm:flex-row gap-4 sm:w-auto ">
-          {products?.map((product) => (
-            <Product key={product._id} product={{...product, id: Number(product._id)}} />
-          ))}
+        <div className="maylike-products-wrapper">
+          <div className="marquee">
+            <div className="maylike-products-container track ">
+              {products.map((item) => (
+                <div className="!w-[250px] !h-[250px]" key={item._id}>
+                  <Product
+                    
+                    product={{ ...item, id: Number(item._id) }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <div className=" flex w-full justify-center">
           <Link href={"/catalogo"}>
