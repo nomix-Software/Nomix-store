@@ -11,10 +11,6 @@ export async function POST(req: Request) {
 
   const {  status, estadoPedido = ''  } = await req.json();
 
-  if (status !== "approved") {
-    return NextResponse.json({ error: "Pago no aprobado" }, { status: 400 });
-  }
-
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
@@ -78,13 +74,15 @@ export async function POST(req: Request) {
       },
     });
 
-    await prisma.movimientoFinanciero.create({
-      data: {
-        tipo: "INGRESO",
-        monto: total,
-        descripcion: `Venta ID ${venta.id} - Mercado Pago`,
-      },
-    });
+    if(status === 'approved'){
+      await prisma.movimientoFinanciero.create({
+        data: {
+          tipo: "INGRESO",
+          monto: total,
+          descripcion: `Venta ID ${venta.id} - Mercado Pago`,
+        },
+      });
+    }
 
     // Limpiar carrito
     await prisma.carritoItem.deleteMany({
