@@ -6,7 +6,7 @@ import { generateSlug } from "@/utils";
 
 export const getProducts = async () => {
   const productos = await prisma.producto.findMany({
-    take: 30,
+    take: 7,
     orderBy: {
       nombre: "asc", // o 'createdAt' si tenés ese campo
     },
