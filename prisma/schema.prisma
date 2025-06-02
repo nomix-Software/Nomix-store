@@ -25,6 +25,8 @@ model User {
   accounts Account[]
   sessions Session[]
   favoritos Favorito[]
+
+  PasswordResetToken PasswordResetToken[]
 }
 
 enum RolUsuario {
@@ -239,3 +241,14 @@ model Favorito {
 
   @@unique([usuarioId, productoId]) // evita duplicados
 }
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  expiresAt  DateTime
+  used       Boolean  @default(false)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
