@@ -1,8 +1,8 @@
 "use client";
 
-import { requestResetPassword, resetPassword } from "@/actions";
+import {  resetPassword } from "@/actions";
 import { TextField, LoadingOverlay } from "@/components";
-import { useSearchParams, useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -11,12 +11,12 @@ export default function ResetPasswordPage() {
   const [form, setForm] = useState({ password: "", confirm: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const searchParams = useSearchParams();
   const router = useRouter();
 
-  const token = searchParams.get("token") ?? "";
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
+    const token =   new URLSearchParams(window.location.search).get('token') ?? '' //searchParams.get("token") ?? "";
+
     e.preventDefault();
     if (form.password !== form.confirm) {
       toast.error("Las contraseñas no coinciden");
