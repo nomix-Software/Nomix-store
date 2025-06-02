@@ -1,20 +1,23 @@
 "use client";
 
 import { registerUser } from "@/actions/auth/AuthRegister";
+import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword";
 import { LoadingOverlay, TextField } from "@/components";
 import { signIn } from "next-auth/react";
-// import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const getTextButton = (): string => {
     if (isLoading) return "Cargando...";
+    if (isForgotPassword) return "Enviar link de recuperación";
     if (isLogin) return "Ingresar";
     else return "Crear cuenta";
   };
@@ -22,23 +25,44 @@ export default function AuthPage() {
   if (isLoading)
     return (
       <LoadingOverlay
-        text={isLogin ? "Obteniendo datos..." : "Registrando usuario..."}
+        text={
+          isForgotPassword
+            ? "Enviando instrucciones..."
+            : isLogin
+            ? "Obteniendo datos..."
+            : "Registrando usuario..."
+        }
       />
     );
+
   return (
     <div className="max-w-md !mx-auto  !p-6 h-[70vh]  !my-16">
       <div className="h-fit">
         <h2 className="text-2xl font-bold !mb-4 text-center">
-          {isLogin ? "Iniciar sesión" : "Registrarse"}
+          {isForgotPassword
+            ? "Recuperar contraseña"
+            : isLogin
+            ? "Iniciar sesión"
+            : "Registrarse"}
         </h2>
 
         <form
           action={async (formData) => {
+            
             setIsLoading(true);
             const email = formData.get("email") as string;
             const password = formData.get("password") as string;
 
             try {
+              if (isForgotPassword) {
+                // TO-DO: reemplazar por tu acción real
+                await  requestResetPassword(email)
+                toast.success("Instrucciones enviadas a tu email: " + email);
+                setIsForgotPassword(false);
+                setIsLoading(false);
+                return;
+              }
+
               if (!isLogin) {
                 const response = await registerUser({ email, password });
 
@@ -83,23 +107,28 @@ export default function AuthPage() {
             value={form.email}
             name="email"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            // className="w-full p-2 border rounded"
             required
           />
-          <TextField
-            name="password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            label="Contraseña"
-            type={showPassword ? "text" : "password"}
-            endIcon={
-              showPassword ? (
-                <AiFillEyeInvisible onClick={() => setShowPassword(false)} />
-              ) : (
-                <AiFillEye onClick={() => setShowPassword(true)} />
-              )
-            }
-          />
+
+          {!isForgotPassword && (
+            <TextField
+              name="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              label="Contraseña"
+              type={showPassword ? "text" : "password"}
+              endIcon={
+                showPassword ? (
+                  <AiFillEyeInvisible
+                    onClick={() => setShowPassword(false)}
+                  />
+                ) : (
+                  <AiFillEye onClick={() => setShowPassword(true)} />
+                )
+              }
+              required
+            />
+          )}
 
           <button
             type="submit"
@@ -110,29 +139,44 @@ export default function AuthPage() {
           </button>
         </form>
 
-        {/* <div className="my-4 text-center">o</div>
+        {/* Link para cambiar entre login, registro y recuperar */}
+        {!isForgotPassword && (
+          <p className="!mt-2 text-sm text-center">
+            <button
+              onClick={() => setIsForgotPassword(true)}
+              className="text-red-600 underline cursor-pointer"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </p>
+        )}
 
-      <button
-        onClick={() =>
-          signIn("google", {
-            callbackUrl: "/",
-          })
-        }
-        className="w-full border p-2 rounded hover:bg-gray-100"
-      >
-        Iniciar con Google
-      </button> */}
+        {/* Alternancia entre login y registro */}
+        {!isForgotPassword && (
+          <p className="!mt-4 text-sm text-center">
+            {isLogin ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}{" "}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-red-600 underline cursor-pointer"
+            >
+              {isLogin ? "Registrate" : "Iniciar sesión"}
+            </button>
+          </p>
+        )}
 
-        <p className="!mt-4 text-sm text-center">
-          {isLogin ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}
-          {"  "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-red-600 underline cursor-pointer"
-          >
-            {isLogin ? "Registrate" : "Iniciar sesión"}
-          </button>
-        </p>
+        {/* Volver al login desde recuperar contraseña */}
+        {isForgotPassword && (
+          <p className="!mt-4 text-sm text-center">
+            <button
+              onClick={() => {
+                setIsForgotPassword(false);
+              }}
+              className="text-red-600 underline cursor-pointer"
+            >
+              Volver al login
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );

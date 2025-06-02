@@ -29,3 +29,8 @@ export * from "./pedidos/estado";
 
 export * from './cart/saveCart'
 export * from './cart/getCart'
+
+export * from './auth/reset-password/resetPassword'
+export * from './auth/reset-password/requestResetPassword'
+export * from './auth/reset-password/sendPasswordResetEmail'
+
