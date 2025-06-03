@@ -1,6 +1,6 @@
 'use client'
 
-import { createCheckout, getCartByUser, saveCart } from "@/actions";
+import { createCheckout, getCartByUser, saveCart, saveDelivery } from "@/actions";
 import { TextField } from "@/components";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import { useCartStore } from "@/store";
@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 const opcionesRetiro = [
   {
     id: 1,
-    nombre: "Sucursal Centro",
+    nombre: "Sucursal",
     direccion: "Emilio Salgari 1181",
     ciudad: "Córdoba",
     provincia: "Córdoba",
@@ -21,7 +21,7 @@ const opcionesRetiro = [
   },
   {
     id: 2,
-    nombre: "Sucursal Norte",
+    nombre: "Punto de retiro",
     direccion: "Calfucir 1058",
     ciudad: "Córdoba",
     provincia: "Córdoba",
@@ -47,22 +47,25 @@ if(!(Boolean(data?.user.email))){
   router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)
   return
  }
-    // const datosEntrega = {
-    //   tipo: "RETIRO",
-    //   puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
-    //   direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
-    //   ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
-    //   provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
-    //   codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
-    //   pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
-    //   contacto,
-    //   telefono,
-    //   observaciones,
-    // };
+    const datosEntrega = {
+      tipo: "RETIRO" as 'RETIRO',
+      puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
+      direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
+      ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
+      provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
+      codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
+      pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
+      contacto,
+      telefono,
+      observaciones,
+    };
 
     // Aquí se puede continuar con el flujo de generación de la orden
 
-    await saveCart(items. map(product => ({ cantidad : product.cantidad, productoId: product.id})))
+   const carrito = await saveCart(items. map(product => ({ cantidad : product.cantidad, productoId: product.id})))
+   if(!carrito.id) return toast.error('Fallo en guardar carrito')
+      const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
+    if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
         const url = await createCheckout(
       items.map((item) => {
         return {
