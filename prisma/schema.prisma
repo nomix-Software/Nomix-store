@@ -22,8 +22,8 @@ model User {
   image         String?
 
   // Relaciones para NextAuth
-  accounts Account[]
-  sessions Session[]
+  accounts  Account[]
+  sessions  Session[]
   favoritos Favorito[]
 
   PasswordResetToken PasswordResetToken[]
@@ -118,7 +118,7 @@ model Producto {
   imagenes     ImagenProducto[]
   carritoItems CarritoItem[]
   ventaItems   VentaProducto[]
-  favoritos Favorito[]
+  favoritos    Favorito[]
   activo       Boolean          @default(true)
 }
 
@@ -149,8 +149,8 @@ model CarritoItem {
 
 model Venta {
   id        Int             @id @default(autoincrement())
-  usuario   User            @relation(fields: [usuarioId], references: [id])
-  usuarioId String
+  usuario   User?           @relation(fields: [usuarioId], references: [id])
+  usuarioId String?
   fecha     DateTime        @default(now())
   total     Float
   productos VentaProducto[]
@@ -159,9 +159,12 @@ model Venta {
   cupon     CuponDescuento? @relation(fields: [cuponId], references: [id])
   cuponId   Int?
 
-  entrega      Entrega? // <- relación uno a uno, opcional
-  metodoPagoId Int
-  metodoPago   MetodoPago @relation(fields: [metodoPagoId], references: [id])
+  entrega         Entrega? // <- relación uno a uno, opcional
+  metodoPagoId    Int
+  metodoPago      MetodoPago @relation(fields: [metodoPagoId], references: [id])
+  nombreCliente   String? // info manual
+  telefonoCliente String?
+  observacion     String?
 }
 
 model VentaProducto {
@@ -172,8 +175,8 @@ model VentaProducto {
   productoId     Int
   cantidad       Int
   precioUnitario Float
-  descuento      Float?   // Porcentaje o monto aplicado (lo que uses)
-  total          Float    // precioUnitario * cantidad - descuento
+  descuento      Float? // Porcentaje o monto aplicado (lo que uses)
+  total          Float // precioUnitario * cantidad - descuento
 }
 
 model EstadoPedido {
@@ -206,8 +209,9 @@ enum TipoMovimiento {
 
 model Entrega {
   id            Int         @id @default(autoincrement())
-  venta         Venta       @relation(fields: [ventaId], references: [id])
-  ventaId       Int         @unique // 1 entrega por venta
+  venta         Venta?       @relation(fields: [ventaId], references: [id])
+  ventaId       Int?         @unique // 1 entrega por venta
+  carritoId     Int?         @unique
   tipo          TipoEntrega
   puntoRetiro   String? // Ej: "Sucursal Av. Siempreviva 742", solo si tipo = RETIRO
   direccion     String? // Futuro uso: dirección exacta si tipo = ENVIO
@@ -231,6 +235,7 @@ model MetodoPago {
   nombre String
   ventas Venta[]
 }
+
 model Favorito {
   id         Int      @id @default(autoincrement())
   usuario    User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
@@ -241,14 +246,14 @@ model Favorito {
 
   @@unique([usuarioId, productoId]) // evita duplicados
 }
+
 model PasswordResetToken {
-  id         String   @id @default(cuid())
-  userId     String
-  token      String   @unique
-  expiresAt  DateTime
-  used       Boolean  @default(false)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
 }
-

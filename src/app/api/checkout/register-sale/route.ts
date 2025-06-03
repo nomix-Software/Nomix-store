@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { sendPurchaseEmail } from "@/actions";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
       where: { nombre: "Mercado Pago" },
     });
     if (!metodoPago) {
-      metodoPago = await prisma.estadoPedido.create({
+      metodoPago = await prisma.metodoPago.create({
         data: { nombre: "Mercado Pago" },
       });
     }
@@ -73,7 +74,11 @@ export async function POST(req: Request) {
         },
       },
     });
-
+    
+  await prisma.entrega.update({
+  where: { carritoId: user?.carrito?.id },
+  data: { ventaId: venta.id }
+});
     if(status === 'approved'){
       await prisma.movimientoFinanciero.create({
         data: {
@@ -88,7 +93,7 @@ export async function POST(req: Request) {
     await prisma.carritoItem.deleteMany({
       where: { carritoId: user.carrito.id },
     });
-
+    sendPurchaseEmail(user.email, venta.id)
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

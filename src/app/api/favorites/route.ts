@@ -23,6 +23,7 @@ export async function GET() {
             nombre: true,
             precio: true,
             slug: true,
+            stock:true,
             imagenes: {
               select: {
                 url: true, // Tomamos solo la URL de la primera imagen
@@ -41,7 +42,8 @@ export async function GET() {
       price: favorito.producto.precio,
       slug:{current: favorito.producto.slug},
       image: favorito.producto.imagenes.length > 0 ? favorito.producto.imagenes[0].url : '', // Asegurarnos de que la imagen exista
-      id:favorito.id
+      id:favorito.id,
+      stock: favorito.producto.stock
     }));
 
     return NextResponse.json(favoritosFormateados);

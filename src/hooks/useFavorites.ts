@@ -96,7 +96,8 @@ export const useFavorites = () => {
       price: number;
       slug:{current: string};
       image: string;
-      id:number
+      id:number;
+      stock: number
     }[],
     isLoading,
     isError: !!error,
