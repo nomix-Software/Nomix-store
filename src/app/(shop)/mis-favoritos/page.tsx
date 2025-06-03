@@ -64,7 +64,7 @@ export default function FavoritosPage() {
         {favoritos.map((product, index) => (
           <div key={`${product.slug}-${index}`}>
             <Suspense fallback={""}>
-              <Product product={{...product, _id: product.productID.toString()}} size="small" />
+              <Product product={{...product, _id: product.productID.toString()}}  />
             </Suspense>
           </div>
         ))}
