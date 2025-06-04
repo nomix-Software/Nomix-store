@@ -51,6 +51,12 @@ export async function GET(
         { status: 404 }
       );
     }
+    if (venta.usuarioId != session.user.id && session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: "No estas autorizado a ver la información" },
+        { status: 401 }
+      );
+    }
 
     const response = NextResponse.json({
       id: venta.id,
