@@ -3,7 +3,7 @@ import { updatePedidoEstado } from "@/actions";
 import { LoadingOverlay } from "@/components";
 import type { DetallePedido } from "@/interfaces";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ImSpinner2 } from "react-icons/im";
 
@@ -13,7 +13,8 @@ const DetallePedido = () => {
   const [pedido, setPedido] = useState<DetallePedido | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-    const [estadoActual, setEstadoActual] = useState<DetallePedido['estado'] | string>('');
+  const [estadoActual, setEstadoActual] = useState<DetallePedido['estado'] | string>('');
+  const route = useRouter()
   useEffect(() => {
     if (!id) return; // Esperamos a que el parámetro esté disponible
 
@@ -29,6 +30,7 @@ const DetallePedido = () => {
         setEstadoActual(data.estado)
       } catch (err) {
         setError("Error inesperado");
+        {route.push('/')}
         console.log(err);
       }
     };
