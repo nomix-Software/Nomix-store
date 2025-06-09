@@ -2,7 +2,7 @@ import React from "react";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Label } from "./Label";
 
-export interface TextFieldProps {
+export interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -28,6 +28,7 @@ export const TextField = ({
   className,
   required,
   endIcon,
+  ...rest
 }: TextFieldProps) => {
   const hasError = errors && errors[name];
 
@@ -45,6 +46,7 @@ export const TextField = ({
           } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 !border-0.5 ${className}`}
           placeholder={placeholder}
           required={required}
+           {...rest}
         />
         {endIcon && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">

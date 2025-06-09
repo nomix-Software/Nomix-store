@@ -1,12 +1,24 @@
 "use client";
 
+import { saveDelivery } from "@/actions";
+import { createSale } from "@/actions/sale/createSale";
 import { Autocomplete, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
+import { ProductItem } from "@/interfaces";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 type Errors = { [key: string]: string };
-
+type Venta = {
+  importe: string;
+  metodo_pago_id: string;
+  tipoEntrega: "ENVIO" | "RETIRO";
+  productos: { cantidad: number; producto: ProductItem | undefined }[];
+  cliente_nombre: string;
+  cliente_telefono: string;
+  direccion_envio: string;
+  observaciones: string;
+};
 export default function VentaForm() {
   // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
 
@@ -16,11 +28,11 @@ export default function VentaForm() {
     { id: 3, nombre: "Transferencia" },
   ]);
 
-  const [venta, setVenta] = useState({
-    fecha: "",
+  const [venta, setVenta] = useState<Venta>({
     importe: "",
     metodo_pago_id: "",
-    productos: [{ producto_id: "", cantidad: 1 }],
+    tipoEntrega: "RETIRO",
+    productos: [],
     cliente_nombre: "",
     cliente_telefono: "",
     direccion_envio: "",
@@ -39,22 +51,38 @@ export default function VentaForm() {
     const { name, value } = e.target;
     setVenta((prev) => ({ ...prev, [name]: value }));
   };
+  const handleQuantity = (index: number, value: number) => {
+    const product = venta.productos[index];
 
+    if (!product.producto?.stock || product.producto?.stock < value) {
+      setErrors({
+        ...errors,
+        [`cantidad_${index}`]: "Superaste el stock disponible",
+      });
+      return;
+    }
+    setErrors({ ...errors, [`cantidad_${index}`]: "" });
+    const newQuantity = { ...product, cantidad: value };
+    const products = { ...venta }.productos;
+    products[index] = newQuantity;
+    setVenta({ ...venta, productos: products });
+  };
   const handleChangeProducto = (
     index: number,
-    field: "producto_id" | "cantidad",
-    value: "producto_id" | "cantidad"
+    value: ProductItem,
   ) => {
-    console.log({ value });
     const productosActualizados = [...venta.productos];
-    productosActualizados[index][field] = value;
+    productosActualizados[index]['producto'] = value
     setVenta((prev) => ({ ...prev, productos: productosActualizados }));
   };
 
   const agregarProducto = () => {
     setVenta((prev) => ({
       ...prev,
-      productos: [...prev.productos, { producto_id: "", cantidad: 1 }],
+      productos: [
+        ...prev.productos,
+        { producto: undefined, cantidad: 1 },
+      ],
     }));
   };
 
@@ -66,7 +94,6 @@ export default function VentaForm() {
   // Validación sencilla
   const validar = () => {
     const err: Errors = {};
-    if (!venta.fecha) err.fecha = "La fecha es obligatoria";
     if (!venta.importe) err.importe = "El importe es obligatorio";
     if (!venta.metodo_pago_id)
       err.metodo_pago_id = "Selecciona un método de pago";
@@ -76,7 +103,7 @@ export default function VentaForm() {
       err.productos = "Debe haber al menos un producto";
     } else {
       venta.productos.forEach((prod, i) => {
-        if (!prod.producto_id)
+        if (!prod.producto?._id)
           err[`producto_id_${i}`] = "Selecciona un producto";
         if (!prod.cantidad || isNaN(prod.cantidad) || Number(prod.cantidad) < 1)
           err[`cantidad_${i}`] = "Cantidad inválida";
@@ -88,28 +115,39 @@ export default function VentaForm() {
   };
 
   // Submit
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (!validar()) {
       console.log({ errors });
       toast.error("Por favor corrige los errores");
       return;
     }
-
+    const medioPago =metodosPago.find(mp => mp.id == Number(venta.metodo_pago_id))?.nombre || 'EFECTIVO'
+const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoPago:medioPago, products: venta.productos.filter(p => p.producto !== undefined)})
+    const nuevaEntrega = await saveDelivery({
+      tipo: venta.tipoEntrega as "RETIRO" | "ENVIO",
+      direccion: venta.direccion_envio,
+      telefono: venta.cliente_telefono,
+      contacto: venta.cliente_nombre,
+      observaciones: venta.observaciones,
+      ventaId: nuevaVenta.data?.id
+    });
     // Aquí llamás a tu API para enviar "venta"
-    console.log("Enviando venta:", venta);
-    toast.success("Venta guardada correctamente");
+    if (nuevaVenta.status === "success") {
+      toast.success("Venta guardada correctamente");
+    }
 
+    console.log("Enviando venta:", venta);
     // Reseteo formulario (opcional)
     setVenta({
-      fecha: "",
       importe: "",
       metodo_pago_id: "",
-      productos: [{ producto_id: "", cantidad: 1 }],
+      productos: [{ producto: undefined, cantidad: 1 }],
       cliente_nombre: "",
       cliente_telefono: "",
       direccion_envio: "",
       observaciones: "",
+      tipoEntrega: "RETIRO",
     });
     setErrors({});
   };
@@ -122,17 +160,6 @@ export default function VentaForm() {
         </h1>
 
         <form onSubmit={handleSubmit} className="!space-y-6">
-          {/* Fecha */}
-          <TextField
-            type="date"
-            label="Fecha de venta"
-            name="fecha"
-            value={venta.fecha}
-            onChange={handleChange}
-            errors={errors}
-            helperText="Fecha en la que se realizó la venta."
-          />
-
           {/* Importe */}
           <TextField
             type="number"
@@ -170,19 +197,17 @@ export default function VentaForm() {
             {venta.productos.map((prod, index) => (
               <div key={index} className="flex gap-4 !items-center">
                 <div className="flex-1">
-
                   <Autocomplete
                     name={`productos[${index}].producto_id`}
-                    value={prod.producto_id}
-
-                    onChange={(value) =>{
-                      if(value == null) return
+                    value={prod.producto?._id.toString() || ''}
+                    onChange={(value) => {
+                      if (value == null) return;
                       handleChangeProducto(
                         index,
-                        "producto_id",
-                        value._id as "producto_id"
-                      )}
-                    }
+                        value,
+
+                      );
+                    }}
                     errors={{
                       [index]: errors[`producto_id_${index}`],
                       ...errors,
@@ -202,11 +227,12 @@ export default function VentaForm() {
                     type="number"
                     name={`productos[${index}].cantidad`}
                     value={prod.cantidad + ""}
+                    max={prod.producto?.stock}
+                    min={0}
                     onChange={(e) =>
-                      handleChangeProducto(
+                      handleQuantity(
                         index,
-                        "cantidad",
-                        e.target.value as "cantidad"
+                       Number( e.target.value) 
                       )
                     }
                     label="Cantidad"
@@ -241,7 +267,23 @@ export default function VentaForm() {
               + Agregar producto
             </button>
           </div>
-
+          {/* Tipo de entrega */}
+          <Select
+            label="Tipo de entrega"
+            name="tipo_entrega"
+            value={venta.tipoEntrega}
+            onChange={handleChange}
+            helperText="Selecciona el tipo de entrega."
+            errors={errors}
+            options={[
+              { id: 1, nombre: "RETIRO" },
+              { id: 2, nombre: "ENVIO" },
+            ].map(({ id, nombre }) => ({
+              id: id.toString(),
+              nombre,
+            }))}
+            className="!mb-2"
+          />
           {/* Datos opcionales del cliente */}
           <TextField
             label="Nombre del cliente (opcional)"

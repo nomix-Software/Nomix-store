@@ -58,6 +58,7 @@ export async function POST(req: Request) {
         data: { nombre: "Mercado Pago" },
       });
     }
+    //TODO: usar server actions
     const venta = await prisma.venta.create({
       data: {
         usuarioId: user.id,

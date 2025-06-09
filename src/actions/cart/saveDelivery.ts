@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma'
 
 type EntregaForm = {
-  carritoId: number
+  carritoId?: number
   tipo: 'RETIRO' | 'ENVIO'
   puntoRetiro?: string
   direccion?: string
@@ -14,6 +14,7 @@ type EntregaForm = {
   contacto?: string
   telefono?: string
   observaciones?: string
+  ventaId?:number
 }
 
 export async function saveDelivery(data: EntregaForm) {
@@ -31,6 +32,7 @@ export async function saveDelivery(data: EntregaForm) {
         contacto: data.contacto || null,
         telefono: data.telefono || null,
         observaciones: data.observaciones || null,
+        ventaId:data.ventaId
       },
     })
 
