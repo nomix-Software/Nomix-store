@@ -32,7 +32,7 @@ export const TextField = ({
   const hasError = errors && errors[name];
 
   return (
-    <div className="gap-1 flex flex-col !mb-4">
+    <div className="gap-1 flex flex-col mb-4">
       <Label label={label} />
       <div className="relative">
         <input

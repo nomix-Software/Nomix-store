@@ -1,20 +1,15 @@
-'use client'
+"use client";
 
-import { Select, TextField } from "@/components";
+import { Autocomplete, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-
-
+type Errors = { [key: string]: string };
 
 export default function VentaForm() {
   // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
-  const [productos] = useState([
-    { codigo: 1, nombre: "Producto A" },
-    { codigo: 2, nombre: "Producto B" },
-    { codigo: 3, nombre: "Producto C" },
-  ]);
+
   const [metodosPago] = useState([
     { id: 1, nombre: "Efectivo" },
     { id: 2, nombre: "Tarjeta" },
@@ -32,17 +27,27 @@ export default function VentaForm() {
     observaciones: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Errors>({});
 
   // Funciones para manejar cambios
-  const handleChange = (e) => {
+  const handleChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setVenta((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleChangeProducto = (index: number, field: string) => (e) => {
+  const handleChangeProducto = (
+    index: number,
+    field: "producto_id" | "cantidad",
+    value: "producto_id" | "cantidad"
+  ) => {
+    console.log({ value });
     const productosActualizados = [...venta.productos];
-    productosActualizados[index][field] = e.target.value;
+    productosActualizados[index][field] = value;
     setVenta((prev) => ({ ...prev, productos: productosActualizados }));
   };
 
@@ -53,17 +58,18 @@ export default function VentaForm() {
     }));
   };
 
-  const eliminarProducto = (index:number) => {
+  const eliminarProducto = (index: number) => {
     const nuevos = venta.productos.filter((_, i) => i !== index);
     setVenta((prev) => ({ ...prev, productos: nuevos }));
   };
 
   // Validación sencilla
   const validar = () => {
-    const err = {};
+    const err: Errors = {};
     if (!venta.fecha) err.fecha = "La fecha es obligatoria";
     if (!venta.importe) err.importe = "El importe es obligatorio";
-    if (!venta.metodo_pago_id) err.metodo_pago_id = "Selecciona un método de pago";
+    if (!venta.metodo_pago_id)
+      err.metodo_pago_id = "Selecciona un método de pago";
 
     // Validar productos
     if (venta.productos.length === 0) {
@@ -82,9 +88,10 @@ export default function VentaForm() {
   };
 
   // Submit
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (!validar()) {
+      console.log({ errors });
       toast.error("Por favor corrige los errores");
       return;
     }
@@ -153,7 +160,7 @@ export default function VentaForm() {
           />
 
           {/* Productos vendidos */}
-          <div className="space-y-4">
+          <div className="!space-y-4 align-middle items-center">
             <span className="block text-sm font-medium text-gray-700 !mb-1">
               Productos vendidos
             </span>
@@ -161,22 +168,27 @@ export default function VentaForm() {
               <p className="text-red-600 text-sm mb-1">{errors.productos}</p>
             )}
             {venta.productos.map((prod, index) => (
-              <div key={index} className="flex gap-4 items-center">
+              <div key={index} className="flex gap-4 !items-center">
                 <div className="flex-1">
-                  <Select
+
+                  <Autocomplete
                     name={`productos[${index}].producto_id`}
                     value={prod.producto_id}
-                    onChange={handleChangeProducto(index, "producto_id")}
-                    options={productos.map(({ codigo, nombre }) => ({
-                      id: codigo.toString(),
-                      nombre,
-                    }))}
+
+                    onChange={(value) =>{
+                      if(value == null) return
+                      handleChangeProducto(
+                        index,
+                        "producto_id",
+                        value._id as "producto_id"
+                      )}
+                    }
                     errors={{
                       [index]: errors[`producto_id_${index}`],
                       ...errors,
                     }}
                     label="Producto"
-                    className="mb-0"
+                    className="!mb-0"
                   />
                   {errors[`producto_id_${index}`] && (
                     <p className="text-red-600 text-sm">
@@ -189,14 +201,20 @@ export default function VentaForm() {
                   <TextField
                     type="number"
                     name={`productos[${index}].cantidad`}
-                    value={prod.cantidad}
-                    onChange={handleChangeProducto(index, "cantidad")}
+                    value={prod.cantidad + ""}
+                    onChange={(e) =>
+                      handleChangeProducto(
+                        index,
+                        "cantidad",
+                        e.target.value as "cantidad"
+                      )
+                    }
                     label="Cantidad"
                     errors={{
                       [index]: errors[`cantidad_${index}`],
                       ...errors,
                     }}
-                    className="mb-0"
+                    className={errors[`cantidad_${index}`] ? "!mb-4" : "!mb-0"}
                   />
                   {errors[`cantidad_${index}`] && (
                     <p className="text-red-600 text-sm">

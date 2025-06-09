@@ -6,7 +6,7 @@ import useSWR from "swr";
 
 
 
-export const useProducts = (FAVORITOS_KEY : string) => {
+export const useProducts = (PRODUCTS_KEY : string) => {
   const [error, setError] = useState<Error | null>(null);
 
 
@@ -14,7 +14,7 @@ export const useProducts = (FAVORITOS_KEY : string) => {
     data,
     error: fetchError,
     isLoading,
-  } = useSWR( FAVORITOS_KEY , fetcher, {
+  } = useSWR( PRODUCTS_KEY , fetcher, {
     revalidateOnFocus: false, // para que no vuelva a hacer fetch al cambiar de pestaña
     shouldRetryOnError: false, // evita reintentos automáticos
     onError: (err) => {

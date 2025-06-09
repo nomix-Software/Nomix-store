@@ -35,3 +35,4 @@ export * from "./ui/Avatar";
 export * from "./ui/LoadingOverlay";
 export * from "./ui/Pagination";
 export * from "./ui/ConfirmModal";
+export * from "./products/Autocomplete";
