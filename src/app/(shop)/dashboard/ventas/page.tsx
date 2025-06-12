@@ -1,23 +1,34 @@
 "use client";
 
-import { saveDelivery } from "@/actions";
-import { createSale } from "@/actions/sale/createSale";
+import { getAllCupons, saveDelivery } from "@/actions";
+import {  createSale } from "@/actions/sale/createSale";
 import { Autocomplete, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import { ProductItem } from "@/interfaces";
-import React, { useState } from "react";
+import { CuponDescuento } from "@prisma/client";
+import React, { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { FaTag } from "react-icons/fa";
 
 type Errors = { [key: string]: string };
 type Venta = {
   importe: string;
   metodo_pago_id: string;
   tipoEntrega: "ENVIO" | "RETIRO";
-  productos: { cantidad: number; producto: ProductItem | undefined }[];
+  productos: { cantidad: number; producto?: ProductItem }[];
   cliente_nombre: string;
   cliente_telefono: string;
   direccion_envio: string;
   observaciones: string;
+  cupon_descuento: string;
+};
+export const calcularTotal = (
+  items: { cantidad: number; producto: ProductItem }[]
+): number => {
+  return items.reduce((total, item) => {
+    const subtotal = item.producto.price * item.cantidad;
+    return total + subtotal;
+  }, 0);
 };
 export default function VentaForm() {
   // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
@@ -37,11 +48,15 @@ export default function VentaForm() {
     cliente_telefono: "",
     direccion_envio: "",
     observaciones: "",
+    cupon_descuento: "",
   });
 
   const [errors, setErrors] = useState<Errors>({});
-
+  const [cuponsOptions, setCuponsOptions] = useState<CuponDescuento[]>([]);
   // Funciones para manejar cambios
+      const productsValidos = venta.productos.filter((p) =>
+      Boolean(p.producto)
+    ) as { cantidad: number; producto: ProductItem }[];
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -67,22 +82,17 @@ export default function VentaForm() {
     products[index] = newQuantity;
     setVenta({ ...venta, productos: products });
   };
-  const handleChangeProducto = (
-    index: number,
-    value: ProductItem,
-  ) => {
+
+  const handleChangeProducto = (index: number, value: ProductItem) => {
     const productosActualizados = [...venta.productos];
-    productosActualizados[index]['producto'] = value
+    productosActualizados[index]["producto"] = value;
     setVenta((prev) => ({ ...prev, productos: productosActualizados }));
   };
 
   const agregarProducto = () => {
     setVenta((prev) => ({
       ...prev,
-      productos: [
-        ...prev.productos,
-        { producto: undefined, cantidad: 1 },
-      ],
+      productos: [...prev.productos, { producto: undefined, cantidad: 1 }],
     }));
   };
 
@@ -94,7 +104,6 @@ export default function VentaForm() {
   // Validación sencilla
   const validar = () => {
     const err: Errors = {};
-    if (!venta.importe) err.importe = "El importe es obligatorio";
     if (!venta.metodo_pago_id)
       err.metodo_pago_id = "Selecciona un método de pago";
 
@@ -122,18 +131,32 @@ export default function VentaForm() {
       toast.error("Por favor corrige los errores");
       return;
     }
-    const medioPago =metodosPago.find(mp => mp.id == Number(venta.metodo_pago_id))?.nombre || 'EFECTIVO'
-const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoPago:medioPago, products: venta.productos.filter(p => p.producto !== undefined)})
+    const medioPago =
+      metodosPago.find((mp) => mp.id == Number(venta.metodo_pago_id))?.nombre ||
+      "EFECTIVO";
+    const productsValidos = venta.productos.filter((p) =>
+      Boolean(p.producto)
+    ) as { cantidad: number; producto: ProductItem }[];
+    const nuevaVenta = await createSale("MANUAL", {
+      estadoPedido: "ENTREGADO",
+      metodoPago: medioPago,
+      products: productsValidos,
+      total: calcularTotal(productsValidos),
+      cuponId: cuponsOptions.find(op => op.id.toString() === venta.cupon_descuento)?.id
+    });
+    console.log({nuevaVenta})
     const nuevaEntrega = await saveDelivery({
       tipo: venta.tipoEntrega as "RETIRO" | "ENVIO",
       direccion: venta.direccion_envio,
       telefono: venta.cliente_telefono,
       contacto: venta.cliente_nombre,
       observaciones: venta.observaciones,
-      ventaId: nuevaVenta.data?.id
+      ventaId: nuevaVenta.data?.id,
+
     });
+       console.log({nuevaEntrega})
     // Aquí llamás a tu API para enviar "venta"
-    if (nuevaVenta.status === "success") {
+    if (nuevaVenta.status === "success" && nuevaEntrega.status == 'success') {
       toast.success("Venta guardada correctamente");
     }
 
@@ -148,10 +171,17 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
       direccion_envio: "",
       observaciones: "",
       tipoEntrega: "RETIRO",
+      cupon_descuento: "",
     });
     setErrors({});
   };
 
+  useEffect(() => {
+    (async () => {
+      getAllCupons().then((data) => setCuponsOptions(data)).catch(err => toast.error('No se pudo obtener los cupones de descuento'));
+    })();
+  }, []);
+console.log({venta})
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center !mt-2">
       <div className="bg-white shadow-xl rounded-xl !p-8 w-full max-w-2xl">
@@ -161,7 +191,7 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
 
         <form onSubmit={handleSubmit} className="!space-y-6">
           {/* Importe */}
-          <TextField
+          {/* <TextField
             type="number"
             label="Importe total ($)"
             name="importe"
@@ -170,7 +200,7 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
             errors={errors}
             helperText="Importe total de la venta."
             placeholder="Ej: 4999.99"
-          />
+          /> */}
 
           {/* Método de pago */}
           <Select
@@ -199,14 +229,10 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
                 <div className="flex-1">
                   <Autocomplete
                     name={`productos[${index}].producto_id`}
-                    value={prod.producto?._id.toString() || ''}
+                    value={prod.producto?._id.toString() || ""}
                     onChange={(value) => {
                       if (value == null) return;
-                      handleChangeProducto(
-                        index,
-                        value,
-
-                      );
+                      handleChangeProducto(index, value);
                     }}
                     errors={{
                       [index]: errors[`producto_id_${index}`],
@@ -230,10 +256,7 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
                     max={prod.producto?.stock}
                     min={0}
                     onChange={(e) =>
-                      handleQuantity(
-                        index,
-                       Number( e.target.value) 
-                      )
+                      handleQuantity(index, Number(e.target.value))
                     }
                     label="Cantidad"
                     errors={{
@@ -267,6 +290,23 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
               + Agregar producto
             </button>
           </div>
+          {/* Cupon de descuento */}
+          { cuponsOptions.length ? 
+          <Select
+            label="Cupon de descuento (opcional)"
+            name="cupon_descuento"
+            value={venta.cupon_descuento }
+            onChange={handleChange}
+            helperText= { "Selecciona un cupon de descuento."}
+            errors={errors}
+            options={cuponsOptions.map(({ id, codigo }) => ({
+              id: id.toString(),
+              nombre: codigo,
+            }))}
+            className="!mb-2"
+          /> : null
+          }
+
           {/* Tipo de entrega */}
           <Select
             label="Tipo de entrega"
@@ -284,6 +324,7 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
             }))}
             className="!mb-2"
           />
+          <hr/>
           {/* Datos opcionales del cliente */}
           <TextField
             label="Nombre del cliente (opcional)"
@@ -313,6 +354,7 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
             onChange={handleChange}
             helperText="Notas adicionales sobre la venta."
           />
+          <VentaTotalInfo total={calcularTotal(productsValidos)} cuponDescripcion={venta.cupon_descuento ? cuponsOptions.find(op => op.id.toString() == venta.cupon_descuento)?.descripcion || '' : ''} />
 
           <button
             type="submit"
@@ -325,3 +367,25 @@ const nuevaVenta = await createSale('MANUAL', {estadoPedido: 'ENTREGADO',metodoP
     </div>
   );
 }
+
+type Props = {
+  total: number;
+  cuponDescripcion?: string;
+};
+
+const VentaTotalInfo: FC<Props> = ({ total, cuponDescripcion }) => {
+  return (
+    <div className=" !m-auto  shadow-lg rounded-2xl !p-4 w-64 border border-gray-200 z-50">
+      <div className="text-2xl font-bold text-gray-800 text-right">
+        ${total.toLocaleString('es-AR')}
+      </div>
+
+      {cuponDescripcion && (
+        <div className="!mt-2 text-sm text-green-600 flex items-center gap-2 justify-end">
+          <FaTag className="text-green-500" />
+          <span>{cuponDescripcion}</span>
+        </div>
+      )}
+    </div>
+  );
+};
