@@ -7,6 +7,8 @@ export * from "./FooterBanner";
 export * from "./ItemCart";
 export * from "./ClientWrapper";
 
+export * from "./sale/SectionDelivery";
+
 
 export * from "./products/RelatedProducts";
 export * from "./products/Catalogue";

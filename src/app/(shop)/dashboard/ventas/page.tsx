@@ -1,17 +1,16 @@
 "use client";
 
-import { getAllCupons, saveDelivery } from "@/actions";
-import {  createSale } from "@/actions/sale/createSale";
-import { Autocomplete, Select, TextField } from "@/components";
-import Textarea from "@/components/ui/Textarea";
+import {  saveDelivery } from "@/actions";
+import { createSale } from "@/actions/sale/createSale";
+import { Autocomplete, SectionDelivery, Select, TextField } from "@/components";
+import { useCupons } from "@/hooks";
 import { ProductItem } from "@/interfaces";
-import { CuponDescuento } from "@prisma/client";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag } from "react-icons/fa";
 
-type Errors = { [key: string]: string };
-type Venta = {
+export type Errors = { [key: string]: string };
+export type Venta = {
   importe: string;
   metodo_pago_id: string;
   tipoEntrega: "ENVIO" | "RETIRO";
@@ -52,11 +51,11 @@ export default function VentaForm() {
   });
 
   const [errors, setErrors] = useState<Errors>({});
-  const [cuponsOptions, setCuponsOptions] = useState<CuponDescuento[]>([]);
+  const { allcuponsOptions }= useCupons()
   // Funciones para manejar cambios
-      const productsValidos = venta.productos.filter((p) =>
-      Boolean(p.producto)
-    ) as { cantidad: number; producto: ProductItem }[];
+  const productsValidos = venta.productos.filter((p) =>
+    Boolean(p.producto)
+  ) as { cantidad: number; producto: ProductItem }[];
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -96,8 +95,11 @@ export default function VentaForm() {
     }));
   };
 
-  const eliminarProducto = (index: number) => {
-    const nuevos = venta.productos.filter((_, i) => i !== index);
+  const eliminarProducto = (producto: ProductItem | undefined) => {
+                        console.log('eliminando', {producto: producto?.name})
+      console.log({productos: venta.productos})
+    if(!producto) return
+    const nuevos = venta.productos.filter((product) => product.producto?._id !== producto._id);
     setVenta((prev) => ({ ...prev, productos: nuevos }));
   };
 
@@ -142,9 +144,11 @@ export default function VentaForm() {
       metodoPago: medioPago,
       products: productsValidos,
       total: calcularTotal(productsValidos),
-      cuponId: cuponsOptions.find(op => op.id.toString() === venta.cupon_descuento)?.id
+      cuponId: allcuponsOptions.find(
+        (op) => op.id.toString() === venta.cupon_descuento
+      )?.id,
     });
-    console.log({nuevaVenta})
+    console.log({ nuevaVenta });
     const nuevaEntrega = await saveDelivery({
       tipo: venta.tipoEntrega as "RETIRO" | "ENVIO",
       direccion: venta.direccion_envio,
@@ -152,11 +156,10 @@ export default function VentaForm() {
       contacto: venta.cliente_nombre,
       observaciones: venta.observaciones,
       ventaId: nuevaVenta.data?.id,
-
     });
-       console.log({nuevaEntrega})
+    console.log({ nuevaEntrega });
     // Aquí llamás a tu API para enviar "venta"
-    if (nuevaVenta.status === "success" && nuevaEntrega.status == 'success') {
+    if (nuevaVenta.status === "success" && nuevaEntrega.status == "success") {
       toast.success("Venta guardada correctamente");
     }
 
@@ -176,12 +179,6 @@ export default function VentaForm() {
     setErrors({});
   };
 
-  useEffect(() => {
-    (async () => {
-      getAllCupons().then((data) => setCuponsOptions(data)).catch(err => toast.error('No se pudo obtener los cupones de descuento'));
-    })();
-  }, []);
-console.log({venta})
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center !mt-2">
       <div className="bg-white shadow-xl rounded-xl !p-8 w-full max-w-2xl">
@@ -190,17 +187,6 @@ console.log({venta})
         </h1>
 
         <form onSubmit={handleSubmit} className="!space-y-6">
-          {/* Importe */}
-          {/* <TextField
-            type="number"
-            label="Importe total ($)"
-            name="importe"
-            value={venta.importe}
-            onChange={handleChange}
-            errors={errors}
-            helperText="Importe total de la venta."
-            placeholder="Ej: 4999.99"
-          /> */}
 
           {/* Método de pago */}
           <Select
@@ -229,7 +215,7 @@ console.log({venta})
                 <div className="flex-1">
                   <Autocomplete
                     name={`productos[${index}].producto_id`}
-                    value={prod.producto?._id.toString() || ""}
+                    value={prod.producto?.name || ''}
                     onChange={(value) => {
                       if (value == null) return;
                       handleChangeProducto(index, value);
@@ -274,7 +260,8 @@ console.log({venta})
 
                 <button
                   type="button"
-                  onClick={() => eliminarProducto(index)}
+                  onClick={() => { 
+                    eliminarProducto(prod.producto)}}
                   className="text-red-600 hover:text-red-800 font-bold text-xl"
                   aria-label={`Eliminar producto ${index + 1}`}
                 >
@@ -291,70 +278,37 @@ console.log({venta})
             </button>
           </div>
           {/* Cupon de descuento */}
-          { cuponsOptions.length ? 
-          <Select
-            label="Cupon de descuento (opcional)"
-            name="cupon_descuento"
-            value={venta.cupon_descuento }
-            onChange={handleChange}
-            helperText= { "Selecciona un cupon de descuento."}
-            errors={errors}
-            options={cuponsOptions.map(({ id, codigo }) => ({
-              id: id.toString(),
-              nombre: codigo,
-            }))}
-            className="!mb-2"
-          /> : null
-          }
+          {allcuponsOptions.length ? (
+            <Select
+              label="Cupon de descuento (opcional)"
+              name="cupon_descuento"
+              value={venta.cupon_descuento}
+              onChange={handleChange}
+              helperText={"Selecciona un cupon de descuento."}
+              errors={errors}
+              options={allcuponsOptions.map(({ id, codigo }) => ({
+                id: id.toString(),
+                nombre: codigo,
+              }))}
+              className="!mb-2"
+            />
+          ) : null}
 
-          {/* Tipo de entrega */}
-          <Select
-            label="Tipo de entrega"
-            name="tipo_entrega"
-            value={venta.tipoEntrega}
-            onChange={handleChange}
-            helperText="Selecciona el tipo de entrega."
+          <SectionDelivery
             errors={errors}
-            options={[
-              { id: 1, nombre: "RETIRO" },
-              { id: 2, nombre: "ENVIO" },
-            ].map(({ id, nombre }) => ({
-              id: id.toString(),
-              nombre,
-            }))}
-            className="!mb-2"
+            handleChange={handleChange}
+            venta={venta}
           />
-          <hr/>
-          {/* Datos opcionales del cliente */}
-          <TextField
-            label="Nombre del cliente (opcional)"
-            name="cliente_nombre"
-            value={venta.cliente_nombre}
-            onChange={handleChange}
-            helperText="Para registrar al cliente si se desea."
+          <VentaTotalInfo
+            total={calcularTotal(productsValidos)}
+            cuponDescripcion={
+              venta.cupon_descuento
+                ? allcuponsOptions.find(
+                    (op) => op.id.toString() == venta.cupon_descuento
+                  )?.descripcion || ""
+                : ""
+            }
           />
-          <TextField
-            label="Teléfono del cliente (opcional)"
-            name="cliente_telefono"
-            value={venta.cliente_telefono}
-            onChange={handleChange}
-            helperText="Número de contacto."
-          />
-          <Textarea
-            label="Dirección de envío (opcional)"
-            name="direccion_envio"
-            value={venta.direccion_envio}
-            onChange={handleChange}
-            helperText="Si la venta incluye envío."
-          />
-          <Textarea
-            label="Observaciones (opcional)"
-            name="observaciones"
-            value={venta.observaciones}
-            onChange={handleChange}
-            helperText="Notas adicionales sobre la venta."
-          />
-          <VentaTotalInfo total={calcularTotal(productsValidos)} cuponDescripcion={venta.cupon_descuento ? cuponsOptions.find(op => op.id.toString() == venta.cupon_descuento)?.descripcion || '' : ''} />
 
           <button
             type="submit"
@@ -377,7 +331,7 @@ const VentaTotalInfo: FC<Props> = ({ total, cuponDescripcion }) => {
   return (
     <div className=" !m-auto  shadow-lg rounded-2xl !p-4 w-64 border border-gray-200 z-50">
       <div className="text-2xl font-bold text-gray-800 text-right">
-        ${total.toLocaleString('es-AR')}
+        ${total.toLocaleString("es-AR")}
       </div>
 
       {cuponDescripcion && (
