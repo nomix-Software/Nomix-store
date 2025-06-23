@@ -213,7 +213,7 @@ console.log({venta})
               <div key={prod.inputId} className="flex gap-4 !items-center">
                 <div className="flex-1">
                   <Autocomplete
-                    name={`productos[${index}]._id`}
+                    name={`productos[${index}].producto_id`}
                     value={prod.producto?.name || ''}
                     onChange={(value) => {
                       if (value == null) return;
