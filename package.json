@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "ts-node src/utils/seed.ts",
+    "seed:admin": "ts-node src/utils/seed-admin.ts",
     "seed:mis-pedidos": "ts-node src/utils/seed.misPedidos.ts"
   },
   "dependencies": {

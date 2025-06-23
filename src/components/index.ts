@@ -7,6 +7,8 @@ export * from "./FooterBanner";
 export * from "./ItemCart";
 export * from "./ClientWrapper";
 
+export * from "./sale/SectionDelivery";
+
 
 export * from "./products/RelatedProducts";
 export * from "./products/Catalogue";
@@ -35,3 +37,4 @@ export * from "./ui/Avatar";
 export * from "./ui/LoadingOverlay";
 export * from "./ui/Pagination";
 export * from "./ui/ConfirmModal";
+export * from "./products/Autocomplete";

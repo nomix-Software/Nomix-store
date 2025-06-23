@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/auth");
+  if (!session) redirect("/auth/login");
   if(session.user.role !== 'ADMIN') redirect('/')
   return <>{children}</>;
 };
