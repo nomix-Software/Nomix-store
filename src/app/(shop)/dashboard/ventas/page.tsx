@@ -14,14 +14,14 @@ export type Venta = {
   importe: string;
   metodo_pago_id: string;
   tipoEntrega: "ENVIO" | "RETIRO";
-  productos: { cantidad: number; producto?: ProductItem }[];
+  productos: { cantidad: number; producto?: ProductItem, inputId: number }[];
   cliente_nombre: string;
   cliente_telefono: string;
   direccion_envio: string;
   observaciones: string;
   cupon_descuento: string;
 };
-const calcularTotal = (
+export const calcularTotal = (
   items: { cantidad: number; producto: ProductItem }[]
 ): number => {
   return items.reduce((total, item) => {
@@ -91,16 +91,15 @@ export default function VentaForm() {
   const agregarProducto = () => {
     setVenta((prev) => ({
       ...prev,
-      productos: [...prev.productos, { producto: undefined, cantidad: 1 }],
+      productos: [...prev.productos, { producto: undefined, cantidad: 1, inputId: new Date().valueOf() }],
     }));
   };
+console.log({venta})
+  const eliminarProducto = (inputId: number) => {
 
-  const eliminarProducto = (producto: ProductItem | undefined) => {
-                        console.log('eliminando', {producto: producto?.name})
-      console.log({productos: venta.productos})
-    if(!producto) return
-    const nuevos = venta.productos.filter((product) => product.producto?._id !== producto._id);
-    setVenta((prev) => ({ ...prev, productos: nuevos }));
+    if(!inputId) return
+    const nuevos = venta.productos.filter((product) =>product.inputId !== inputId);
+    setVenta({ ...venta, productos: nuevos });
   };
 
   // Validación sencilla
@@ -168,7 +167,7 @@ export default function VentaForm() {
     setVenta({
       importe: "",
       metodo_pago_id: "",
-      productos: [{ producto: undefined, cantidad: 1 }],
+      productos: [],
       cliente_nombre: "",
       cliente_telefono: "",
       direccion_envio: "",
@@ -211,10 +210,10 @@ export default function VentaForm() {
               <p className="text-red-600 text-sm mb-1">{errors.productos}</p>
             )}
             {venta.productos.map((prod, index) => (
-              <div key={index} className="flex gap-4 !items-center">
+              <div key={prod.inputId} className="flex gap-4 !items-center">
                 <div className="flex-1">
                   <Autocomplete
-                    name={`productos[${index}].producto_id`}
+                    name={`productos[${index}]._id`}
                     value={prod.producto?.name || ''}
                     onChange={(value) => {
                       if (value == null) return;
@@ -261,7 +260,7 @@ export default function VentaForm() {
                 <button
                   type="button"
                   onClick={() => { 
-                    eliminarProducto(prod.producto)}}
+                    eliminarProducto(prod.inputId)}}
                   className="text-red-600 hover:text-red-800 font-bold text-xl"
                   aria-label={`Eliminar producto ${index + 1}`}
                 >
