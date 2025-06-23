@@ -8,7 +8,7 @@ import { ProductItem } from '@/interfaces';
 
 export interface AutocompleteProps {
   name: string;
-  value: string;
+  value?: string;
   onChange: (value: ProductItem | null) => void;
   label?: string;
   errors?: { [key: string]: string };
@@ -19,7 +19,6 @@ export interface AutocompleteProps {
 
 export const Autocomplete: React.FC<AutocompleteProps> = ({
   name,
-  value,
   onChange,
   label,
   errors,

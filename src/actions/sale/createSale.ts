@@ -1,7 +1,7 @@
 'use server'
 import { ProductItem } from "@/interfaces";
 import prisma from "@/lib/prisma";
-import { getCupon } from "../discount-coupons/getCupon";
+// import { getCupon } from "../discount-coupons/getCupon";
 
 interface PayloadCreateSale {
   estadoPedido: string;
@@ -16,7 +16,7 @@ export const createSale = async (
   type: "MANUAL" | "ONLINE",
   { estadoPedido, metodoPago, products, cuponId, total }: PayloadCreateSale
 ) => {
-  let porcentajeDescuento = 0;
+  // let porcentajeDescuento = 0;
   if (products.some((p) => p.producto === undefined))
     return { status: "failed", message: "producto indefinido" };
   try {
@@ -40,10 +40,10 @@ export const createSale = async (
         data: { nombre: metodoPago },
       });
     }
-    if (cuponId) {
-      const cupon = await getCupon(cuponId);
-      porcentajeDescuento = cupon.porcentaje;
-    }
+    // if (cuponId) {
+    //   const cupon = await getCupon(cuponId);
+    //   porcentajeDescuento = cupon.porcentaje;
+    // }
     const venta = await prisma.venta.create({
       data: {
         usuarioId: null,

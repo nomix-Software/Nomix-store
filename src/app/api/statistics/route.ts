@@ -2,7 +2,7 @@
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const MERCADOPAGO_BASE = "https://api.mercadopago.com";
 const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
@@ -12,29 +12,29 @@ if (!ACCESS_TOKEN) {
 }
 
 // --- Interfaces ---
-interface MercadoPagoPayment {
-  id: number;
-  status: string;
-  payment_type_id: string;
-  transaction_amount: number;
-  date_created: string;
-  pos_id?: string;
-  description?: string;
-}
+// interface MercadoPagoPayment {
+//   id: number;
+//   status: string;
+//   payment_type_id: string;
+//   transaction_amount: number;
+//   date_created: string;
+//   pos_id?: string;
+//   description?: string;
+// }
 
-interface MercadoPagoOrder {
-  id: number;
-  status: string;
-  preference_id: string;
-  total_amount: number;
-  date_created: string;
-}
+// interface MercadoPagoOrder {
+//   id: number;
+//   status: string;
+//   preference_id: string;
+//   total_amount: number;
+//   date_created: string;
+// }
 
-interface ApiResponse {
-  payments: MercadoPagoPayment[];
-  pointOrQrPayments: MercadoPagoPayment[];
-  orders: MercadoPagoOrder[];
-}
+// interface ApiResponse {
+//   payments: MercadoPagoPayment[];
+//   pointOrQrPayments: MercadoPagoPayment[];
+//   orders: MercadoPagoOrder[];
+// }
 
 const MONTH_NAMES = [
   "January",
@@ -53,7 +53,6 @@ const MONTH_NAMES = [
 
 // --- Handler ---
 export async function GET(
-  req: NextRequest
 ): Promise<NextResponse<MercadoPagoSummaryResponse | { error: string }>> {
   const session = await getServerSession(authOptions);
   if (session?.user.role !== "ADMIN") {
@@ -76,7 +75,7 @@ export async function GET(
 
     // 2. Filtrar cobros por QR o Point
     const pointOrQrPayments = payments.filter(
-      (p: any) =>
+      (p: { payment_type_id: string; pos_id: string; }) =>
         p.payment_type_id === "account_money" ||
         p.payment_type_id === "ticket" ||
         p.pos_id

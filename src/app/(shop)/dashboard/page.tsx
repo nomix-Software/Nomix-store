@@ -90,7 +90,7 @@ export default function AdminPage() {
             const icon = ICONS[item.title as keyof typeof ICONS];
             const value =
               item.title === "Producto_mas_vendido" 
-                ? `${item.quantity} - ${(item as any).name ?? ""}`
+                ? `${item.quantity} - ${(item).name ?? ""}`
                 : item.title === "Productos_en_venta" ? `${item.quantity}`:`$${item.quantity}`;
 
             return (

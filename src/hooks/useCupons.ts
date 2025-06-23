@@ -11,7 +11,7 @@ export const useCupons = () => {
     (async () => {
       getAllCupons()
         .then((data) => setAllcuponsOptions(data))
-        .catch((err) =>
+        .catch(() =>
           toast.error("No se pudo obtener los cupones de descuento")
         );
     })();

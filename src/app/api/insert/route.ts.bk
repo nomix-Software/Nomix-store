@@ -1,0 +1,99 @@
+// app/api/importar-marcas/route.ts
+import { NextResponse } from 'next/server';
+import { readFileSync } from 'fs';
+import path from 'path';
+import prisma from '@/lib/prisma';
+
+
+export async function GET() {
+  try {
+    const filePath = path.join(process.cwd(), 'scripts', 'insert_marcas.sql');
+    // const sqlMarcas = `INSERT INTO "public"."Marca" ("id", "nombre") VALUES ('5', 'wireless'), ('6', 'Dinax'), ('7', 'Legatus'), ('8', 'A6S'), ('9', 'Sony'), ('10', 'Royacell'), ('11', 'looking'), ('12', 'varios'), ('13', 'AY83'), ('14', 'table lamp'), ('15', 'Stanley'), ('16', 'ULTRAHD'), ('17', 'Smart tech'), ('18', 'seisa');`
+    // const sqlUser = `INSERT INTO "public"."User" ("id", "email", "password", "rol", "creadoEn", "emailVerified", "image", "name") VALUES ('cmagcyxl70000mmdoo18azt8n', 'cliente@cliente.com', '$2b$10$T6X29xQwNUtKReC9ydrmOurKyhW0ysmkOTSOIVEOBcHnh.FFN0ao2', 'CLIENTE', '2025-05-09 05:31:17.515', null, null, 'cliente'), ('cmavjv9lo0000mmysbsg5syjm', 'admin@admin.com', '$2b$10$MV9MsT6qGGJLWo99bJLEq.vMWfjUJTa.tYtoxTlCf0/j8C6mEK4xy', 'ADMIN', '2025-05-19 20:40:56.411', null, null, 'admin'), ('cmb5i4dl30000mmxk9kiuwoxa', 'cliente1@cliente.com', '$2b$10$IZP3uAZ5/5quQVtQW2FCZOL2GgV4hYoFkM/LLhdFAt5/2.0N//Q0i', 'CLIENTE', '2025-05-26 19:49:44.006', null, null, 'cliente1'), ('cmbfp5rsv0000mmg4e60jej34', 'marcosgaliano96@gmail.com', '$2b$10$fMahQAsyqJHDQwxN92S9MeiYmpNsRhYUAH4mIYFBYzYav8Hlkm.nm', 'CLIENTE', '2025-06-02 23:04:28.159', null, null, 'marcosgaliano96'), ('cmbfrjjrk0000l5049qbe8149', 'estre_96@hotmail.com.ar', '$2b$10$05OjGgg269GxLGoTR.JrReAiNJG3jHs0/CISC3gw6QCpdFWmZPSgq', 'CLIENTE', '2025-06-03 00:11:10.16', null, null, 'estre_96');`
+     const sqlImagenProducto = `INSERT INTO "public"."ImagenProducto" ("id", "url", "productoId", "publicId") VALUES ('16', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748292460/productos/xaduqylqpjtj90gf6kib.png', '8', 'productos/xaduqylqpjtj90gf6kib'), ('17', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748292460/productos/mrbljw4zv9crkh82axh9.png', '8', 'productos/mrbljw4zv9crkh82axh9'), ('18', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748294290/productos/lfqwtn3ojoweizf6nt4y.png', '10', 'productos/lfqwtn3ojoweizf6nt4y'), ('19', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748294290/productos/hk7k1rmn4sqcsrdeplzo.png', '10', 'productos/hk7k1rmn4sqcsrdeplzo'), ('20', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296082/productos/eavh74rtzwef0asaxc55.png', '11', 'productos/eavh74rtzwef0asaxc55'), ('21', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296083/productos/k3of3aqqivbk1eftwfll.png', '11', 'productos/k3of3aqqivbk1eftwfll'), ('22', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296270/productos/ukzxe4vjevlw8mmggw06.png', '12', 'productos/ukzxe4vjevlw8mmggw06'), ('23', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296270/productos/ztz9g7lqxoajluuhdmko.png', '12', 'productos/ztz9g7lqxoajluuhdmko'), ('24', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296483/productos/emmvq9ekeijvoog3r0rb.png', '13', 'productos/emmvq9ekeijvoog3r0rb'), ('25', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296483/productos/gnr7pcyj6ky7sjk3wz1b.png', '13', 'productos/gnr7pcyj6ky7sjk3wz1b'), ('26', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748296783/productos/crkepu6mgh6wnnorfhlo.png', '14', 'productos/crkepu6mgh6wnnorfhlo'), ('27', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748297412/productos/pbbsoa5rav9okqrggzfp.png', '15', 'productos/pbbsoa5rav9okqrggzfp'), ('28', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748297412/productos/saccvmcpaudinuin3hmv.png', '15', 'productos/saccvmcpaudinuin3hmv'), ('29', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748297783/productos/ogvocpaxz1xfr9bichvn.png', '16', 'productos/ogvocpaxz1xfr9bichvn'), ('30', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1748297783/productos/owzyjbftbrsu93n2ksyi.png', '16', 'productos/owzyjbftbrsu93n2ksyi'), ('31', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1747351727/productos/hlyqnganezfxg3yk3mnb.jpg', '4', 'productos/hlyqnganezfxg3yk3mnb'), ('32', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1746042965/auricular_p47_gr5sig.png', '4', 'auricular_p47_gr5sig'), ('33', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1747352282/productos/skyfcdd5qiw2efqx3apm.png', '5', 'productos/skyfcdd5qiw2efqx3apm'), ('34', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1747352282/productos/x6nwsvpyp0eievffpuic.png', '5', 'productos/x6nwsvpyp0eievffpuic'), ('35', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749589714/productos/hbwemree6ekyaemakoo9.png', '17', 'productos/hbwemree6ekyaemakoo9'), ('36', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749591128/productos/i04kpghdbqnz0zeyy5oh.png', '18', 'productos/i04kpghdbqnz0zeyy5oh'), ('37', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749591409/productos/cgkptjadzo3k0ickcofe.png', '19', 'productos/cgkptjadzo3k0ickcofe'), ('38', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749591749/productos/qzftcbcpdgbp5wi22ijd.png', '20', 'productos/qzftcbcpdgbp5wi22ijd'), ('39', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749592441/productos/kmfmaiwc7itmfftfowyd.png', '21', 'productos/kmfmaiwc7itmfftfowyd'), ('40', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749592793/productos/nwadt2mnmvpxjxjiiihu.png', '22', 'productos/nwadt2mnmvpxjxjiiihu'), ('44', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1749595896/productos/biz3k0hkblbjf1uiqozs.png', '24', 'productos/biz3k0hkblbjf1uiqozs'), ('45', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1750254732/productos/bqzmxh8e9tzkzazntpej.png', '26', 'productos/bqzmxh8e9tzkzazntpej'), ('46', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1750254973/productos/ulfxmwwqdkycmhd3tthz.png', '27', 'productos/ulfxmwwqdkycmhd3tthz'), ('47', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1750255296/productos/qk7npkpn4kccqp5sykd5.png', '28', 'productos/qk7npkpn4kccqp5sykd5'), ('48', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1750255567/productos/s5q1gughaedfp0dzlt7k.png', '29', 'productos/s5q1gughaedfp0dzlt7k'), ('49', 'https://res.cloudinary.com/dwbtksm52/image/upload/v1750256109/productos/xlnii0p7lzeqshphvsiw.png', '30', 'productos/xlnii0p7lzeqshphvsiw');`
+    const sqlCategorias = `INSERT INTO "public"."Categoria" ("id", "nombre") VALUES ('6', 'Auriculares'), ('7', 'soportes'), ('8', 'Parlantes'), ('9', 'Iluminacion'), ('10', 'Termos vasos mates'), ('11', 'Tecnología');`
+    const sqlProductos = `INSERT INTO "public"."Producto" ("id", "nombre", "descripcion", "precio", "stock", "categoriaId", "marcaId", "promocionId", "slug", "creadoEn", "activo") VALUES ('4', 'Auricular P47', 'Auricular Inalámbrico P47 Plegable Micro SD Manos Libre
+Producto de excelente calidad
+Auriculares P47 - Bluetooth + manos libres + SD
+Este auricular es compatible con iOS, Android y Windows, Cuenta con micrófono incorporado.
+Micrófono Sensible que proporciona llamadas de voz claras.
+Aísla el ruido ambiental Plegable y fácil de usar.', '11579', '3', '6', '5', null, 'auricular-p47', '2025-05-15 23:28:48.276', 'true'), ('5', 'Soporte de TV Dinax 32"-55" Movil', 'Soporte para TV de 32" a 55". Móvil. Soporta hasta 50kg', '15789', '2', '7', '6', null, 'soporte-de-tv-dinax-32-55-movil', '2025-05-15 23:38:03.196', 'true'), ('8', 'Parlante Dinax Sound', '✅Radio
+✅Entrada para micrófono
+✅Entrada para SD
+✅Entrada USB
+✅Luces led
+', '14737', '3', '8', '6', null, 'parlante-dinax-sound', '2025-05-26 20:47:41.379', 'true'), ('10', 'Auricular A6S', '✔️Cuenta con tecnología True Wireless.
+✔️Alcance inalámbrico de 10 m.
+✔️Tiene una memoria de 128 GB.
+✔️Modo manos libres incluido.
+✔️Con estuche de carga.
+✔️Con micrófono incorporado.
+✔️Resistentes al agua y al polvo.
+✔️Su clasificación IP es IPX6.
+✔️Uso apto para entretenimiento.
+✔️Cómodos y prácticos.
+✔️Tamaño del altavoz: 4cm.', '10526', '1', '6', '8', null, 'auricular-a6s', '2025-05-26 21:18:11.565', 'true'), ('11', 'Auricular Sony XB450BT', 'Auricular Sony
+✔Blanco
+✔Modelo XB450BT
+❌ Inalambrico', '26316', '1', '6', '9', null, 'auricular-sony-xb450bt', '2025-05-26 21:48:04.236', 'true'), ('12', 'Auricular Royacell RW2250', 'Auriculares inalámbricos tipo "Airpods" con conexión mediante bluetooth. Estuche con diseño de transparencias.', '21053', '3', '6', '10', null, 'auricular-royacell-rw2250', '2025-05-26 21:51:11.809', 'true'), ('13', 'Parlante Royacell RS1433', 'Parlante con luces led y microfono', '36842', '1', '8', '10', null, 'parlante-royacell-rs1433', '2025-05-26 21:54:44.579', 'true'), ('14', 'Aro de luz con tripode', 'Aro Luz Led Selfie + Tripode Extensible 1,50cm 3 Modos Luz Calida Fria Mixta 120 Leds 10 Pulgadas 26 Cm Rota 360 grados Ajustable Horizontal Vertical.', '20251', '1', '9', '6', null, 'aro-de-luz-con-tripode', '2025-05-26 21:59:45.409', 'true'), ('15', 'Parlante de ducha', '✔Voltaje: 5V
+✔Es manos libres.
+✔Tipo de parlante: tweeter.
+✔Es a prueba de agua.
+✔Apto para uso en exteriores.
+✔Con conectividad bluetooth.
+✔Batería recargable y cargador incluido.
+✔Potencia de 3W.
+✔Viene con un micrófono de accesorio.
+✔Conector de entrada: USB.
+✔Lugar de colocación: la pared.
+✔Cuenta con micrófono interno.
+✔Tiempo de carga de la batería: 4h.', '9474', '1', '8', '11', null, 'parlante-de-ducha', '2025-05-26 22:10:13.283', 'true'), ('16', 'Kit editor de video con soporte', '-soporte para celular
+-microfono
+-luz', '21053', '2', '7', '6', null, 'kit-editor-de-video-con-soporte', '2025-05-26 22:16:25.333', 'true'), ('17', 'Parlante G con cargador inalambrico', 'El Parlante G combina sonido de alta calidad con funcionalidad avanzada. Este dispositivo inalámbrico ofrece una experiencia de audio excepcional, perfecta para cualquier ocasión.
+Además, cuenta con tecnología de carga inalámbrica, permitiendo cargar celulares simplemente apoyándolos sobre el parlante. Su diseño elegante y compacto lo hace fácil de transportar, mientras que su batería de larga duración garantiza horas de música continua.
+
+Compatible con Bluetooth, el Parlante G se conecta sin esfuerzo a tus dispositivos, proporcionando un sonido claro y potente. Ideal para el hogar, la oficina o cualquier lugar donde desees disfrutar de tu música favorita.
+
+NO CARGA CUALQUIER CELULAR, ASEGURESE DE QUE SU CELULAR TENGA LA FUNCIÓN DE CARGA INALÁMBRICA!!!
+
+- Tiene Luz led Rgb que se puede programar con distintos efectos de iluminación. Uno de esos efectos de iluminación es Audiorritmico.
+
+- Puede reproducir música a través de la tarjeta micro SD, por Bluetooth, puerto Usb y conexión Auxiliar.
+- Con sonido envolvente de 360 ° para que la calidad sea más sobresaliente.', '30526', '1', '8', '12', null, 'parlante-g-con-cargador-inalambrico', '2025-06-10 21:08:35.824', 'true'), ('18', 'Luz para celular', 'Luz para celular, Tablet computadora.
+Tus videos con una buena iluminación!', '12632', '2', '9', '13', null, 'luz-para-celular', '2025-06-10 21:32:09.12', 'true'), ('19', 'Velador escritorio flexible', 'Velador para escritorio con brazo flexible', '10316', '2', '9', '12', null, 'velador-escritorio-flexible', '2025-06-10 21:36:49.927', 'true'), ('20', 'Proyector de estrellas', 'Luz de noche de proyección LED estrellada para niños. 
+Compuesta de luz láser (estrellas y luna) que crean un ambiente tranquilo, muy útil para relajar el cuerpo y la mente, y propiciar un sueño dulce.
+
+- Alimentación por 4 pilas AAA (no incluidas) o cable USB (incluido).
+- Ahorro de energía y respetuoso con el medio ambiente.
+- Tamaño del producto: 13 cm x 13 cm x 14,5 cm.
+- Material: Plástico.', '15789', '2', '9', '12', null, 'proyector-de-estrellas', '2025-06-10 21:42:30.003', 'true'), ('21', 'Espejo redondo Flexible', 'Espejo de doble cara con una ampliación de 10x en un lado
+y 1 aumento de cara completa en el lado opuesto.
+» Ideal para viajes. Se pliega para facilitar el almacenamiento y la portabilidad.
+Se extiende hasta 28 cm. cuando está completamente extendido.
+El espejo mide 13 cm. de diámetro.
+ Cuenta con Base Organizadora de accesorios.
+', '16842', '2', '9', '12', null, 'espejo-redondo-flexible', '2025-06-10 21:54:02.243', 'true'), ('22', 'Velador led Astronauta JS6801H', 'Velador infantil Astronauta', '8421', '3', '9', '14', null, 'velador-led-astronauta-js6801h', '2025-06-10 21:59:53.93', 'true'), ('24', 'Vaso cervecero con parlante', 'Vaso cervecero Stanley con destapador.
+Tiene parlante en la base del vaso.
+Se conecta por Bluetooth
+Material: Acero inoxidable', '28421', '3', '10', '15', null, 'vaso-cervecero-con-parlante', '2025-06-10 22:37:14.799', 'true'), ('26', 'Proyector 4k ultra hd', 'Este proyector doméstico de 220 V cuenta con una función de corrección automática de imagen, lo que garantiza que siempre obtenga la mejor experiencia de visualización.
+
+ Con una relación de proyección de 1,37, con un tamaño de pantalla de 40"-130".
+
+El proyector portátil es pequeño y portátil con unas dimensiones de 101,5 x 101,5 x 197 mm, lo que lo hace adecuado para uso en dormitorios o para acampar al aire libre.
+
+El paquete incluye 1 proyector de vídeo, 1 manual de usuario, 1 control remoto y 1 cable de alimentación: todo lo que necesita para comenzar a disfrutar de su cine personal en pantalla grande.', '89474', '1', '11', '16', null, 'proyector-4k-ultra-hd', '2025-06-18 13:52:13.616', 'true'), ('27', 'Joystick para celular', '', '23684', '2', '11', '6', null, 'joystick-para-celular', '2025-06-18 13:56:14.582', 'true'), ('28', 'Cámara IP panorámica YN-DP01JW-2MP', 'El Foco Cámara 360 Wifi Security Espía IP Visión Nocturna HD Color Blanco es el dispositivo perfecto para mantener tu hogar seguro. Con su conectividad Wi-Fi, podrás monitorear en tiempo real desde cualquier lugar a través de tu smartphone. Además, su cámara motorizada te permite controlar la dirección y el zoom para tener una vista completa de tu entorno. Es para interiores.', '26316', '1', '11', '12', null, 'cmara-ip-panormica-yn-dp01jw-2mp', '2025-06-18 14:01:38.528', 'true'), ('29', 'Cámara de seguridad doble 4K 6AMP', '• Audio bidireccional: Permite la comunicación en tiempo real, escuchando y hablando a través de la cámara desde cualquier lugar.
+• Utiliza la app ICSee: Controla y monitorea la cámara fácilmente desde tu dispositivo móvil con la aplicación ICSee.
+• Grabación 24/7 (Cíclica): Graba continuamente y reemplaza automáticamente las grabaciones antiguas cuando la memoria está llena, asegurando que siempre tengas los eventos más recientes.
+• Visión nocturna infrarroja: Proporciona imágenes claras y detalladas incluso en completa oscuridad, garantizando una vigilancia efectiva durante la noche.
+• Detección de movimiento: Detecta y alerta automáticamente sobre cualquier movimiento en el área monitoreada, mejorando la seguridad y respuesta inmediata.', '90526', '1', '11', '17', null, 'cmara-de-seguridad-doble-4k-6amp', '2025-06-18 14:06:08.339', 'true'), ('30', 'Cámara espía', 'Un modelo de acuerdo a tus necesidades
+Esta cámara tipo espía te permitirá registrar momentos sin que nadie se dé cuenta. Además, se destaca por su versatilidad, funcionalidad y discreción para lograr captar aquello que estás buscando. Cuenta con resolución HD 1080p, que ofrece una grabación de óptima calidad, así como una vigilancia clara y precisa sobre los espacios.', '9474', '2', '11', '18', null, 'cmara-espa', '2025-06-18 14:15:10.414', 'true');`
+
+
+    await prisma.$executeRawUnsafe(sqlImagenProducto);
+
+    return NextResponse.json({ success: true, message: 'Datos insertados imagenes correctamente' });
+  } catch (error) {
+    console.error('Error ejecutando el SQL:', error);
+    return NextResponse.json({ success: false, error: 'Error al ejecutar SQL' });
+  }
+}

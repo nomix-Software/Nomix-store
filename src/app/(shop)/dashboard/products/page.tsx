@@ -4,6 +4,7 @@ import { getProductsFiltered } from "@/actions";
 import Link from "next/link";
 
 import { Pagination, TableProduct } from "@/components";
+import SearchBar from "@/components/ui/SearchBar";
 
 interface Props {
   searchParams: Promise<{
@@ -32,6 +33,7 @@ export default async function AdminProductPage({ searchParams }: Props) {
     <div className="!p-2 sm:!p-6">
       <div className="flex justify-between items-center !mb-6">
         <h1 className="text-2xl font-bold">Productos</h1>
+        <SearchBar/>
         <Link href="/dashboard/products/add">
           <button className="w-full bg-red-600 text-white !p-2 !px-4 rounded-2xl hover:bg-red-700 cursor-pointer">
             Agregar Producto
