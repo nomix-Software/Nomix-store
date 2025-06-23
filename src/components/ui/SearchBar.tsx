@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
@@ -12,6 +12,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
   const [input, setInput] = useState(defaultValue);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname()
 
   const updateQuery = (key: string, value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -20,7 +21,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
     } else {
       params.delete(key);
     }
-    router.push(`/catalogo?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

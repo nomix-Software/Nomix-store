@@ -16,7 +16,7 @@ export async function getProductsFiltered({
   categorias,
   page = 1,
 }: FilterParams) {
-  const take = 30;
+  const take = 20;
   const skip = (page - 1) * take;
 
   const filters = {

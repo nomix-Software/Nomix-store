@@ -1,7 +1,7 @@
 "use client";
 import { ProductItem } from "@/interfaces";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import notFoundImage from "../../../public/not-found-image.png";
 import Link from "next/link";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
@@ -24,6 +24,10 @@ export const TableProduct = ({
     setProducts(products.filter((p) => p._id !== id));
     toast.success("Producto eliminado con éxito");
   };
+  useEffect(() => {
+    setProducts(productsDB);
+  }, [productsDB]);
+
   return (
     <div className="overflow-x-auto rounded-lg shadow">
       <table className="min-w-full bg-white border border-gray-200">
@@ -71,18 +75,17 @@ export const TableProduct = ({
                   <FiTrash2 size={18} />
                 </button>
               </td>
-
             </tr>
           ))}
         </tbody>
       </table>
       <ConfirmModal
-                isOpen={openConfirmModal?.open}
-                onClose={() => setOpenConfirmModal({ open: false, id: "" })}
-                onConfirm={() => handleDelete(openConfirmModal.id)}
-                title="¿Seguro que querés eliminar el producto?"
-                message="El producto quedará deshabilitado para la venta en estado inactivo. No podrás cargar otro producto con el mismo nombre."
-              />
+        isOpen={openConfirmModal?.open}
+        onClose={() => setOpenConfirmModal({ open: false, id: "" })}
+        onConfirm={() => handleDelete(openConfirmModal.id)}
+        title="¿Seguro que querés eliminar el producto?"
+        message="El producto quedará deshabilitado para la venta en estado inactivo. No podrás cargar otro producto con el mismo nombre."
+      />
     </div>
   );
 };
