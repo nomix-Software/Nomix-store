@@ -1,6 +1,5 @@
 // app/dashboard/products/page.tsx
 'use client'
-import { getProductsFiltered } from "@/actions";
 import Link from "next/link";
 
 import { LoadingOverlay, Pagination, TableProduct } from "@/components";
@@ -8,14 +7,6 @@ import SearchBar from "@/components/ui/SearchBar";
 import { useProducts } from "@/hooks";
 import { useSearchParams } from "next/navigation";
 
-interface Props {
-  searchParams: Promise<{
-    nombre?: string;
-    marcas?: string | string[];
-    categorias?: string | string[];
-    page?: string;
-  }>;
-}
 
  function AdminProductPage() {
   const search = useSearchParams()
@@ -24,17 +15,6 @@ interface Props {
     `/api/products?${search.toString()}`
   );
 
-  console.log({productos})
-  // const { currentPage, totalPages, products } = await getProductsFiltered({
-  //   search: nombre,
-  //   marcas: Array.isArray(marcas) ? marcas : marcas ? [marcas] : [],
-  //   categorias: Array.isArray(categorias)
-  //     ? categorias
-  //     : categorias
-  //     ? [categorias]
-  //     : [],
-  //   page: page ? parseInt(page) : 1,
-  // });
 
   return (
     <div className="!p-2 sm:!p-6">

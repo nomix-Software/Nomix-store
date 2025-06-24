@@ -21,7 +21,7 @@ export type Venta = {
   observaciones: string;
   cupon_descuento: string;
 };
-export const calcularTotal = (
+ const calcularTotal = (
   items: { cantidad: number; producto: ProductItem }[]
 ): number => {
   return items.reduce((total, item) => {
