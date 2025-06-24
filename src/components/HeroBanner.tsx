@@ -48,7 +48,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
             <h5>Descripción</h5>
             <p>{productLatest?.descripcion}</p>
           </div>
-          <Link href={`/product/${heroBanner.product}`} className=" flex justify-center !mb-2">
+          <Link href={`/product/${productLatest?.slug}`} className=" flex justify-center !mb-2">
             <button
               type="button"
               className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !px-4 !w-[140px] transform transition-transform duration-300 hover:scale-110"
