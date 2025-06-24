@@ -1,33 +1,20 @@
 // app/dashboard/products/page.tsx
-
-import { getProductsFiltered } from "@/actions";
+'use client'
 import Link from "next/link";
 
-import { Pagination, TableProduct } from "@/components";
+import { LoadingOverlay, Pagination, TableProduct } from "@/components";
 import SearchBar from "@/components/ui/SearchBar";
+import { useProducts } from "@/hooks";
+import { useSearchParams } from "next/navigation";
 
-interface Props {
-  searchParams: Promise<{
-    nombre?: string;
-    marcas?: string | string[];
-    categorias?: string | string[];
-    page?: string;
-  }>;
-}
 
-export default async function AdminProductPage({ searchParams }: Props) {
-  const { nombre, marcas, categorias, page } = await searchParams;
+ function AdminProductPage() {
+  const search = useSearchParams()
 
-  const { currentPage, totalPages, products } = await getProductsFiltered({
-    search: nombre,
-    marcas: Array.isArray(marcas) ? marcas : marcas ? [marcas] : [],
-    categorias: Array.isArray(categorias)
-      ? categorias
-      : categorias
-      ? [categorias]
-      : [],
-    page: page ? parseInt(page) : 1,
-  });
+  const { productos, isLoading } = useProducts(
+    `/api/products?${search.toString()}`
+  );
+
 
   return (
     <div className="!p-2 sm:!p-6">
@@ -40,10 +27,15 @@ export default async function AdminProductPage({ searchParams }: Props) {
           </button>
         </Link>
       </div>
-      <TableProduct products={products} />
-      {totalPages > 1 && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
-      )}
+      {!isLoading ? <>
+        <TableProduct products={productos.products} />
+        {productos.totalPages > 1 && (
+          <Pagination currentPage={productos.currentPage} totalPages={productos.totalPages} />
+        )}
+      </>
+      : <LoadingOverlay text="Cargando productos" />
+      }
     </div>
   );
 }
+export default AdminProductPage
