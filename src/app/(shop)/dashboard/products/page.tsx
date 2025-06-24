@@ -18,14 +18,16 @@ import { useSearchParams } from "next/navigation";
 
   return (
     <div className="!p-2 sm:!p-6">
-      <div className="flex justify-between items-center !mb-6">
-        <h1 className="text-2xl font-bold">Productos</h1>
+      <div className="flex justify-between items-center !mb-6 flex-col sm:flex-row gap-4">
+        <h1 className="text-2xl font-bold ">Productos</h1>
+        <div className="flex flex-row items-center align-middle gap-1.5">
         <SearchBar/>
         <Link href="/dashboard/products/add">
-          <button className="w-full bg-red-600 text-white !p-2 !px-4 rounded-2xl hover:bg-red-700 cursor-pointer">
+          <button className="w-fit bg-red-600 text-white !p-1 sm:!p-2 font-medium sm:!px-4 rounded-2xl hover:bg-red-700 cursor-pointer">
             Agregar Producto
           </button>
         </Link>
+        </div>
       </div>
       {!isLoading ? <>
         <TableProduct products={productos.products} />
