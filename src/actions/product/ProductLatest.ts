@@ -2,16 +2,17 @@
 
 import prisma from "@/lib/prisma";
 
-export async function getLatestProduct() {
-  const producto = await prisma.producto.findFirst({
+export async function getLatestProducts() {
+  const productos = await prisma.producto.findMany({
     where: {
       stock: {
         gt: 0, // stock > 0
       },
     },
     orderBy: {
-      creadoEn: "desc", // Ordena por fecha de creación más reciente
+      creadoEn: "desc", // Los más recientes primero
     },
+    take: 3, // <-- Acá traés los últimos 3
     include: {
       imagenes: true,
       categoria: true,
@@ -19,5 +20,5 @@ export async function getLatestProduct() {
     },
   });
 
-  return producto;
+  return productos;
 }

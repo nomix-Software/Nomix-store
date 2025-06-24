@@ -3,6 +3,7 @@ export * from "./Cart";
 export * from "./Footer";
 export * from "./Product";
 export * from "./HeroBanner";
+export * from "./HeroSlider";
 export * from "./FooterBanner";
 export * from "./ItemCart";
 export * from "./ClientWrapper";
