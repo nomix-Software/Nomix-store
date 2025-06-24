@@ -15,7 +15,7 @@ interface HeroBannerProps {
 }
 
 
-export const HeroBanner: React.FC<HeroBannerProps> = async ({ heroBanner }) => {
+export const HeroBanner: React.FC<HeroBannerProps> = async () => {
   const productsLatest = await getLatestProducts();
 if(!productsLatest) return null
   return (
