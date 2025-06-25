@@ -20,7 +20,7 @@ export const Catalogue = () => {
       setAvailableBrands(productsResponse.filtrosDisponibles.marcas)
       setAvailableCategories(productsResponse.filtrosDisponibles.categorias)
     }
-  }, [isLoading])
+  }, [isLoading, searchParams.toString()])
 
 
   if (isLoading) return <LoadingOverlay text='Cargando productos...' />
