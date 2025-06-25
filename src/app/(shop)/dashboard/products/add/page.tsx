@@ -51,18 +51,6 @@ const AddProductPage = () => {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const validate = () => {
-    const newErrors: typeof errors = {};
-    if (!product.name) newErrors.name = "El nombre es obligatorio.";
-    if (!product.price || parseFloat(product.price) <= 0)
-      newErrors.price = "El precio debe ser mayor a 0.";
-    if (!product.stock || parseFloat(product.stock) <= 0)
-      newErrors.stock = "El stock debe ser mayor a 0.";
-    if (!product.category) newErrors.category = "La categoría es obligatoria.";
-    if (!product.brand) newErrors.brand = "La marca es obligatoria.";
-    if (!product.images) newErrors.image = "La imagen es obligatoria.";
-    return newErrors;
-  };
   const handleDeleteImage = (fileName: string) => {
     if (!product) return;
     const imagenesFiltradas = images.filter((img) => img.name !== fileName);
@@ -73,30 +61,62 @@ const AddProductPage = () => {
       setIsLoading({loading:true, message: 'Cargando producto...'})
       e.preventDefault();
       const formData = new FormData();
-      // Agregamos los archivos nuevos al FormData
       images.forEach((file) => {
         formData.append("images", file);
       });
-      const savedImages = await uploadImagesToCloudinary(formData);
-      // Agregamos el resto de la data como JSON (producto sin imagenes)
-      const formErrors = validate();
-      if (Object.keys(formErrors).length > 0) {
-        setErrors(formErrors);
-        toast.error("Revisa los errores del formulario.");
+      let savedImages;
+      try {
+        savedImages = await uploadImagesToCloudinary(formData);
+            } catch (imgError: unknown) {
+        // Errores de validación de imágenes
+        if (imgError instanceof Error && imgError.message) {
+          setErrors({ image: imgError.message });
+          toast.error(imgError.message);
+        } else {
+          toast.error("Error al subir imágenes. Intenta de nuevo.");
+        }
+        setIsLoading({loading:false, message:''});
         return;
       }
       if (!savedImages) {
         toast.error("Revisa los errores del formulario.");
+        setIsLoading({loading:false, message:''});
         return;
       }
       await createProduct({ ...product, images: savedImages });
       toast.success("Producto agregado correctamente.");
-    } catch (error) {
-      console.log({error})
-      toast.error("Ocurrio un error, intente de nuevo mas tarde");
+      setErrors({});
+        } catch (error: unknown) {
+      // Manejo de errores de validación de zod
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof (error as { message?: unknown }).message === "string" &&
+        (
+          (error as { message: string }).message.includes('obligatorio') ||
+          (error as { message: string }).message.includes('válido') ||
+          (error as { message: string }).message.includes('mayor a 0')
+        )
+      ) {
+        const errorArr = (error as { message: string }).message.split(' | ');
+        const newErrors: { [key: string]: string } = {};
+        errorArr.forEach((msg: string) => {
+          if (msg.toLowerCase().includes('nombre')) newErrors.name = msg;
+          else if (msg.toLowerCase().includes('descripción')) newErrors.description = msg;
+          else if (msg.toLowerCase().includes('precio')) newErrors.price = msg;
+          else if (msg.toLowerCase().includes('stock')) newErrors.stock = msg;
+          else if (msg.toLowerCase().includes('categoría')) newErrors.category = msg;
+          else if (msg.toLowerCase().includes('marca')) newErrors.brand = msg;
+          else if (msg.toLowerCase().includes('imagen')) newErrors.image = msg;
+        });
+        setErrors(newErrors);
+        toast.error("Revisa los errores del formulario.");
+      } else {
+        toast.error("Ocurrió un error, intente de nuevo más tarde");
+      }
     }
     setIsLoading({loading:false, message:''})
-    // Aquí iría la lógica real para guardar el producto
   };
   //   const categories = ["Pañales", "Higiene", "Accesorios"];
   //   const brands = ["Huggies", "Pampers", "Johnson's"];
@@ -207,6 +227,7 @@ if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
           <ImageInput
             multiple
             label="Agrega una imagen"
+            errors={errors}
             onChange={(e) => {
               if (!e.target.files?.length) return;
               setImages([...images, ...Array.from(e.target.files)]);
