@@ -11,20 +11,8 @@ async function MyApp() {
 
   return (
     <>
-      <div>
-        <HeroBanner
-          heroBanner={{
-            buttonText: "Comprar ahora",
-            desc: "El juego empieza aquí. Con los auriculares para gaming Immortal 1000D, no solo juegues: siéntelo, vívelo y aduéñate de él. Mejora tu audio con 7.1 canales",
-            image:
-              "https://cdn.sanity.io/images/kyml1h03/production/a205aaa5ac2c75342801e683c3b78ea2fff8913b-600x600.webp",
-            largeText1: "Auriculares",
-            // largeText2: "texto
-            midText: "Inhalambrico",
-            product: "product-1",
-            smallText: "Novedades",
-          }}
-        />
+      <div className="!pt-0 !mt-0">
+        <HeroBanner />
 
         <div className="products-heading">
           <h2>Productos más vendidos</h2>
