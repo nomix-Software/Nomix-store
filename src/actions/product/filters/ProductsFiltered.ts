@@ -32,7 +32,7 @@ export async function getProductsFiltered({
         : undefined,
   };
 
-  const [totalCount, products, marcasConCantidad, categoriasConCantidad] = await Promise.all([
+  const [totalCount, products] = await Promise.all([
     prisma.producto.count({ where: filters }),
 
     prisma.producto.findMany({
@@ -51,24 +51,36 @@ export async function getProductsFiltered({
         },
       },
     }),
+  ]);
 
-    // Cantidad de productos por marca (usando solo search)
+  // Filtros para recalcular marcas y categorías disponibles
+  const filtersSinMarcas = {
+    activo: true,
+    nombre: search ? { contains: search, mode: Prisma.QueryMode.insensitive } : undefined,
+    categoria:
+      categorias && categorias.length > 0
+        ? { nombre: { in: categorias } }
+        : undefined,
+  };
+  const filtersSinCategorias = {
+    activo: true,
+    nombre: search ? { contains: search, mode: Prisma.QueryMode.insensitive } : undefined,
+    marca:
+      marcas && marcas.length > 0
+        ? { nombre: { in: Array.isArray(marcas) ? marcas : [marcas] } }
+        : undefined,
+  };
+
+  // Recalcular marcas y categorías disponibles en base a los productos filtrados actuales
+  const [marcasConCantidad, categoriasConCantidad] = await Promise.all([
     prisma.producto.groupBy({
       by: ["marcaId"],
-      where: {
-        activo: true,
-        nombre: search ? { contains: search, mode: "insensitive" } : undefined,
-      },
+      where: filtersSinMarcas,
       _count: { marcaId: true },
     }),
-
-    // Cantidad de productos por categoría (usando solo search)
     prisma.producto.groupBy({
       by: ["categoriaId"],
-      where: {
-        activo: true,
-        nombre: search ? { contains: search, mode: "insensitive" } : undefined,
-      },
+      where: filtersSinCategorias,
       _count: { categoriaId: true },
     }),
   ]);
@@ -85,16 +97,20 @@ export async function getProductsFiltered({
     }),
   ]);
 
-  // Asociar nombres a cantidades
-  const marcasDisponibles = marcasData.map((m) => {
-    const count = marcasConCantidad.find((mc) => mc.marcaId === m.id)?._count.marcaId || 0;
-    return { nombre: m.nombre, cantidad: count };
-  });
+  // Asociar nombres a cantidades y filtrar los ya aplicados
+  const marcasDisponibles = marcasData
+    .map((m) => {
+      const count = marcasConCantidad.find((mc) => mc.marcaId === m.id)?._count.marcaId || 0;
+      return { nombre: m.nombre, cantidad: count };
+    })
+    .filter((m) => !(marcas && marcas.includes(m.nombre)));
 
-  const categoriasDisponibles = categoriasData.map((c) => {
-    const count = categoriasConCantidad.find((cc) => cc.categoriaId === c.id)?._count.categoriaId || 0;
-    return { nombre: c.nombre, cantidad: count };
-  });
+  const categoriasDisponibles = categoriasData
+    .map((c) => {
+      const count = categoriasConCantidad.find((cc) => cc.categoriaId === c.id)?._count.categoriaId || 0;
+      return { nombre: c.nombre, cantidad: count };
+    })
+    .filter((c) => !(categorias && categorias.includes(c.nombre)));
 
   const totalPages = Math.ceil(totalCount / take);
 
