@@ -5,7 +5,7 @@ import React, { Suspense } from "react";
 const CatalogoPage = () => {
   return (
     <div>
-      <div className=" flex flex-row justify-around !smb-4  items-center">
+      <div className="flex flex-row justify-around !smb-4 items-center">
         <h1 className="products-heading !text-start font-extrabold text-4xl">
           Catálogo
         </h1>
@@ -19,15 +19,19 @@ const CatalogoPage = () => {
       <div className="flex flex-row w-full sm:gap-10">
         {/* filtros desktop */}
         <Suspense fallback={<div></div>}>
-          <Filters />
+          <div className="hidden md:block min-w-[260px] max-w-[320px]">
+            <Filters />
+          </div>
         </Suspense>
         {/* filtros mobile  */}
         <Suspense fallback={<div></div>}>
-        <ModalMobileFilters />
+          <ModalMobileFilters />
         </Suspense>
         {/* productos */}
         <Suspense fallback={<div></div>}>
-          <Catalogue />
+          <div className="flex-1">
+            <Catalogue />
+          </div>
         </Suspense>
       </div>
     </div>

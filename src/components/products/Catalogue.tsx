@@ -37,10 +37,10 @@ export const Catalogue = () => {
     }
   return (
     <div className='flex flex-col justify-between items-center'>
-      <div className="flex flex-row flex-wrap gap-4 w-full bg-gray-50 justify-center">
+      <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full bg-gray-50 justify-center">
         {productsResponse?.products.map((product, index) => (
-          <div key={`${product.slug}-${index}`} >
-            <Product product={{ ...product, id: Number(product._id) }} size='small' />
+          <div key={`${product.slug}-${index}`} className="w-full flex justify-center">
+            <Product product={{ ...product, id: Number(product._id) }} size='large' />
           </div>
         ))}
       </div>

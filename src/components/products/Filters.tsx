@@ -19,7 +19,7 @@ export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
   };
 
   return (
-    <div className={`${isMobile ? "block" : "hidden md:flex"} w-full md:w-[150px]`}>
+    <div className={`${isMobile ? "block" : "hidden md:flex"} w-full md:w-[260px]`}>
       <ul className="pl-6 flex flex-col gap-4">
         <CollapsibleFilterList
           items={availableCategories.map((filter) => ({
