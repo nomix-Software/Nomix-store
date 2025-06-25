@@ -8,6 +8,7 @@ export * from "./product/ProductsRelated";
 export * from "./product/ProductMostSale";
 export * from "./product/ProductLatest";
 export * from "./product/ProductDelete";
+export * from "./product/createProduct";
 
 export * from "./product/filters/ProductByCategorie";
 export * from "./product/filters/ProductsByBrand";
