@@ -42,6 +42,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
       <div className="flex flex-row items-center gap-2 border-b border-gray-400 focus-within:border-[#f02d34] py-2 px-1">
         <button
           type="submit"
+          onClick={handleSubmit}
           className="text-gray-500 cursor-pointer hover:text-gray-700 transition-transform duration-200 transform hover:scale-110 px-1"
         >
           <FaSearch size={18} />
@@ -53,7 +54,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
           onChange={(e) => setInput(e.target.value)}
           className="outline-none px-2 py-1.5 bg-transparent w-full border-none focus:ring-0"
         />
-        {input.length > 0 && (
+        {input.length > 0 || searchParams.get('search') ? (
           <button
             type="button"
             onClick={clearSearch}
@@ -62,7 +63,7 @@ export default function SearchBar({ defaultValue = "" }: Props) {
           >
             <FaTimes size={18} />
           </button>
-        )}
+        ) : null}
       </div>
     </form>
   );
