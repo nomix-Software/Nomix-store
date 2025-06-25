@@ -45,7 +45,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
           <SwiperSlide key={index}>
             <div className="flex flex-col md:flex-row !bg-white">
               {/* Imagen */}
-              <div className="w-full md:w-1/2 !bg-gray-50 flex items-center justify-center p-6">
+              <div className="w-full md:w-1/2 !bg-gray-50 flex items-center justify-center !p-6">
                 <div className="relative w-full max-w-[500px] aspect-square">
                   <Image
                     src={product.imagenes?.[0]?.url || notFoundImage}
@@ -58,7 +58,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
               </div>
 
               {/* Info */}
-              <div className="w-full md:w-1/2 p-6 sm:p-10 flex items-center justify-center">
+              <div className="w-full md:w-1/2 !p-6 sm:p-10 flex items-center justify-center">
                 <div className="w-full max-w-md flex flex-col gap-4">
                   <p className="!text-sm !uppercase !tracking-widest !text-gray-500">
                     Producto destacado
