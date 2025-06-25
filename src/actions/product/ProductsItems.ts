@@ -1,8 +1,6 @@
 "use server";
 
-import { RequestProduct } from "@/interfaces";
 import prisma from "@/lib/prisma";
-import { generateSlug } from "@/utils";
 
 export const getProducts = async () => {
   const productos = await prisma.producto.findMany({
@@ -36,48 +34,4 @@ export const getProducts = async () => {
       current: p.slug,
     },
   }));
-};
-
-export const createProduct = async ({
-  name,
-  description,
-  price,
-  brand,
-  category,
-  images,
-  stock
-}: RequestProduct) => {
-  const createdProduct = await prisma.producto.create({
-    data: {
-      nombre: name,
-      slug: await generateSlug(name),
-      descripcion: description,
-      precio: Number(price),
-      stock: Number(stock),
-      categoriaId: Number(category),
-      marcaId: Number(brand),
-    },
-  });
-
-  // Paso 2 y 3: Por cada imagen, crearla y luego relacionarla con el producto
-  for (const image of images) {
-    const imagen = await prisma.imagenProducto.create({
-      data: {
-        url: image.url,
-        publicId: image.publicId, // Add the required publicId field
-        producto: {
-          connect: {
-            id: createdProduct.id, // Connect the image to the created product
-          },
-        },
-      },
-    });
-    console.log("Imagen creada:", imagen);
-    // await prisma.imagenProducto.create({
-    //   data: {
-    //     productoId: createdProduct.id, // este es el id del producto
-    //     imagenId: imagen.id, // este es el id de la imagen
-    //   },
-    // });
-  }
 };
