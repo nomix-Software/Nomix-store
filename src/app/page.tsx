@@ -2,9 +2,9 @@ export const revalidate = 60;
 
 import { HeroBanner, Product } from "@/components";
 import React from "react";
-
 import { getProducts } from "@/actions";
 import Link from "next/link";
+import { AboutSection, TestimonialsSection, BenefitsSection } from "@/components/HomeSections";
 
 async function MyApp() {
   const products = await getProducts();
@@ -13,7 +13,9 @@ async function MyApp() {
     <>
       <div className="!pt-0 !mt-0">
         <HeroBanner />
-
+        <BenefitsSection />
+        <AboutSection />
+        <TestimonialsSection />
         <div className="products-heading">
           <h2>Productos más vendidos</h2>
           <p>Descubrí las diferentes versiones más elegidas.</p>
@@ -23,10 +25,7 @@ async function MyApp() {
             <div className="maylike-products-container track ">
               {products.map((item) => (
                 <div className="!w-[250px] !h-[250px]" key={item._id}>
-                  <Product
-                    
-                    product={{ ...item, id: Number(item._id) }}
-                  />
+                  <Product product={{ ...item, id: Number(item._id) }} />
                 </div>
               ))}
             </div>
@@ -42,6 +41,7 @@ async function MyApp() {
             </button>
           </Link>
         </div>
+
         {/* <FooterBanner
           footerBanner={{
             discount: "29% de descuento",
