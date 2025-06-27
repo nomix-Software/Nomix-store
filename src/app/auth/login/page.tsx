@@ -4,7 +4,7 @@ import { registerUser } from "@/actions/auth/AuthRegister";
 import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword";
 import { LoadingOverlay, TextField } from "@/components";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
@@ -14,12 +14,28 @@ export default function AuthPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const getTextButton = (): string => {
     if (isLoading) return "Cargando...";
     if (isForgotPassword) return "Enviar link de recuperación";
     if (isLogin) return "Ingresar";
     else return "Crear cuenta";
+  };
+
+  // Validación simple de email y password
+  const isEmailValid = form.email.match(/^\S+@\S+\.\S+$/);
+  const isPasswordValid = isForgotPassword || form.password.length >= 6;
+  const isFormValid = Boolean(isEmailValid && isPasswordValid);
+
+  // Estado para mover el botón
+  const [buttonPos, setButtonPos] = useState<'center' | 'up' | 'down'>('center');
+
+  // Handler para esquivar el mouse
+  const handleButtonMouseEnter = () => {
+    if (!isFormValid && !isLoading) {
+      setButtonPos((prev) => prev === 'center' ? 'up' : prev === 'up' ? 'down' : 'center');
+    }
   };
 
   if (isLoading)
@@ -117,6 +133,7 @@ export default function AuthPage() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               label="Contraseña"
               type={showPassword ? "text" : "password"}
+              className="!mb-2"
               endIcon={
                 showPassword ? (
                   <AiFillEyeInvisible
@@ -131,9 +148,29 @@ export default function AuthPage() {
           )}
 
           <button
-            type="submit"
-            className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer"
+            ref={buttonRef}
+            type="button"
+            tabIndex={-1}
+            className={`w-full !p-2 rounded-2xl transition-all duration-300 select-none
+              ${!isFormValid || isLoading ? 'bg-gray-300 text-gray-400' : 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'}
+              ${!isFormValid && !isLoading ? (
+                buttonPos === 'center' ? 'translate-y-0' :
+                buttonPos === 'up' ? 'md:-translate-y-16' :
+                'md:translate-y-16') : ''
+              }
+            `}
             disabled={isLoading}
+            onMouseEnter={handleButtonMouseEnter}
+            style={{ position: !isFormValid && !isLoading ? 'relative' : 'static', pointerEvents: !isFormValid && !isLoading ? 'auto' : 'auto' }}
+            onClick={async (e) => {
+              if (!isFormValid || isLoading) {
+                e.preventDefault();
+                return;
+              }
+              // Simular submit si es válido
+              const formEl = e.currentTarget.closest('form');
+              if (formEl) formEl.requestSubmit();
+            }}
           >
             {getTextButton()}
           </button>
