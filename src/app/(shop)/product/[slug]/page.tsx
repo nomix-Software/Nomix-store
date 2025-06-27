@@ -10,15 +10,12 @@ import { notFound } from "next/navigation";
 
 import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
 import { MdErrorOutline } from "react-icons/md";
-interface Props {
-  params: Promise<{ slug: string }>;
-}
 export async function generateStaticParams() {
   const productos = await getProducts(); // o fetch a tu DB
   return productos.map((p) => ({ slug: p.slug.current }));
 }
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const productDetail: ProductDetails | null = await getProductDetail(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const productDetail: ProductDetails | null = await getProductDetail((await params).slug);
   if (!productDetail) return {};
   return {
     title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH` ,
@@ -32,7 +29,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     keywords: [productDetail.nombre, productDetail.categoria.nombre, productDetail.marca.nombre, "CYE TECH", "tecnología", "comprar", "accesorios"],
   };
 }
-const ProductDetails = async ({ params }: Props) => {
+const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
