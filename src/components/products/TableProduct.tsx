@@ -29,8 +29,8 @@ export const TableProduct = ({
   }, [productsDB]);
 
   return (
-    <div className="overflow-x-auto rounded-lg shadow">
-      <table className="min-w-full bg-white border border-gray-200">
+    <div className="overflow-x-auto rounded-lg shadow w-full">
+      <table className="min-w-[600px] w-full bg-white border border-gray-200">
         <thead className="bg-gray-100 py-6 items-center">
           <tr className="text-[#324d67]">
             <th className="text-left px-4 py-2">Imagen</th>
