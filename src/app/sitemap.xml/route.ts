@@ -1,4 +1,5 @@
 'use server'
+import { ProductItem } from '@/interfaces';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -15,7 +16,7 @@ export async function GET() {
   if (res.ok) {
     const data = await res.json();
     if (Array.isArray(data.products)) {
-      productUrls = data.products.map((p: any) => `/product/${p.slug.current}`);
+      productUrls = data.products.map((p: ProductItem) => `/product/${p.slug.current}`);
     }
   }
 
