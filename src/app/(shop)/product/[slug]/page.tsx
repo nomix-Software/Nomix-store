@@ -1,6 +1,7 @@
 export const revalidate = 60; // en segundos
 import React from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import type { Metadata } from "next";
 
 import type { ProductDetails } from "@/interfaces";
 
@@ -15,6 +16,21 @@ interface Props {
 export async function generateStaticParams() {
   const productos = await getProducts(); // o fetch a tu DB
   return productos.map((p) => ({ slug: p.slug.current }));
+}
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const productDetail: ProductDetails | null = await getProductDetail(params.slug);
+  if (!productDetail) return {};
+  return {
+    title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH` ,
+    description: productDetail.descripcion,
+    openGraph: {
+      title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
+      description: productDetail.descripcion,
+      type: "website",
+      images: [productDetail.imagenes ? productDetail.imagenes[0]?.url : ''],
+    },
+    keywords: [productDetail.nombre, productDetail.categoria.nombre, productDetail.marca.nombre, "CYE TECH", "tecnología", "comprar", "accesorios"],
+  };
 }
 const ProductDetails = async ({ params }: Props) => {
   const { slug } = await params;
