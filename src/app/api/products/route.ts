@@ -15,6 +15,7 @@ function parseQueryParam(param: string | string[] | null): string[] | undefined 
     const search = searchParams.get("search") || undefined;
     const marcas = parseQueryParam(searchParams.getAll("brand"));
     const categorias = parseQueryParam(searchParams.getAll("categorie"));
+    const take = parseInt(searchParams.get("take") || "20", 10);
 
     try {
       const data = await getProductsFiltered({
@@ -22,6 +23,7 @@ function parseQueryParam(param: string | string[] | null): string[] | undefined 
         marcas,
         categorias,
         page: isNaN(page) ? 1 : page,
+        take: isNaN(take) ? 20 : take,
       });
   
       const response = NextResponse.json(data);

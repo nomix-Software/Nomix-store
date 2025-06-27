@@ -1,7 +1,8 @@
+'use server'
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const baseUrl = 'https://www.cyetech.com.ar';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ;
   const staticUrls = [
     '',
     '/catalogo',
@@ -9,12 +10,12 @@ export async function GET() {
   ];
 
   // Obtener productos dinámicamente desde el endpoint local
-  const res = await fetch(`${baseUrl}/api/products`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/products?take=2000`, { next: { revalidate: 3600 } });
   let productUrls: string[] = [];
   if (res.ok) {
     const data = await res.json();
     if (Array.isArray(data.products)) {
-      productUrls = data.products.map((p: any) => `/product/${p.slug}`);
+      productUrls = data.products.map((p: any) => `/product/${p.slug.current}`);
     }
   }
 
