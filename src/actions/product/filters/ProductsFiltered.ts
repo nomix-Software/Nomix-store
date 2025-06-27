@@ -8,6 +8,7 @@ interface FilterParams {
   marcas?: string[];
   categorias?: string[];
   page?: number;
+  take?: number;
 }
 
 export async function getProductsFiltered({
@@ -15,8 +16,9 @@ export async function getProductsFiltered({
   marcas,
   categorias,
   page = 1,
+  take = 20,
 }: FilterParams) {
-  const take = 20;
+
   const skip = (page - 1) * take;
 
   const filters = {
