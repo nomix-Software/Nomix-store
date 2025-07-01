@@ -6,10 +6,11 @@ type Props = {
   title: string;
   items: { label: string; count: number }[];
   onSelect?: (label: string) => void; // opcional
+  openDefault?: boolean; // opcional, para controlar el estado inicial
 };
 
-export function CollapsibleFilterList({ title, items, onSelect }: Props) {
-  const [open, setOpen] = useState(true);
+export function CollapsibleFilterList({ title, items, onSelect, openDefault }: Props) {
+  const [open, setOpen] = useState(openDefault || false);
 
   return (
     <div>

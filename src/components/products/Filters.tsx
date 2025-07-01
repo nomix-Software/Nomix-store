@@ -5,6 +5,7 @@ import { CollapsibleFilterList } from "../ui/CollapsibleFilterList";
 import { useAvailableFilters } from "@/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaTimesCircle } from "react-icons/fa";
+import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
 
 export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
   const { availableBrands, availableCategories } = useAvailableFilters((state) => state);
@@ -27,6 +28,7 @@ export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
             count: filter.cantidad,
           }))}
           title="Categorías"
+          openDefault={true} // Abierto por defecto
           onSelect={(label) => {
             const search = new URLSearchParams(searchParams.toString());
             search.set("categorie", label);
@@ -48,13 +50,15 @@ export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
         />
 
         {/* Botón de limpiar filtros */}
-        <button
-          onClick={clearFilters}
-          className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 mt-2 px-2 py-1 rounded transition-colors duration-200 hover:underline cursor-pointer"
-        >
-          <FaTimesCircle size={16} />
-          Limpiar filtros
-        </button>
+        {countFiltersAdded(searchParams.toString()) > 0 && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 mt-2 px-2 py-1 rounded transition-colors duration-200 hover:underline cursor-pointer"
+          >
+            <FaTimesCircle size={16} />
+            Limpiar filtros ( {countFiltersAdded(searchParams.toString())} )
+          </button>
+        )}
       </ul>
     </div>
   );
