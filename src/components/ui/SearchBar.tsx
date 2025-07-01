@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
 interface Props {
@@ -12,7 +12,11 @@ export default function SearchBar({ defaultValue = "" }: Props) {
   const [input, setInput] = useState(defaultValue);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname()
+  const pathname = usePathname();
+  useEffect(() => {
+    const search = searchParams.get("search") || "";
+    setInput(search);
+  }, [searchParams]);
 
   const updateQuery = (key: string, value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -37,33 +41,32 @@ export default function SearchBar({ defaultValue = "" }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex justify-end m-2 h-fit"
+      className="w-full"
     >
-      <div className="flex flex-row items-center gap-2 border-b border-gray-400 focus-within:border-[#f02d34] py-2 px-1">
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          className="text-gray-500 cursor-pointer hover:text-gray-700 transition-transform duration-200 transform hover:scale-110 px-1"
-        >
+      <div className="relative mb-4">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
           <FaSearch size={18} />
-        </button>
+        </span>
         <input
           type="text"
-          placeholder="Nombre de producto"
+          placeholder="Buscar productos..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="outline-none px-2 py-1.5 bg-transparent w-full border-none focus:ring-0"
+          className="transition-all duration-200 shadow-sm bg-white border border-gray-200 focus:border-[#f02d34] focus:ring-2 focus:ring-[#f02d34]/20 rounded-full h-12 pl-12 pr-12 text-base text-gray-800 placeholder-gray-400 outline-none w-full"
+          autoComplete="off"
+          style={{ paddingLeft: 44 }} // 44px para dejar espacio al icono
         />
-        {input.length > 0 || searchParams.get('search') ? (
+        {(input.length > 0 || searchParams.get('search')) && (
           <button
             type="button"
             onClick={clearSearch}
-            className="text-gray-400 hover:text-red-500 px-1 cursor-pointer"
+            className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-500 focus:text-red-500 transition-colors duration-200 z-10"
             title="Limpiar búsqueda"
+            tabIndex={-1}
           >
-            <FaTimes size={18} />
+            <FaTimes size={20} />
           </button>
-        ) : null}
+        )}
       </div>
     </form>
   );
