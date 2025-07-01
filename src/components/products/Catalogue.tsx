@@ -36,10 +36,11 @@ export const Catalogue = () => {
       );
     }
   return (
-    <div className='flex flex-col justify-between items-center'>
-      <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 w-full bg-gray-50 justify-center">
+    <div className='flex flex-col justify-between items-center w-full !px-2 sm:px-6 xl:px-16'>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] place-items-center gap-4 w-full bg-gray-50 justify-center
+        [grid-auto-flow:row] [grid-auto-rows:auto]">
         {productsResponse?.products.map((product, index) => (
-          <div key={`${product.slug}-${index}`} className="w-full flex justify-center">
+          <div key={`${product.slug}-${index}`} className="w-full flex justify-center !mx-3">
             <Product product={{ ...product, id: Number(product._id) }} size='large' />
           </div>
         ))}
