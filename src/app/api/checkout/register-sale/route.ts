@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const { paymentId, status, estadoPedido = '' } = await req.json();
+  const { paymentId } = await req.json();
 
   // Validación con Mercado Pago
   if (!paymentId) {
@@ -27,7 +27,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No se pudo validar el pago con Mercado Pago" }, { status: 400 });
     }
     mpData = await mpRes.json();
-  } catch (err) {
+  } catch (error) {
+    console.error("Error al validar con Mercado Pago:", error);
     return NextResponse.json({ error: "Error validando con Mercado Pago" }, { status: 500 });
   }
 

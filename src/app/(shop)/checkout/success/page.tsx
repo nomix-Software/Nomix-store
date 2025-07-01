@@ -41,6 +41,7 @@ const Success = () => {
           setErrorMsg(data?.error || "Hubo un error al procesar la compra.");
         }
       } catch (err) {
+        console.log("Error al registrar la venta:", err);
         setErrorMsg("Error de red al registrar la venta.");
       } finally {
         setLoading(false);
