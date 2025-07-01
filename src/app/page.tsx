@@ -1,10 +1,9 @@
 export const revalidate = 60;
 
-import { HeroBanner, Product } from "@/components";
+import { AboutSection, BenefitsSection, HeroBanner, Product, TestimonialsSection } from "@/components";
 import React from "react";
-import { getProducts } from "@/actions";
+import { getProducts, getLatestProducts } from "@/actions";
 import Link from "next/link";
-import { AboutSection, TestimonialsSection, BenefitsSection } from "@/components/HomeSections";
 
 async function MyApp() {
   const products = await getProducts();
@@ -60,6 +59,43 @@ async function MyApp() {
       </div>
     </>
   );
+}
+
+export async function generateMetadata() {
+  const productos = await getLatestProducts();
+  const principal = productos?.[0];
+  const heroImage = principal?.imagenes?.[0]?.url || "/not-found-image.png";
+  const title = principal?.nombre
+    ? `CyE Tech | Novedad: ${principal.nombre}`
+    : "CyE Tech | Artículos tecnológicos";
+  const description = principal?.nombre
+    ? `¡Descubrí la última novedad en tecnología! ${principal.nombre} ya está disponible en CyE Tech. Innovación, calidad y el mejor precio para vos. No te pierdas este lanzamiento exclusivo y llevá tu experiencia al siguiente nivel.`
+    : "¡Descubrí las últimas novedades en tecnología! En CyE Tech encontrá productos innovadores, calidad y el mejor precio. No te pierdas nuestros lanzamientos exclusivos.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: heroImage,
+          width: 1200,
+          height: 630,
+          alt: principal?.nombre || "Imagen principal del Hero",
+        },
+      ],
+      type: "website",
+      locale: "es_AR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [heroImage],
+    },
+  };
 }
 
 export default MyApp;
