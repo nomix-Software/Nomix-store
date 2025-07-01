@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react";
 import { Filters } from "./Filters";
 import { FaFilter, FaTimes } from "react-icons/fa";
-import SearchBar from "../ui/SearchBar";
 import { useSearchParams } from "next/navigation";
 import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
 
