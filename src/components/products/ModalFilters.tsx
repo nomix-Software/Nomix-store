@@ -3,8 +3,8 @@
 import { Suspense, useState } from "react";
 import { Filters } from "./Filters";
 import { FaFilter, FaTimes } from "react-icons/fa";
-import SearchBar from "../ui/SearchBar";
 import { useSearchParams } from "next/navigation";
+import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
 
 export const ModalMobileFilters = () => {
     const search = useSearchParams()
@@ -18,6 +18,7 @@ export const ModalMobileFilters = () => {
         title="Abrir filtros"
       >
         <FaFilter size={18} />
+        {countFiltersAdded(search.toString())}
         <span className="text-sm font-medium">Filtros</span>
       </button>
 
@@ -46,12 +47,12 @@ export const ModalMobileFilters = () => {
                 <Filters isMobile />
                 </Suspense>
               </div>
-                            {/* Barra de búsqueda (adaptada para mobile) */}
+                            {/* Barra de búsqueda (adaptada para mobile)
               <div className="mb-4">
                 <Suspense fallback={<div>Cargando Input</div>}>
                 <SearchBar  defaultValue={search.get('search') || undefined}/>
                 </Suspense>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

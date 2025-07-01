@@ -6,6 +6,7 @@ import { FaCheckCircle } from "react-icons/fa";
 const Success = () => {
   const [loading, setLoading] = useState(true);
   const [ventaRegistrada, setVentaRegistrada] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const registrarVenta = async () => {
@@ -14,7 +15,11 @@ const Success = () => {
       const status = searchParams.get("status");
       const preferenceId = searchParams.get("preference_id");
 
-      if (!paymentId || !status || !preferenceId) return;
+      if (!paymentId || !status || !preferenceId) {
+        setErrorMsg("Faltan datos de la transacción.");
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await fetch("/api/checkout/register-sale", {
@@ -32,10 +37,12 @@ const Success = () => {
         if (res.ok) {
           setVentaRegistrada(true);
         } else {
-          console.error("Error al registrar la venta");
+          const data = await res.json();
+          setErrorMsg(data?.error || "Hubo un error al procesar la compra.");
         }
       } catch (err) {
-        console.error("Error al registrar la venta:", err);
+        console.log("Error al registrar la venta:", err);
+        setErrorMsg("Error de red al registrar la venta.");
       } finally {
         setLoading(false);
       }
@@ -58,7 +65,7 @@ const Success = () => {
             </p>
           </>
         ) : (
-          <p className="text-red-500">Hubo un error al procesar la compra.</p>
+          <p className="text-red-500">{errorMsg || "Hubo un error al procesar la compra."}</p>
         )}
       </div>
     </div>

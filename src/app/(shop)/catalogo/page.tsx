@@ -5,10 +5,15 @@ import React, { Suspense } from "react";
 const CatalogoPage = () => {
   return (
     <div>
-      <div className="flex flex-row justify-around !smb-4 items-center">
+      <div className="flex flex-col sm:flex-row justify-around !smb-4 items-center">
         <h1 className="products-heading !text-start font-extrabold text-4xl">
           Catálogo
         </h1>
+        <div className="!mb-4 sm:hidden">
+          <Suspense fallback={<div>Cargando Input</div>}>
+            <SearchBar defaultValue={undefined} />
+          </Suspense>
+        </div>
         <Suspense fallback={<div>Cargando input...</div>}>
           <div className="hidden md:flex">
             {/* searchBar desktop */}
