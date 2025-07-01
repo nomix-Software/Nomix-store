@@ -37,7 +37,7 @@ export const Catalogue = () => {
     }
   return (
     <div className='flex flex-col justify-between items-center w-full !px-2 sm:px-6 xl:px-16'>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] place-items-center gap-4 w-full bg-gray-50 justify-center
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] place-items-center gap-4 w-full  justify-center
         [grid-auto-flow:row] [grid-auto-rows:auto]">
         {productsResponse?.products.map((product, index) => (
           <div key={`${product.slug}-${index}`} className="w-full flex justify-center !mx-3">
