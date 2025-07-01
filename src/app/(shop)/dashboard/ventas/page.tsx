@@ -321,6 +321,13 @@ console.log({venta})
   );
 }
 
+// NOTA:
+// Los campos paymentId y paymentStatus en el modelo Venta son opcionales.
+// Cuando se registra una venta manual desde este formulario, esos campos quedan en null.
+// Solo las ventas procesadas por Mercado Pago (o integraciones similares) completan esos datos.
+// No es necesario enviar paymentId ni paymentStatus en createSale para ventas manuales.
+// Si en el futuro agregas pagos manuales con referencia externa, puedes adaptar la acción para incluirlos.
+
 type Props = {
   total: number;
   cuponDescripcion?: string;

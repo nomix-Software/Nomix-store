@@ -10,7 +10,38 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const {  status, estadoPedido = ''  } = await req.json();
+  const { paymentId, status, estadoPedido = '' } = await req.json();
+
+  // Validación con Mercado Pago
+  if (!paymentId) {
+    return NextResponse.json({ error: "Falta paymentId" }, { status: 400 });
+  }
+  let mpData;
+  try {
+    const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+      },
+    });
+    if (!mpRes.ok) {
+      return NextResponse.json({ error: "No se pudo validar el pago con Mercado Pago" }, { status: 400 });
+    }
+    mpData = await mpRes.json();
+  } catch (err) {
+    return NextResponse.json({ error: "Error validando con Mercado Pago" }, { status: 500 });
+  }
+
+  // Determinar estado de venta según status de Mercado Pago
+  let estadoVenta = "PENDIENTE";
+  if (mpData.status === "approved") {
+    estadoVenta = "APROBADO";
+  } else if (mpData.status === "rejected") {
+    estadoVenta = "RECHAZADO";
+  } else if (mpData.status === "in_process") {
+    estadoVenta = "EN PROCESO";
+  } else {
+    estadoVenta = mpData.status?.toUpperCase() || "PENDIENTE";
+  }
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -43,11 +74,11 @@ export async function POST(req: Request) {
 
   try {
     let estadoInicial = await prisma.estadoPedido.findFirst({
-      where: { nombre: estadoPedido  || "PENDIENTE" },
+      where: { nombre: estadoVenta },
     });
     if (!estadoInicial) {
       estadoInicial = await prisma.estadoPedido.create({
-        data: { nombre: estadoPedido  || "PENDIENTE" },
+        data: { nombre: estadoVenta },
       });
     }
     let metodoPago = await prisma.metodoPago.findFirst({
@@ -58,7 +89,6 @@ export async function POST(req: Request) {
         data: { nombre: "Mercado Pago" },
       });
     }
-    //TODO: usar server actions
     const venta = await prisma.venta.create({
       data: {
         usuarioId: user.id,
@@ -73,14 +103,17 @@ export async function POST(req: Request) {
             total: item.producto.precio * item.cantidad,
           })),
         },
+        // Puedes guardar el paymentId y status de MP si lo deseas
       },
     });
-    
-  await prisma.entrega.update({
-  where: { carritoId: user?.carrito?.id },
-  data: { ventaId: venta.id }
-});
-    if(status === 'approved'){
+
+    await prisma.entrega.update({
+      where: { carritoId: user?.carrito?.id },
+      data: { ventaId: venta.id },
+    });
+
+    // Solo crea movimiento financiero y envía mail si el pago fue aprobado
+    if (mpData.status === "approved") {
       await prisma.movimientoFinanciero.create({
         data: {
           tipo: "INGRESO",
@@ -88,14 +121,14 @@ export async function POST(req: Request) {
           descripcion: `Venta ID ${venta.id} - Mercado Pago`,
         },
       });
+      sendPurchaseEmail(user.email, venta.id);
     }
 
     // Limpiar carrito
     await prisma.carritoItem.deleteMany({
       where: { carritoId: user.carrito.id },
     });
-    sendPurchaseEmail(user.email, venta.id)
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, estado: estadoVenta });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

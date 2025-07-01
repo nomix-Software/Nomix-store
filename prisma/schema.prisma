@@ -165,6 +165,8 @@ model Venta {
   nombreCliente   String? // info manual
   telefonoCliente String?
   observacion     String?
+  paymentId       String?   // ID de pago de Mercado Pago (opcional)
+  paymentStatus   String?   // Status de pago de Mercado Pago (opcional)
 }
 
 model VentaProducto {
