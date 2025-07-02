@@ -9,11 +9,14 @@ import { AuthSessionProvider } from "@/components/SessionProvider";
 export const metadata: Metadata = {
   title: "Cye Tech",
   description: "Artículos tecnológicos",
+  icons:{
+    icon: '/favicon.ico'
+  }
 };
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <html>
+    <html lang="es">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,16 +27,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="es_AR" />
         <meta name="theme-color" content="#f02d34" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <meta name="google-site-verification" content="iN8BjG0udt6TIsq5Jv2WQJrcSVkUowaMxRg9Au5yJ2Y" />
       </head>
       <AuthSessionProvider>
          <ClientWrapper />
         <body>
           <div className="min-h-screen flex flex-col !mt-16">
-            <Head>
-              <title>CyE Tech</title>
-            </Head>
             <header>
               <Navbar />
             </header>
