@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { calcularDistanciaKm } from '@/utils';
 
 const opcionesRetiro = [
   {
@@ -68,7 +69,7 @@ export default function SeleccionEntregaPage() {
     }
     const datosEntrega = tipoEntrega === 'RETIRO'
       ? {
-          tipo: 'RETIRO' as 'RETIRO',
+          tipo: 'RETIRO',
           puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
           direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
           ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
@@ -79,9 +80,9 @@ export default function SeleccionEntregaPage() {
           telefono,
           observaciones,
           costoEnvio: 0,
-        }
+        } as const
       : {
-          tipo: 'ENVIO' as 'ENVIO',
+          tipo: 'ENVIO',
           direccion: direccionEntrega?.address,
           lat: direccionEntrega?.lat,
           lng: direccionEntrega?.lng,
@@ -93,7 +94,7 @@ export default function SeleccionEntregaPage() {
           telefono,
           observaciones,
           costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
-        };
+        } as const;
 
     // Aquí se puede continuar con el flujo de generación de la orden
 
@@ -284,17 +285,4 @@ useEffect(() => {
       </form>
     </div>
   );
-}
-
-// Calcula la distancia en kilómetros entre dos puntos lat/lng usando la fórmula de Haversine
-export function calcularDistanciaKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371; // Radio de la Tierra en km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
 }
