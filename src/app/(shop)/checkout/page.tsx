@@ -133,15 +133,6 @@ useEffect(() => {
     }
   })()
 }, [data, status, items.length])
-useEffect(() => {
- const distancia= calcularDistanciaKm(
-    opcionesRetiro[0].lat ?? 0,
-    opcionesRetiro[0].lng ?? 0,
-    direccionEntrega?.lat ?? 0,
-    direccionEntrega?.lng ?? 0
-  );
-  console.log("Distancia a la sucursal:", distancia, "km");
-}, [direccionEntrega]);
 
   // Calcula el costo de envío según la distancia
   function calcularCostoEnvio(distancia: number) {
