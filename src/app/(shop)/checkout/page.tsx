@@ -78,6 +78,7 @@ export default function SeleccionEntregaPage() {
           contacto,
           telefono,
           observaciones,
+          costoEnvio: 0,
         }
       : {
           tipo: 'ENVIO' as 'ENVIO',
@@ -91,6 +92,7 @@ export default function SeleccionEntregaPage() {
           contacto,
           telefono,
           observaciones,
+          costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
         };
 
     // Aquí se puede continuar con el flujo de generación de la orden

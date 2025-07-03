@@ -14,7 +14,8 @@ type EntregaForm = {
   contacto?: string
   telefono?: string
   observaciones?: string
-  ventaId?:number
+  ventaId?: number
+  costoEnvio?: number // Nuevo campo
 }
 
 export async function saveDelivery(data: EntregaForm) {
@@ -32,7 +33,8 @@ export async function saveDelivery(data: EntregaForm) {
         contacto: data.contacto || null,
         telefono: data.telefono || null,
         observaciones: data.observaciones || null,
-        ventaId:data.ventaId
+        ventaId: data.ventaId || null,
+        costoEnvio: data.costoEnvio ?? null, // Nuevo campo
       },
     })
 
