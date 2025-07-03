@@ -39,4 +39,6 @@ export * from "./ui/LoadingOverlay";
 export * from "./ui/Pagination";
 export * from "./ui/ConfirmModal";
 export * from "./products/Autocomplete";
+export * from "./checkout/AutocompleteLocation";
 export * from './HomeSections';
+export * from "./CostoEnvio";
