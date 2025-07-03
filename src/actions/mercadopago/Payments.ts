@@ -35,9 +35,9 @@ export async function createCheckout(items: Item[], email: string, shippingCost?
     body: {
       items: itemsWithShipping,
       back_urls: {
-        success: "https://cye-tech.vercel.app/checkout/success",
-        failure: "https://cye-tech.vercel.app/checkout/failure",
-        pending: "https://cye-tech.vercel.app/checkout/pending",
+        success: "https://cyetech.com.ar/checkout/success",
+        failure: "https://cyetech.com.ar/checkout/failure",
+        pending: "https://cyetech.com.ar/checkout/pending",
       },
       auto_return: "approved",
       payer: {
