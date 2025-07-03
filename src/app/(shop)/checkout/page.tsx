@@ -108,7 +108,8 @@ export default function SeleccionEntregaPage() {
           quantity: item.cantidad,
         };
       }),
-      data?.user.email as string
+      data?.user.email as string,
+      tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
     );
 
     toast.loading("Redirecting...");
