@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClientWrapper, Footer, Navbar } from "@/components";
 import { Toaster } from "react-hot-toast";
 import { AuthSessionProvider } from "@/components/SessionProvider";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cye Tech",
@@ -29,9 +30,13 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <meta name="google-site-verification" content="iN8BjG0udt6TIsq5Jv2WQJrcSVkUowaMxRg9Au5yJ2Y" />
       </head>
-      <AuthSessionProvider>
-         <ClientWrapper />
-        <body>
+      <body>
+        <Script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+          strategy="beforeInteractive"
+        />
+        <AuthSessionProvider>
+          <ClientWrapper />
           <div className="min-h-screen flex flex-col !mt-16">
             <header>
               <Navbar />
@@ -42,8 +47,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
             </footer>
           </div>
           <Toaster position="top-right" reverseOrder={false} />
-        </body>
-      </AuthSessionProvider>
+        </AuthSessionProvider>
+      </body>
     </html>
   );
 };

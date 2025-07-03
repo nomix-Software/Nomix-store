@@ -224,6 +224,7 @@ model Entrega {
   contacto      String? // Nombre o contacto del receptor
   telefono      String? // Teléfono para coordinar
   observaciones String? // Comentarios adicionales
+  costoEnvio    Float?  
   creadoEn      DateTime    @default(now())
 }
 

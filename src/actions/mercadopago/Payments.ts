@@ -19,10 +19,21 @@ type Item = {
   quantity: number;
 };
 
-export async function createCheckout(items: Item[], email: string) {
+export async function createCheckout(items: Item[], email: string, shippingCost?: number) {
+  const itemsWithShipping = shippingCost && shippingCost > 0
+    ? [
+        ...items,
+        {
+          id: 'envio',
+          title: 'Envío a domicilio',
+          unit_price: shippingCost,
+          quantity: 1,
+        },
+      ]
+    : items;
   const response = await preference.create({
     body: {
-      items,
+      items: itemsWithShipping,
       back_urls: {
         success: "https://cye-tech.vercel.app/checkout/success",
         failure: "https://cye-tech.vercel.app/checkout/failure",
@@ -31,6 +42,9 @@ export async function createCheckout(items: Item[], email: string) {
       auto_return: "approved",
       payer: {
         email,
+      },
+      payment_methods: {
+        excluded_payment_types: [{ id: 'ticket' }], // Deshabilita efectivo (Rapipago/PagoFacil/Boleto)
       },
     },
   });
