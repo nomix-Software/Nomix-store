@@ -50,7 +50,6 @@ export default function SeleccionEntregaPage() {
   const {items , addToCart } = useCartStore(state => state)
   const {data, status} = useSession()
   const router = useRouter()
-console.log({direccionEntrega})
   const isDireccionValida =
     tipoEntrega === 'RETIRO' ||
     (direccionEntrega &&
@@ -111,7 +110,6 @@ console.log({direccionEntrega})
       }),
       data?.user.email as string
     );
-    console.log("url", url);
 
     toast.loading("Redirecting...");
     if (url) window.location.href = url
@@ -119,7 +117,6 @@ console.log({direccionEntrega})
   };
 useEffect(() => {
   (async ()=>{
-    console.log({data},!Boolean(data?.user.id ))
     if(!Boolean(data?.user.id ) && status !== 'loading') {router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)}
     if(Boolean(data?.user.id) && status == 'authenticated' && items.length === 0){
       try {
