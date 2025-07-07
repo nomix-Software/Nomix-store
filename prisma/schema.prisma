@@ -193,6 +193,7 @@ model CuponDescuento {
   descripcion String?
   porcentaje  Float
   validoHasta DateTime
+  maxUsos     Int?     // Nuevo campo: máximo de usos globales
   ventas      Venta[]
 }
 
