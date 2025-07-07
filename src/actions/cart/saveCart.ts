@@ -17,7 +17,17 @@ export async function saveCart(items: CartItemInput[]) {
     throw new Error('Usuario no autenticado')
   }
 
-  // Obtener carrito existente o crear uno nuevo si no existe
+  // Eliminar todos los items del carrito anterior antes de crear los nuevos
+  const carritoExistente = await prisma.carrito.findUnique({
+    where: { usuarioId: userId },
+    include: { items: true }
+  });
+
+  if (carritoExistente) {
+    await prisma.carritoItem.deleteMany({ where: { carritoId: carritoExistente.id } });
+  }
+
+  // Crear o actualizar el carrito con los nuevos items
   const carrito = await prisma.carrito.upsert({
     where: { usuarioId: userId },
     create: {
@@ -30,8 +40,8 @@ export async function saveCart(items: CartItemInput[]) {
       }
     },
     update: {
+      // Ya eliminamos los items antes, solo creamos los nuevos
       items: {
-        deleteMany: {}, // eliminamos los items anteriores
         create: items.map(item => ({
           productoId: item.productoId,
           cantidad: item.cantidad
