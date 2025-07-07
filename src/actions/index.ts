@@ -22,8 +22,7 @@ export * from "./categorie/CategoriesItems";
 export * from "./categorie/CategorieAbm";
 
 export * from "./mercadopago/Payments";
-export * from "./discount-coupons/getAllCupons";
-export * from "./discount-coupons/getCupon";
+export * from './discount-coupons';
 
 
 export * from "./pedidos/mis-pedidos";

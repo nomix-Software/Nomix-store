@@ -17,6 +17,7 @@ import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
 import { FiHelpCircle } from "react-icons/fi";
+import { adminCouponOption } from "./adminCouponOption";
 
 interface SidebarProps {
   role: "ADMIN" | "CLIENTE";
@@ -53,6 +54,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       href: "/dashboard/pedidos",
       icon: FaClipboardCheck, // ✅ ícono de pedidos / entrega
     },
+    adminCouponOption, // Nuevo ítem para cupones
   ];
 
   const clientOptions = [
