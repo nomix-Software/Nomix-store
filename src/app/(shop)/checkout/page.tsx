@@ -118,8 +118,8 @@ export default function SeleccionEntregaPage() {
       }),
       data?.user.email as string,
       tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
-      cuponValidado ? cuponValidado.id : undefined,
-      descuentoCalculado
+      // cuponValidado ? cuponValidado.id : undefined,
+      // descuentoCalculado
     );
 
     toast.loading("Redirecting...");
@@ -174,16 +174,16 @@ useEffect(() => {
     if (!cuponInput) return setCuponError("Ingresá un código de cupón");
     if (!data?.user?.email) return setCuponError("Debes iniciar sesión para usar cupones");
     const res = await validateCupon({ codigo: cuponInput.trim(), userEmail: data.user.email });
-    if (res.status === 'success') {
+    if (res && res.status === 'success' && res.cupon) {
       setCuponValidado(res.cupon);
-      setDescuento(res.cupon.porcentaje);
+      setDescuento(typeof res.cupon.porcentaje === 'number' ? res.cupon.porcentaje : 0);
       setCuponError("");
-      toast.success("Cupón aplicado: " + res.cupon.codigo);
+      toast.success("Cupón aplicado: " + (res.cupon.codigo ?? ''));
     } else {
-      setCuponError(res.message);
+      setCuponError(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
       setCuponValidado(null);
       setDescuento(0);
-      toast.error(res.message);
+      toast.error(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
     }
   };
 
@@ -268,9 +268,7 @@ useEffect(() => {
             quantity: item.cantidad,
           })),
           data?.user.email as string,
-          tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
-          cuponValidado ? cuponValidado.id : undefined,
-          descuentoCalculado
+          tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
         );
 
         toast.loading("Redirecting...");
