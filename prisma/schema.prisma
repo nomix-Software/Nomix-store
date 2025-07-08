@@ -136,6 +136,8 @@ model Carrito {
   usuarioId     String        @unique
   items         CarritoItem[]
   actualizadoEn DateTime      @updatedAt
+  cupon         CuponDescuento? @relation(fields: [cuponId], references: [id])
+  cuponId       Int?
 }
 
 model CarritoItem {
@@ -195,6 +197,7 @@ model CuponDescuento {
   validoHasta DateTime
   maxUsos     Int?     // Nuevo campo: máximo de usos globales
   ventas      Venta[]
+  carritos    Carrito[] // Relación inversa para Prisma
 }
 
 model MovimientoFinanciero {
