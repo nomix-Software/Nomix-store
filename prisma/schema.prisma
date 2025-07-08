@@ -138,6 +138,7 @@ model Carrito {
   actualizadoEn DateTime      @updatedAt
   cupon         CuponDescuento? @relation(fields: [cuponId], references: [id])
   cuponId       Int?
+  preferenceId  String?       @unique // ID de preferencia de Mercado Pago
 }
 
 model CarritoItem {

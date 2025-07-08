@@ -172,13 +172,10 @@ export default function SeleccionEntregaPage() {
               costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
             } as const;
 
-        // Aquí se puede continuar con el flujo de generación de la orden
-
-       const carrito = await saveCart(items. map(product => ({ cantidad : product.cantidad, productoId: product.id})))
-       if(!carrito.id) return toast.error('Fallo en guardar carrito')
-          const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
-        if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
-          const url = await createCheckout(
+        // Guardar carrito y entrega antes de crear preferencia
+        let cuponId = cuponValidado?.id ?? undefined;
+        // Crear preferencia de pago y obtener preferenceId
+        const url = await createCheckout(
           items.map((item) => ({
             id: String(item.id),
             title: item.nombre,
@@ -188,7 +185,21 @@ export default function SeleccionEntregaPage() {
           data?.user.email as string,
           tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
         );
-
+        // Extraer preferenceId de la url de Mercado Pago
+        let preferenceId: string | undefined = undefined;
+        if (url) {
+          const match = url.match(/pref_id=([^&]+)/);
+          if (match) preferenceId = match[1];
+        }
+        // Guardar carrito con cuponId y preferenceId
+        const carrito = await saveCart(
+          items.map(product => ({ cantidad : product.cantidad, productoId: product.id})),
+          cuponId,
+          preferenceId
+        );
+        if(!carrito.id) return toast.error('Fallo en guardar carrito')
+        const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
+        if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
         toast.loading("Redirecting...");
         if (url) window.location.href = url
       
