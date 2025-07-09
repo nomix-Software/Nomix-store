@@ -1,30 +1,18 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { sendPurchaseEmail } from "@/actions";
-
+import axios from "axios";
 // Utilidad para extraer preferenceId y paymentId del body del webhook
-function extractIds(body: {
-  data?: {
-    id?: string;
-    preference_id?: string;
-    status?: string;
-  };
+function extractPaymentId(body: {
+  data?: { id?: string };
   type?: string;
-  status?: string;
-  preference_id?: string;
-  payment_id?: string;
 }) {
-  let preferenceId = null;
-  let paymentId = null;
-  if (body?.data?.id) paymentId = body.data.id;
-  if (body?.data?.preference_id) preferenceId = body.data.preference_id;
-  if (body?.type === "payment" && body?.data?.id) paymentId = body.data.id;
-  if (body?.type === "payment" && body?.data?.preference_id) preferenceId = body.data.preference_id;
-  // Fallbacks
-  if (!preferenceId && body?.preference_id) preferenceId = body.preference_id;
-  if (!paymentId && body?.payment_id) paymentId = body.payment_id;
-  return { preferenceId, paymentId };
+  if (body?.type === "payment" && body?.data?.id) {
+    return body.data.id.toString();
+  }
+  return null;
 }
+
 
 export async function POST(req: Request) {
   try {
@@ -40,12 +28,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No autorizado. Webhook inválido." }, { status: 401 });
     }
 
-    const { preferenceId, paymentId } = extractIds(body);
-    console.log("[WEBHOOK] - preferenceId:", preferenceId, "paymentId:", paymentId);
-    if (!preferenceId || !paymentId) {
+    const  paymentId  = extractPaymentId(body);
+    console.log("[WEBHOOK]"+ "paymentId:", paymentId);
+
+    if (!paymentId) {
       console.log("[WEBHOOK] - Faltan datos de la transacción");
       return NextResponse.json({ error: "Faltan datos de la transacción." }, { status: 400 });
     }
+    const mpResponse = await axios.get(
+  `https://api.mercadopago.com/v1/payments/${paymentId}`,
+  {
+    headers: {
+      Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+    },
+  }
+);
+const paymentData = mpResponse.data;
+const preferenceId = paymentData.preference_id;
+const mpStatus = paymentData.status;
+
+console.log("[WEBHOOK] - preferenceId:", preferenceId, "status:", mpStatus);
 
     // Buscar si ya existe una venta con ese paymentId (preferenceId no existe en Venta)
     const ventaExistente = await prisma.venta.findFirst({
@@ -89,7 +91,6 @@ export async function POST(req: Request) {
 
     // Determinar estado de venta según status de Mercado Pago
     let estadoVenta = "PENDIENTE";
-    const mpStatus = body?.data?.status || body?.status;
     if (mpStatus === "approved") {
       estadoVenta = "APROBADO";
     } else if (mpStatus === "rejected") {
