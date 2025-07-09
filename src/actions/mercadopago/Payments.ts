@@ -50,5 +50,5 @@ export async function createCheckout(items: Item[], email: string, shippingCost?
     },
   });
 
-  return response.sandbox_init_point || response.init_point;
+  return  response.init_point;
 }

@@ -197,7 +197,7 @@ export default function SeleccionEntregaPage() {
         const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
         if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
         toast.loading("Redirecting...");
-        if (url) window.location.href = url
+          if (url) window.location.href = url
       
       }} className="!space-y-6 !mt-4 !bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8">
         <div>
