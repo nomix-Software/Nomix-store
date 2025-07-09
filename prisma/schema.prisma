@@ -136,6 +136,9 @@ model Carrito {
   usuarioId     String        @unique
   items         CarritoItem[]
   actualizadoEn DateTime      @updatedAt
+  cupon         CuponDescuento? @relation(fields: [cuponId], references: [id])
+  cuponId       Int?
+  preferenceId  String?       @unique // ID de preferencia de Mercado Pago
 }
 
 model CarritoItem {
@@ -193,7 +196,9 @@ model CuponDescuento {
   descripcion String?
   porcentaje  Float
   validoHasta DateTime
+  maxUsos     Int?     // Nuevo campo: máximo de usos globales
   ventas      Venta[]
+  carritos    Carrito[] // Relación inversa para Prisma
 }
 
 model MovimientoFinanciero {

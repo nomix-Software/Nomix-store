@@ -54,6 +54,7 @@ export async function POST(req: Request) {
               producto: true,
             },
           },
+          cupon: true, // Incluir el cupón aplicado
         },
       },
     },
@@ -67,11 +68,19 @@ export async function POST(req: Request) {
   }
 
   const carritoItems = user.carrito.items;
+  const cupon = user.carrito.cupon;
 
-  const total = carritoItems.reduce(
+  let total = carritoItems.reduce(
     (acc, item) => acc + item.producto.precio * item.cantidad,
     0
   );
+  let observacion = "";
+  let cuponId = undefined;
+  if (cupon) {
+    cuponId = cupon.id;
+    total = Math.round(total * (1 - cupon.porcentaje / 100));
+    observacion = `Se aplicó cupón ${cupon.codigo} con ${cupon.porcentaje}% de descuento.`;
+  }
 
   try {
     let estadoInicial = await prisma.estadoPedido.findFirst({
@@ -96,6 +105,8 @@ export async function POST(req: Request) {
         total,
         estadoId: estadoInicial?.id || 1,
         metodoPagoId: metodoPago?.id || 1,
+        cuponId: cuponId ?? null,
+        observacion: observacion,
         productos: {
           create: carritoItems.map((item) => ({
             productoId: item.productoId,
@@ -107,6 +118,14 @@ export async function POST(req: Request) {
         // Puedes guardar el paymentId y status de MP si lo deseas
       },
     });
+
+    // Actualizar stock de productos
+    for (const item of carritoItems) {
+      await prisma.producto.update({
+        where: { id: item.productoId },
+        data: { stock: { decrement: item.cantidad } },
+      });
+    }
 
     await prisma.entrega.update({
       where: { carritoId: user?.carrito?.id },

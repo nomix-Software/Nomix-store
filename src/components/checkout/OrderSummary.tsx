@@ -8,12 +8,16 @@ interface OrderSummaryProps {
   costoEnvio?: number;
   totalFinal?: number;
   tipoEntrega?: "ENVIO" | "RETIRO";
+  descuento?: number;
+  cupon?: { codigo: string; porcentaje: number } | null;
 }
 
 export default function OrderSummary({
   costoEnvio = 0,
   totalFinal,
   tipoEntrega,
+  descuento = 0,
+  cupon = null,
 }: OrderSummaryProps) {
   const [abierto, setAbierto] = useState(false);
   const products = useCartStore((state) => state.items);
@@ -40,6 +44,13 @@ export default function OrderSummary({
         {tipoEntrega === "ENVIO" && costoEnvio > 0 && (
           <p className="!text-gray-700">
             Envío: <span className="!font-bold">${costoEnvio.toFixed(2)}</span>
+          </p>
+        )}
+        {cupon && descuento > 0 && (
+          <p className="!text-green-700">
+            Cupón{" "}
+            <span className="!font-bold">{cupon.codigo}</span> aplicado:-
+            {cupon.porcentaje}% (-${descuento.toFixed(2)})
           </p>
         )}
         <p className="!text-gray-800 !font-bold !text-lg">

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { calcularDistanciaKm } from '@/utils';
+import { validateCupon } from "@/actions/discount-coupons/validateCupon";
 
 const opcionesRetiro = [
   {
@@ -48,6 +49,9 @@ export default function SeleccionEntregaPage() {
   const [contacto, setContacto] = useState("");
   const [telefono, setTelefono] = useState("");
   const [observaciones, setObservaciones] = useState("");
+  const [cuponInput, setCuponInput] = useState("");
+  const [cuponValidado, setCuponValidado] = useState<Awaited<ReturnType<typeof validateCupon>>["cupon"] | null>(null);
+  const [cuponError, setCuponError] = useState("");
   const {items , addToCart } = useCartStore(state => state)
   const {data, status} = useSession()
   const router = useRouter()
@@ -58,68 +62,7 @@ export default function SeleccionEntregaPage() {
       direccionEntrega.ciudad?.toLowerCase() === 'córdoba' &&
       direccionEntrega.provincia?.toLowerCase().includes('córdoba'));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (tipoEntrega === 'RETIRO' && sucursalSeleccionada === null) return alert("Selecciona una sucursal");
-    if (tipoEntrega === 'ENVIO' && !direccionEntrega?.address) return alert("Selecciona una dirección válida para el envío");
-    if(!(Boolean(data?.user.email))){
-      alert('se venció tu sesión')
-      router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)
-      return
-    }
-    const datosEntrega = tipoEntrega === 'RETIRO'
-      ? {
-          tipo: 'RETIRO',
-          puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
-          direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
-          ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
-          provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
-          codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
-          pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
-          contacto,
-          telefono,
-          observaciones,
-          costoEnvio: 0,
-        } as const
-      : {
-          tipo: 'ENVIO',
-          direccion: direccionEntrega?.address,
-          lat: direccionEntrega?.lat,
-          lng: direccionEntrega?.lng,
-          ciudad: direccionEntrega?.ciudad,
-          provincia: direccionEntrega?.provincia,
-          codigoPostal: direccionEntrega?.codigoPostal,
-          pais: direccionEntrega?.pais,
-          contacto,
-          telefono,
-          observaciones,
-          costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
-        } as const;
-
-    // Aquí se puede continuar con el flujo de generación de la orden
-
-   const carrito = await saveCart(items. map(product => ({ cantidad : product.cantidad, productoId: product.id})))
-   if(!carrito.id) return toast.error('Fallo en guardar carrito')
-      const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
-    if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
-        const url = await createCheckout(
-      items.map((item) => {
-        return {
-          id: String(item.id),
-          title: item.nombre,
-          unit_price: item.precio,
-          quantity: item.cantidad,
-        };
-      }),
-      data?.user.email as string,
-      tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
-    );
-
-    toast.loading("Redirecting...");
-    if (url) window.location.href = url
-  
-  };
-useEffect(() => {
+  useEffect(() => {
   (async ()=>{
     if(!Boolean(data?.user.id ) && status !== 'loading') {router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)}
     if(Boolean(data?.user.id) && status == 'authenticated' && items.length === 0){
@@ -155,7 +98,27 @@ useEffect(() => {
     );
     costoEnvio = calcularCostoEnvio(distanciaEnvio);
   }
-  const totalFinal = totalCarrito + (tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0);
+  // Calcular descuento si hay cupón válido
+  const descuentoCalculado = cuponValidado ? Math.round((totalCarrito * cuponValidado.porcentaje) / 100) : 0;
+  const totalFinal = totalCarrito + (tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0) - descuentoCalculado;
+
+  // Handler para aplicar cupón
+  const handleAplicarCupon = async () => {
+    setCuponError("");
+    setCuponValidado(null);
+    if (!cuponInput) return setCuponError("Ingresá un código de cupón");
+    if (!data?.user?.email) return setCuponError("Debes iniciar sesión para usar cupones");
+    const res = await validateCupon({ codigo: cuponInput.trim(), userEmail: data.user.email });
+    if (res && res.status === 'success' && res.cupon) {
+      setCuponValidado(res.cupon);
+      setCuponError("");
+      toast.success("Cupón aplicado: " + (res.cupon.codigo ?? ''));
+    } else {
+      setCuponError(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
+      setCuponValidado(null);
+      toast.error(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
+    }
+  };
 
   return (
     <div className="max-w-2xl !mx-auto !p-2 sm:!p-4">
@@ -164,8 +127,79 @@ useEffect(() => {
         costoEnvio={tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0}
         totalFinal={totalFinal}
         tipoEntrega={tipoEntrega}
+        descuento={descuentoCalculado}
+        cupon={cuponValidado}
       />
-      <form onSubmit={handleSubmit} className="!space-y-6 !mt-4 !bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8">
+      <form onSubmit={async (e) => {
+        e.preventDefault();
+        if (tipoEntrega === 'RETIRO' && sucursalSeleccionada === null) return alert("Selecciona una sucursal");
+        if (tipoEntrega === 'ENVIO' && !direccionEntrega?.address) return alert("Selecciona una dirección válida para el envío");
+        if(!(Boolean(data?.user.email))){
+          alert('se venció tu sesión')
+          router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)
+          return
+        }
+        const datosEntrega = tipoEntrega === 'RETIRO'
+          ? {
+              tipo: 'RETIRO',
+              puntoRetiro: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.nombre,
+              direccion: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.direccion,
+              ciudad: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.ciudad,
+              provincia: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.provincia,
+              codigoPostal: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.codigoPostal,
+              pais: opcionesRetiro.find((s) => s.id === sucursalSeleccionada)?.pais,
+              contacto,
+              telefono,
+              observaciones,
+              costoEnvio: 0,
+            } as const
+          : {
+              tipo: 'ENVIO',
+              direccion: direccionEntrega?.address,
+              lat: direccionEntrega?.lat,
+              lng: direccionEntrega?.lng,
+              ciudad: direccionEntrega?.ciudad,
+              provincia: direccionEntrega?.provincia,
+              codigoPostal: direccionEntrega?.codigoPostal,
+              pais: direccionEntrega?.pais,
+              contacto,
+              telefono,
+              observaciones,
+              costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
+            } as const;
+
+        // Guardar carrito y entrega antes de crear preferencia
+        const cuponId = cuponValidado?.id ?? undefined;
+        // Crear preferencia de pago y obtener preferenceId
+        const url = await createCheckout(
+          items.map((item) => ({
+            id: String(item.id),
+            title: item.nombre,
+            unit_price: item.precio,
+            quantity: item.cantidad,
+          })),
+          data?.user.email as string,
+          tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
+        );
+        // Extraer preferenceId de la url de Mercado Pago
+        let preferenceId: string | undefined = undefined;
+        if (url) {
+          const match = url.match(/pref_id=([^&]+)/);
+          if (match) preferenceId = match[1];
+        }
+        // Guardar carrito con cuponId y preferenceId
+        const carrito = await saveCart(
+          items.map(product => ({ cantidad : product.cantidad, productoId: product.id})),
+          cuponId,
+          preferenceId
+        );
+        if(!carrito.id) return toast.error('Fallo en guardar carrito')
+        const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
+        if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
+        toast.loading("Redirecting...");
+        if (url) window.location.href = url
+      
+      }} className="!space-y-6 !mt-4 !bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8">
         <div>
           <p className="!text-base sm:!text-lg !font-semibold !mb-2">Tipo de entrega:</p>
           <div className="!flex !gap-4 !mb-4 !flex-wrap">
@@ -274,6 +308,29 @@ useEffect(() => {
             rows={3}
             placeholder="Ej: Retirar por la tarde"
           />
+        </div>
+        {/* Input de cupón estilizado */}
+        <div>
+          <label className="!block !text-sm !font-medium !text-gray-700 !mb-1">Cupón de descuento</label>
+          <div className="!flex !gap-2 !items-center">
+            <TextField
+              type="text"
+              name="cupon"
+              placeholder="Código de cupón"
+              value={cuponInput}
+              onChange={e => setCuponInput(e.target.value)}
+              className="!mt-1 !block !w-40 !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
+            />
+            <button
+              type="button"
+              onClick={handleAplicarCupon}
+              className="!bg-[#f02d34] !text-white !rounded-lg !px-4 !py-2 !font-semibold hover:!bg-[#d12a2f] !transition"
+            >
+              Aplicar
+            </button>
+            {cuponError && <span className="!text-red-500 !ml-2">{cuponError}</span>}
+            {cuponValidado && <span className="!text-green-600 !ml-2">Cupón aplicado: {cuponValidado.codigo} (-{cuponValidado.porcentaje}%)</span>}
+          </div>
         </div>
         <button
           type="submit"
