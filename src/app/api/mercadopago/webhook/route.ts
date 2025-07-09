@@ -28,18 +28,18 @@ function extractIds(body: {
 
 export async function POST(req: Request) {
   try {
-    console.log("[WEBHOOK] - Inicio POST MercadoPago");
+    console.log("[WEBHOOK] - Inicio POST MercadoPago", );
     // Validar autenticidad del webhook usando la clave secreta de Mercado Pago
     const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     const receivedSecret = req.headers.get("x-signature");
     console.log("[WEBHOOK] - Header x-signature:", receivedSecret);
+    const body = await req.json();
+    console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
     if (!mpSecret || receivedSecret !== mpSecret) {
       console.log("[WEBHOOK] - Webhook inválido: clave incorrecta");
       return NextResponse.json({ error: "No autorizado. Webhook inválido." }, { status: 401 });
     }
 
-    const body = await req.json();
-    console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
     const { preferenceId, paymentId } = extractIds(body);
     console.log("[WEBHOOK] - preferenceId:", preferenceId, "paymentId:", paymentId);
     if (!preferenceId || !paymentId) {
