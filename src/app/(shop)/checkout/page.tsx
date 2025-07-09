@@ -50,8 +50,7 @@ export default function SeleccionEntregaPage() {
   const [telefono, setTelefono] = useState("");
   const [observaciones, setObservaciones] = useState("");
   const [cuponInput, setCuponInput] = useState("");
-  const [cuponValidado, setCuponValidado] = useState<any>(null);
-  const [descuento, setDescuento] = useState(0);
+  const [cuponValidado, setCuponValidado] = useState<Awaited<ReturnType<typeof validateCupon>>["cupon"] | null>(null);
   const [cuponError, setCuponError] = useState("");
   const {items , addToCart } = useCartStore(state => state)
   const {data, status} = useSession()
@@ -107,19 +106,16 @@ export default function SeleccionEntregaPage() {
   const handleAplicarCupon = async () => {
     setCuponError("");
     setCuponValidado(null);
-    setDescuento(0);
     if (!cuponInput) return setCuponError("Ingresá un código de cupón");
     if (!data?.user?.email) return setCuponError("Debes iniciar sesión para usar cupones");
     const res = await validateCupon({ codigo: cuponInput.trim(), userEmail: data.user.email });
     if (res && res.status === 'success' && res.cupon) {
       setCuponValidado(res.cupon);
-      setDescuento(typeof res.cupon.porcentaje === 'number' ? res.cupon.porcentaje : 0);
       setCuponError("");
       toast.success("Cupón aplicado: " + (res.cupon.codigo ?? ''));
     } else {
       setCuponError(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
       setCuponValidado(null);
-      setDescuento(0);
       toast.error(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
     }
   };
@@ -173,7 +169,7 @@ export default function SeleccionEntregaPage() {
             } as const;
 
         // Guardar carrito y entrega antes de crear preferencia
-        let cuponId = cuponValidado?.id ?? undefined;
+        const cuponId = cuponValidado?.id ?? undefined;
         // Crear preferencia de pago y obtener preferenceId
         const url = await createCheckout(
           items.map((item) => ({

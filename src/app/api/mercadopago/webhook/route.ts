@@ -3,7 +3,17 @@ import { NextResponse } from "next/server";
 import { sendPurchaseEmail } from "@/actions";
 
 // Utilidad para extraer preferenceId y paymentId del body del webhook
-function extractIds(body: any) {
+function extractIds(body: {
+  data?: {
+    id?: string;
+    preference_id?: string;
+    status?: string;
+  };
+  type?: string;
+  status?: string;
+  preference_id?: string;
+  payment_id?: string;
+}) {
   let preferenceId = null;
   let paymentId = null;
   if (body?.data?.id) paymentId = body.data.id;
@@ -64,7 +74,7 @@ export async function POST(req: Request) {
 
     // Determinar estado de venta según status de Mercado Pago
     let estadoVenta = "PENDIENTE";
-    let mpStatus = body?.data?.status || body?.status;
+    const mpStatus = body?.data?.status || body?.status;
     if (mpStatus === "approved") {
       estadoVenta = "APROBADO";
     } else if (mpStatus === "rejected") {

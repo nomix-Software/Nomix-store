@@ -4,13 +4,14 @@ import { FaTicketAlt } from "react-icons/fa";
 import { TextField } from "@/components";
 import toast from "react-hot-toast";
 import { createCupon, getAllCupons, deleteCupon } from "@/actions";
+import type { GetAllCuponsResponse } from "@/actions/discount-coupons/getAllCupons";
 
 export default function CuponesPage() {
   const [cupon, setCupon] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [validoHasta, setValidoHasta] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [cupones, setCupones] = useState<any[]>([]);
+  const [cupones, setCupones] = useState<GetAllCuponsResponse>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchCupones = async () => {

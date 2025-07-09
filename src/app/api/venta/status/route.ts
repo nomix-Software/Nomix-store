@@ -14,9 +14,9 @@ export async function GET(req: Request) {
   const venta = await prisma.venta.findFirst({
     where: {
       OR: [
-        paymentId ? { paymentId } : undefined,
-        preferenceId ? { paymentId: preferenceId } : undefined,
-      ].filter(Boolean) as any,
+        ...(paymentId ? [{ paymentId }] : []),
+        ...(preferenceId ? [{ paymentId: preferenceId }] : []),
+      ],
     },
     include: {
       productos: { include: { producto: true } },

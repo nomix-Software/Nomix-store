@@ -7,7 +7,8 @@ export async function createCupon({ codigo, porcentaje, validoHasta, descripcion
       data: { codigo, porcentaje, validoHasta, descripcion },
     });
     return { status: 'success', cupon };
-  } catch (error: any) {
-    return { status: 'failed', message: error?.message || 'Error al crear cupón' };
+  } catch (error) {
+    const err = error as Error;
+    return { status: 'failed', message: err.message || 'Error al crear cupón' };
   }
 }

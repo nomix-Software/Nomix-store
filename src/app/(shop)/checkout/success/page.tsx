@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { VentaStatus } from "@/interfaces/VentaStatus.interface";
 
 const Success = () => {
   const [loading, setLoading] = useState(true);
-  const [venta, setVenta] = useState<any>(null);
+  const [venta, setVenta] = useState<VentaStatus | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -31,6 +32,7 @@ const Success = () => {
           setErrorMsg(data?.message || "No se encontró la venta.");
         }
       } catch (err) {
+        console.error("Error al consultar el estado de la compra:", err);
         setErrorMsg("Error al consultar el estado de la compra.");
       } finally {
         setLoading(false);
