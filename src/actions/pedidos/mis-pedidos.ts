@@ -18,7 +18,7 @@ export async function getMisPedidos({ skip = 0, take = 30, email, pedidoId }: {s
     ? { id: pedidoId } // Si es admin y hay un pedidoId, filtra por ID
     : undefined         // Si es admin pero no hay pedidoId, trae todos
   : { usuarioId: session?.user.id }; // Si no es admin, filtra por usuario
-
+console.log({where})
   const ventas = await prisma.venta.findMany({
     where,
     orderBy: { fecha: "desc" },

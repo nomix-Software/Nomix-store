@@ -2,12 +2,14 @@
 import { updatePedidoEstado } from "@/actions";
 import { LoadingOverlay } from "@/components";
 import type { DetallePedido } from "@/interfaces";
+import { authOptions } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ImSpinner2 } from "react-icons/im";
 
-const estadosDisponibles = ["PENDIENTE", "EN PREPARACIÓN", "ENVIADO", "ENTREGADO", "CANCELADO"];
+const estadosDisponibles = ["PENDIENTE", "EN PREPARACIÓN", "ENVIADO", "ENTREGADO", "CANCELADO", 'RECHAZADO', 'DEVUELTO'];
 const DetallePedido = () => {
   const { id } = useParams(); // Aquí obtenemos el parámetro "id" de la URL
   const [pedido, setPedido] = useState<DetallePedido | null>(null);
@@ -15,6 +17,7 @@ const DetallePedido = () => {
   const [loading, setLoading] = useState(false);
   const [estadoActual, setEstadoActual] = useState<DetallePedido['estado'] | string>('');
   const route = useRouter()
+  const sesion = useSession()
   useEffect(() => {
     if (!id) return; // Esperamos a que el parámetro esté disponible
 
@@ -66,6 +69,8 @@ const DetallePedido = () => {
           <p className="text-gray-600">
             <span className="font-semibold">Estado:</span>{" "}
             <span className="flex flex-col">
+              { sesion.data?.user.role === 'ADMIN' && (
+
               <select
                 value={estadoActual}
                 onChange={(e) => setEstadoActual(e.target.value)}
@@ -77,10 +82,13 @@ const DetallePedido = () => {
                   </option>
                 ))}
               </select>
+            )} 
+              {estadoActual}
+              {sesion.data?.user.role === 'ADMIN' &&(
               <button
-                onClick={handleEstadoChange}
-                className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer !mt-2"
-                disabled={loading}
+              onClick={handleEstadoChange}
+              className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer !mt-2"
+              disabled={loading}
               >
                 {loading ? (
                   <>
@@ -90,6 +98,7 @@ const DetallePedido = () => {
                   "Guardar"
                 )}
               </button>
+              )}
               {/* {guardado && (
                 <FaCheckCircle className="inline-block text-green-500 ml-2" />
               )} */}
