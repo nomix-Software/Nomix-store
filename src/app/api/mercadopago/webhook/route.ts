@@ -28,9 +28,22 @@ function extractIds(body: {
 
 export async function POST(req: Request) {
   try {
+    console.log("[WEBHOOK] - Inicio POST MercadoPago", );
+    // Validar autenticidad del webhook usando la clave secreta de Mercado Pago
+    const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    const receivedSecret = req.headers.get("x-signature");
+    console.log("[WEBHOOK] - Header x-signature:", receivedSecret);
     const body = await req.json();
+    console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
+    if (!mpSecret || receivedSecret !== mpSecret) {
+      console.log("[WEBHOOK] - Webhook inválido: clave incorrecta");
+      return NextResponse.json({ error: "No autorizado. Webhook inválido." }, { status: 401 });
+    }
+
     const { preferenceId, paymentId } = extractIds(body);
+    console.log("[WEBHOOK] - preferenceId:", preferenceId, "paymentId:", paymentId);
     if (!preferenceId || !paymentId) {
+      console.log("[WEBHOOK] - Faltan datos de la transacción");
       return NextResponse.json({ error: "Faltan datos de la transacción." }, { status: 400 });
     }
 
@@ -41,6 +54,7 @@ export async function POST(req: Request) {
       },
     });
     if (ventaExistente) {
+      console.log("[WEBHOOK] - Venta ya registrada");
       // Ya existe la venta, no duplicar
       return NextResponse.json({ ok: true, message: "Venta ya registrada." });
     }
@@ -55,6 +69,7 @@ export async function POST(req: Request) {
       },
     });
     if (!carrito || !carrito.usuario) {
+      console.log("[WEBHOOK] - No se encontró el carrito o usuario asociado");
       return NextResponse.json({ error: "No se encontró el carrito o usuario asociado." }, { status: 404 });
     }
 
@@ -84,6 +99,7 @@ export async function POST(req: Request) {
     } else if (mpStatus) {
       estadoVenta = mpStatus.toUpperCase();
     }
+    console.log("[WEBHOOK] - Estado venta:", estadoVenta);
 
     let estadoInicial = await prisma.estadoPedido.findFirst({
       where: { nombre: estadoVenta },
@@ -120,6 +136,7 @@ export async function POST(req: Request) {
         },
       },
     });
+    console.log("[WEBHOOK] - Venta creada con ID:", venta.id);
 
     // Actualizar stock de productos
     for (const item of carritoItems) {
@@ -128,12 +145,14 @@ export async function POST(req: Request) {
         data: { stock: { decrement: item.cantidad } },
       });
     }
+    console.log("[WEBHOOK] - Stock actualizado");
 
     // Actualizar entrega si existe
     await prisma.entrega.updateMany({
       where: { carritoId: carrito.id },
       data: { ventaId: venta.id },
     });
+    console.log("[WEBHOOK] - Entrega actualizada");
 
     // Solo crea movimiento financiero y envía mail si el pago fue aprobado
     if (mpStatus === "approved") {
@@ -144,13 +163,16 @@ export async function POST(req: Request) {
           descripcion: `Venta ID ${venta.id} - Mercado Pago`,
         },
       });
+      console.log("[WEBHOOK] - Movimiento financiero creado");
       await sendPurchaseEmail(carrito.usuario.email, venta.id);
+      console.log("[WEBHOOK] - Email de compra enviado");
     }
 
     // Limpiar carrito
     await prisma.carritoItem.deleteMany({
       where: { carritoId: carrito.id },
     });
+    console.log("[WEBHOOK] - Carrito limpiado");
 
     return NextResponse.json({ success: true, estado: estadoVenta });
   } catch (err) {
