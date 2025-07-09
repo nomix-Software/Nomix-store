@@ -3,11 +3,12 @@
 
 import { MercadoPagoConfig, Preference } from "mercadopago";
 
+const accessToken = process.env.MP_ACCESS_TOKEN;
+if (!accessToken) {
+  throw new Error("MP_ACCESS_TOKEN environment variable is not defined");
+}
 const client = new MercadoPagoConfig({
-  accessToken:
-    // prod prod "APP_USR-124483288906851-042322-5ef4198ef3800d7e5cc224251aa6531c-2396035246",
-    // prod test "APP_USR-8688105396107782-042923-af5ca2f3e2b8cddd375adabe013682a0-2412510533"
-    "APP_USR-8688105396107782-042923-af5ca2f3e2b8cddd375adabe013682a0-2412510533",
+  accessToken,
 });
 
 const preference = new Preference(client);
