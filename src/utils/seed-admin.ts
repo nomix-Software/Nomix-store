@@ -4,17 +4,20 @@ const prisma = new PrismaClient();
 
 async function main() {
   // LIMPIAR BASE DE DATOS (orden correcto)
-  await prisma.entrega.deleteMany(); // Eliminar entregas antes de las ventas
-  await prisma.carritoItem.deleteMany();
-  await prisma.venta.deleteMany(); // Luego elimina las ventas
-  await prisma.carrito.deleteMany();
+  // await prisma.entrega.deleteMany(); // Eliminar entregas antes de las ventas
+  // await prisma.carritoItem.deleteMany();
+  // await prisma.venta.deleteMany(); // Luego elimina las ventas
+  // await prisma.carrito.deleteMany();
   // Crear usuario
 //  await prisma.user.update({ 
 //     where:{ email : 'marcosgaliano96@gmail.com'}, data: { rol : 'ADMIN'}
 
 //   });
 // const product = await prisma.producto.findFirst({ where:{ slug: 'pizarra-capibara'} })
-
+//usuarioId:'cmbfp5rsv0000mmg4e60jej34'
+ const product = await prisma.user.delete({ where:{ id: 'cmbfp5rsv0000mmg4e60jej34'} })
+//  const product = await prisma.venta.findMany({ where:{ usuarioId: 'cmci9cihn0000ea32wat9wfxs'} })
+  console.log({product})
 // console.log({product})
 //   await prisma.imagenProducto.deleteMany({
 //   where: { productoId: 36 },
