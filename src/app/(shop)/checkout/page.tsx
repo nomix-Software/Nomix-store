@@ -98,6 +98,10 @@ export default function SeleccionEntregaPage() {
     );
     costoEnvio = calcularCostoEnvio(distanciaEnvio);
   }
+  const calcularPrecioConDescuento = (precio: number, descuento: number) => {
+    console.log('calcularPrecioConDescuento',{ precio, descuento, res: Math.round(precio - (precio * descuento / 100)) })
+    return Math.round(precio - (precio * descuento / 100));
+  };
   // Calcular descuento si hay cupón válido
   const descuentoCalculado = cuponValidado ? Math.round((totalCarrito * cuponValidado.porcentaje) / 100) : 0;
   const totalFinal = totalCarrito + (tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0) - descuentoCalculado;
@@ -175,7 +179,7 @@ export default function SeleccionEntregaPage() {
           items.map((item) => ({
             id: String(item.id),
             title: item.nombre,
-            unit_price: item.precio,
+            unit_price: cuponId ? calcularPrecioConDescuento(item.precio, cuponValidado?.porcentaje ?? 0) : item.precio,
             quantity: item.cantidad,
           })),
           data?.user.email as string,
