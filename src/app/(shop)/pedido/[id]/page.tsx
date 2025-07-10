@@ -3,7 +3,6 @@ import { updatePedidoEstado } from "@/actions";
 import { LoadingOverlay } from "@/components";
 import { Select } from "@/components/ui/Select";
 import type { DetallePedido } from "@/interfaces";
-import { authOptions } from "@/lib/auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -47,7 +46,7 @@ const DetallePedido = () => {
   }
     const handleEstadoChange = async () => {
     setLoading(true);
-   const resp = await updatePedidoEstado(Number(id), estadoActual)
+   await updatePedidoEstado(Number(id), estadoActual)
     setLoading(false)
   };
 

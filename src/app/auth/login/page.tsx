@@ -2,7 +2,7 @@
 
 import { registerUser } from "@/actions/auth/AuthRegister";
 import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword";
-import { LoadingOverlay, TextField as UITextField } from "@/components";
+import {TextField as UITextField } from "@/components";
 import { signIn } from "next-auth/react";
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";

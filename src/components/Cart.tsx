@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import Link from "next/link";
 import { AiOutlineLeft, AiOutlineShopping } from "react-icons/ai";
 
@@ -13,46 +13,10 @@ import { formatPrice } from "@/utils/formatPrice";
 // import { createCheckout } from "@/actions";
 
 export const Cart = () => {
-  const cartRef = useRef(null);
   const { items, setShowCart, getSubtotal } = useCartStore((state) => state);
   const subtotal = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.precio * item.cantidad, 0)
   );
-
-  // const handleCheckout = async () => {
-  //   // const stripe = await getStripe();
-
-  //   // const response = await fetch("/api/stripe", {
-  //   //   method: "POST",
-  //   //   headers: {
-  //   //     "Content-Type": "application/json",
-  //   //   },
-  //   //   body: JSON.stringify(cartItems),
-  //   // });
-
-  //   // if (response.status !== 200) {
-  //   //   toast.error(`Failed to Proceed because of ${response.status}`);
-  //   //   return;
-  //   // }
-
-  //   // const data = await response.json();
-  //   const url = await createCheckout(
-  //     items.map((item) => {
-  //       return {
-  //         id: String(item.id),
-  //         title: item.nombre,
-  //         unit_price: item.precio,
-  //         quantity: item.cantidad,
-  //       };
-  //     }),
-  //     "marcosgaliano96@gmail.com"
-  //   );
-  //   console.log("url", url);
-
-  //   toast.loading("Redirecting...");
-  //   if (url) window.location.href = url;
-  //   // stripe.redirectToCheckout({ sessionId: data.id });
-  // };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end !bg-black/30">
