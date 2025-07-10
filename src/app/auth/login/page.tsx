@@ -63,9 +63,9 @@ export default function AuthPage() {
         </h2>
 
         <form
+          onSubmit={() => setIsLoading(true)}
           action={async (formData) => {
-            
-            setIsLoading(true);
+            // setIsLoading(true); // Ya se setea en onSubmit
             const email = formData.get("email") as string;
             const password = formData.get("password") as string;
 
