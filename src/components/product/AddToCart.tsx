@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { Quantity } from '../ui/Quantity'
 import { useCartStore } from '@/store'
+import { formatPrice } from '@/utils/formatPrice'
 
 interface Props {
     precio: number
@@ -42,7 +43,7 @@ export const AddToCart = ({ stock, id, nombre, slug, precio, imagenURI }: Props)
 
     return (
         <>
-            <p className="price">${priceByQuantity}</p>
+            <p className="price">{formatPrice(priceByQuantity)}</p>
             <Quantity
                 quantity={quantity}
                 onChange={(value) => handleChageQty(value)}
