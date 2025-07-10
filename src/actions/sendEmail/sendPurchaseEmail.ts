@@ -10,7 +10,7 @@ export async function sendPurchaseEmail(usuario: string, pedidoId: number) {
     },
   });
 
-  const url = `${process.env.NEXT_PUBLIC_APP_URL}/pedido/${pedidoId}`;
+  const url = `${process.env.NEXT_PUBLIC_APP_URL}/auth/login?redirect_uri=/pedido/${pedidoId}`;
 
   const mailOptions = {
     from: `"CYE Tech" <${process.env.EMAIL_USER}>`,
