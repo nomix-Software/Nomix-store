@@ -2,7 +2,7 @@
 
 import { registerUser } from "@/actions/auth/AuthRegister";
 import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword";
-import { LoadingOverlay, TextField } from "@/components";
+import {TextField as UITextField } from "@/components";
 import { signIn } from "next-auth/react";
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
@@ -38,23 +38,11 @@ export default function AuthPage() {
     }
   };
 
-  if (isLoading)
-    return (
-      <LoadingOverlay
-        text={
-          isForgotPassword
-            ? "Enviando instrucciones..."
-            : isLogin
-            ? "Obteniendo datos..."
-            : "Registrando usuario..."
-        }
-      />
-    );
 
   return (
-    <div className="max-w-md !mx-auto  !p-6 h-[70vh]  !my-16">
+    <div className="max-w-md !mx-auto !p-6 h-fit !my-16 !bg-white !rounded-3xl !shadow-lg !border !border-gray-100">
       <div className="h-fit">
-        <h2 className="text-2xl font-bold !mb-4 text-center">
+        <h2 className="text-2xl font-bold !mb-6 text-center products-heading">
           {isForgotPassword
             ? "Recuperar contraseña"
             : isLogin
@@ -63,9 +51,9 @@ export default function AuthPage() {
         </h2>
 
         <form
+          onSubmit={() => setIsLoading(true)}
           action={async (formData) => {
-            
-            setIsLoading(true);
+            // setIsLoading(true); // Ya se setea en onSubmit
             const email = formData.get("email") as string;
             const password = formData.get("password") as string;
 
@@ -117,28 +105,27 @@ export default function AuthPage() {
           }}
           className="space-y-4"
         >
-          <TextField
+          <UITextField
             type="email"
             placeholder="Email"
             value={form.email}
             name="email"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
+            className="!rounded-full !p-3 !text-base !border-gray-200 !focus:!border-[#f02d34] !focus:!ring-2 !focus:!ring-[#f02d34]/20 !bg-white !mb-2"
           />
 
           {!isForgotPassword && (
-            <TextField
+            <UITextField
               name="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               label="Contraseña"
               type={showPassword ? "text" : "password"}
-              className="!mb-2"
+              className="!rounded-full !p-3 !text-base !border-gray-200 !focus:!border-[#f02d34] !focus:!ring-2 !focus:!ring-[#f02d34]/20 !bg-white !mb-2"
               endIcon={
                 showPassword ? (
-                  <AiFillEyeInvisible
-                    onClick={() => setShowPassword(false)}
-                  />
+                  <AiFillEyeInvisible onClick={() => setShowPassword(false)} />
                 ) : (
                   <AiFillEye onClick={() => setShowPassword(true)} />
                 )

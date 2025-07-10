@@ -39,33 +39,45 @@ export const ItemCart = ({
       return;
     }
   };
+
+  const formatPrice = (value: number) =>
+    value.toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+    });
   return (
-    <div className="product">
+    <div className="flex items-center !gap-3 !py-2 !border-b !border-gray-100 last:!border-b-0">
       <Image
         src={imagen}
-        width={100}
-        height={100}
-        className="cart-product-image"
+        width={56}
+        height={56}
+        className="!rounded-xl !object-cover !bg-gray-100 !shrink-0"
         alt={`cart-product-${nombre}`}
       />
-      <div className="flex flex-col justify-between w-full ">
-        <div className="flex justify-between items-center">
-          <Link href={`/product/${slug}`}>
-            <h5> {nombre}</h5>
+      <div className="flex flex-col justify-between w-full !min-w-0">
+        <div className="flex justify-between items-center !gap-2">
+          <Link href={`/product/${slug}`} className="!truncate !max-w-[120px]">
+            <h5 className="!text-base !font-medium !text-[#222] !truncate">
+              {nombre}
+            </h5>
           </Link>
-          <h4>${precio}</h4>
+          <h4 className="!text-base !font-bold !text-[#222] !whitespace-nowrap">
+            {formatPrice(precio)}
+          </h4>
         </div>
-        <div className="flex bottom">
+        <div className="flex items-center !gap-2 !mt-2">
           <Quantity
             quantity={cantidad}
             onChange={(value, action) => handleChageQty(value, action)}
           />
           <button
             type="button"
-            className="remove-item"
+            className="remove-item !ml-2 !text-gray-400 hover:!text-red-500 transition-colors !p-1"
             onClick={() => removeFromCart(id)}
+            title="Quitar"
           >
-            <TiDeleteOutline />
+            <TiDeleteOutline size={20} />
           </button>
         </div>
       </div>
