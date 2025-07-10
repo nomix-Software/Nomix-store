@@ -38,18 +38,6 @@ export default function AuthPage() {
     }
   };
 
-  if (isLoading)
-    return (
-      <LoadingOverlay
-        text={
-          isForgotPassword
-            ? "Enviando instrucciones..."
-            : isLogin
-            ? "Obteniendo datos..."
-            : "Registrando usuario..."
-        }
-      />
-    );
 
   return (
     <div className="max-w-md !mx-auto  !p-6 h-[70vh]  !my-16">
