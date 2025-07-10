@@ -9,6 +9,7 @@ import { useCartStore } from "@/store";
 
 import { ItemCart } from "./ItemCart";
 import Promotions from "./checkout/Promotion";
+import { formatPrice } from "@/utils/formatPrice";
 // import { createCheckout } from "@/actions";
 
 export const Cart = () => {
@@ -89,7 +90,7 @@ export const Cart = () => {
           <div className="cart-bottom !pt-4 border-t border-gray-100 shrink-0 bg-white sticky bottom-0 left-0 right-0 z-10">
             <div className="total flex justify-between items-center mb-4">
               <h3 className="text-base text-gray-600">Subtotal:</h3>
-              <h3 className="text-lg font-bold text-[#222]">${subtotal}</h3>
+              <h3 className="text-lg font-bold text-[#222]">{formatPrice(subtotal)}</h3>
             </div>
             <div className="w-fit !m-auto mb-4">
               <Promotions total={getSubtotal()}/>
