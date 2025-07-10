@@ -54,11 +54,11 @@ export const Cart = () => {
   // };
 
   return (
-    <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container">
+    <div className="fixed inset-0 z-50 flex items-start justify-end !bg-black/30">
+      <div className="cart-container !max-w-lg !w-full !h-screen !min-h-screen !bg-white !shadow-lg !border !border-gray-100 !p-6 relative mt-0 mr-0 flex flex-col overflow-y-auto">
         <button
           type="button"
-          className="cart-heading"
+          className="cart-heading !flex !items-center !gap-2 !mb-6 !text-[#222] !font-bold !text-lg !bg-transparent !border-none !outline-none hover:!text-[#f02d34] transition-colors"
           onClick={() => setShowCart(false)}
         >
           <AiOutlineLeft />
@@ -67,14 +67,13 @@ export const Cart = () => {
         </button>
 
         {items.length < 1 && (
-          <div className="empty-cart">
-            <AiOutlineShopping size={150} />
-            <h3>Tu carrito está vacío </h3>
-            <Link href="/" onClick={() => setShowCart(false)}>
+          <div className="empty-cart flex flex-col items-center justify-center py-16">
+            <AiOutlineShopping size={120} className="text-gray-300 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-500 mb-4">Tu carrito está vacío</h3>
+            <Link href="/catalogo" onClick={() => setShowCart(false)}>
               <button
                 type="button"
-                // onClick={() => setShowCart(false)}
-                className="btn"
+                className="btn !bg-[#f02d34] !text-white !rounded-full !px-6 !py-2 !shadow-md hover:!bg-[#c81c22] transition-colors"
               >
                 Continuar comprando
               </button>
@@ -82,24 +81,24 @@ export const Cart = () => {
           </div>
         )}
 
-        <div className="product-container">
+        <div className="product-container !mb-4 flex-1 overflow-y-auto">
           {items.length >= 1 &&
             items.map((item, index) => <ItemCart {...item} key={index} />)}
         </div>
         {items.length >= 1 && (
-          <div className="cart-bottom">
-            <div className="total">
-              <h3>Subtotal:</h3>
-              <h3>${subtotal}</h3>
+          <div className="cart-bottom !pt-4 border-t border-gray-100 shrink-0 bg-white sticky bottom-0 left-0 right-0 z-10">
+            <div className="total flex justify-between items-center mb-4">
+              <h3 className="text-base text-gray-600">Subtotal:</h3>
+              <h3 className="text-lg font-bold text-[#222]">${subtotal}</h3>
             </div>
-            <div className="w-fit !m-auto">
+            <div className="w-fit !m-auto mb-4">
               <Promotions total={getSubtotal()}/>
             </div>
-            <div className="btn-container">
+            <div className="btn-container flex justify-center">
               <Link href={'/checkout'} onClick={()=> setShowCart(false)}>
-              <button type="button" className="btn" >
-                Pagar ahora
-              </button>
+                <button type="button" className="btn !bg-[#f02d34] !text-white !rounded-full !px-8 !py-3 !shadow-md hover:!bg-[#c81c22] transition-colors text-lg font-semibold">
+                  Pagar ahora
+                </button>
               </Link>
             </div>
           </div>
