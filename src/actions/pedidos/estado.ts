@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { sendOrderStatusEmail } from "@/actions/sendEmail/sendOrderStatusEmail";
 
 export async function updatePedidoEstado(
   pedidoId: number,
@@ -29,7 +30,18 @@ export async function updatePedidoEstado(
       where: { id: pedidoId },
       data: { estadoId: estado.id },
     });
-revalidatePath(`/pedido/${pedidoId}`);
+
+    // Obtener email del usuario asociado a la venta
+    // Suponiendo que usuarioId referencia al modelo User
+    let usuarioEmail: string | null = null;
+    if (ventas.usuarioId) {
+      const usuario = await prisma.user.findUnique({ where: { id: ventas.usuarioId } });
+      usuarioEmail = usuario?.email || null;
+    }
+    if (usuarioEmail) {
+      await sendOrderStatusEmail(usuarioEmail, pedidoId, nuevoEstado);
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Error al actualizar el estado del pedido:", error);

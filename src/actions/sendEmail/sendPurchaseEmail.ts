@@ -14,7 +14,7 @@ export async function sendPurchaseEmail(usuario: string, pedidoId: number) {
 
   const mailOptions = {
     from: `"CYE Tech" <${process.env.EMAIL_USER}>`,
-    to: ["marcosgaliano96@gmail.com", "estre_96@hotmail.com.ar"],
+    to: usuario, // Solo al usuario
     subject: "Se realizó una compra",
     html: `
   <div style="font-family: Arial, sans-serif; color: #000000; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
@@ -32,7 +32,7 @@ export async function sendPurchaseEmail(usuario: string, pedidoId: number) {
     <!-- Body -->
     <div style="padding: 30px; color:#000">
       <p>Hola,</p>
-      <p>Se recibió una compra de <strong>${usuario}</strong> con el número de pedido <strong>#${pedidoId}</strong>.</p>
+      <p>Se recibió una compra con el número de pedido <strong>#${pedidoId}</strong>.</p>
       <p>Puedes ver los detalles del pedido haciendo clic en el siguiente botón:</p>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${url}" style="background-color: #e7000b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
