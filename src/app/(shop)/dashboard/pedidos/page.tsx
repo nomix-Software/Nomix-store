@@ -5,7 +5,7 @@ import { useState, FormEvent, useEffect } from "react";
 import { MdSearch } from "react-icons/md";
 import { getMisPedidos,  Pedido  } from "@/actions";
 import { useSession } from "next-auth/react";
-import { PedidoCard } from "@/components";
+import { PedidoCard, TextField } from "@/components";
 
 export default function PedidosPage() {
   const [pedidoId, setPedidoId] = useState("");
@@ -43,34 +43,43 @@ export default function PedidosPage() {
 
 
   return (
-    <div className="max-w-2xl !mx-auto !p-6">
-      <h1 className="text-2xl font-bold !mb-4">Buscar pedido</h1>
+    <div className="!p-6 !max-w-3xl !mx-auto">
+      <h1 className="!text-3xl !font-extrabold !mb-6 !text-[#324d67] !text-center">
+        Buscar pedido
+      </h1>
 
-      <form onSubmit={handleSubmit} className="flex gap-2 !mb-6">
-        <input
+      <form onSubmit={handleSubmit} className="!flex !gap-4 !mb-6 !justify-center">
+        <TextField
           type="number"
-          placeholder="ID del pedido"
+          name="pedidoId"
           value={pedidoId}
           onChange={(e) => setPedidoId(e.target.value)}
-          className="flex-1 !px-4 !py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="ID del pedido"
+          className="!flex-1 !mt-1 !block !w-full !border !border-gray-200 !rounded-2xl !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
         />
+
         <button
           type="submit"
-          className="flex items-center gap-2 !px-4 !py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          className="!flex !items-center !gap-2 !bg-[#f02d34] hover:!bg-[#d12a2f] !text-white !rounded-full !px-5 !py-3 !font-semibold !shadow-sm !transition"
         >
-          <MdSearch />
+          <MdSearch size={20} />
           Buscar
         </button>
       </form>
 
-      {loading && <p className="text-gray-500">Cargando...</p>}
-      { !loading && pedidos?.map((pedido) => (
-        <PedidoCard key={pedido.id} {...pedido} />
-      ))}
-      {statusMessage && (
-        <p className="!mt-4 text-green-700 font-medium">{statusMessage}</p>
+      {loading && <p className="!text-gray-500 !text-center">Cargando...</p>}
+
+      {!loading && pedidos && pedidos.length > 0 && (
+        <div className="!space-y-4">
+          {pedidos.map((pedido) => (
+            <PedidoCard key={pedido.id} {...pedido} />
+          ))}
+        </div>
       )}
 
+      {!loading && statusMessage && (
+        <p className="!mt-4 !text-center !text-green-700 !font-medium">{statusMessage}</p>
+      )}
     </div>
   );
 }
