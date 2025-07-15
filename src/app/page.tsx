@@ -1,9 +1,16 @@
 export const revalidate = 60;
 
-import { AboutSection, BenefitsSection, HeroBanner, Product, TestimonialsSection } from "@/components";
+import {
+  AboutSection,
+  BenefitsSection,
+  HeroBanner,
+  Product,
+  TestimonialsSection,
+} from "@/components";
 import React from "react";
 import { getProducts, getLatestProducts } from "@/actions";
 import Link from "next/link";
+import Script from "next/script";
 
 async function MyApp() {
   const products = await getProducts();
@@ -40,23 +47,48 @@ async function MyApp() {
             </button>
           </Link>
         </div>
-
-        {/* <FooterBanner
-          footerBanner={{
-            discount: "29% de descuento",
-            buttonText: "Comprar ahora",
-            desc: "Empresa que ha crecido de 270 a 480 empleados en los últimos 12 meses",
-            image:
-              "https://cdn.sanity.io/images/kyml1h03/production/a64b345016e96adfb8849af5521c8e0ecfe8f027-555x555.webp",
-            largeText1: "Bien",
-            largeText2: "Sonrisa",
-            midText: "Rebajas de verano",
-            product: "Beats Solo Air",
-            saleTime: "29 de abril al 29 de mayo",
-            smallText: "Beats Solo Air",
-          }}
-        /> */}
       </div>
+      {/* WebSite con acción de búsqueda */}
+      <Script id="website-jsonld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "CyE Tech",
+          url: process.env.NEXT_PUBLIC_APP_URL,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${process.env.NEXT_PUBLIC_APP_URL}/search?q={search_term_string}`,
+            "query-input": "required name=search_term_string",
+          },
+        })}
+      </Script>
+      {/* Organization */}
+      <Script id="org-jsonld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "CyE Tech",
+          url: process.env.NEXT_PUBLIC_APP_URL,
+          logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`, // cambiá si tenés logo
+          sameAs: [
+            "https://www.facebook.com/share/16efa9JMz1/",
+            "https://www.instagram.com/cyetech/profilecard/?igsh=enl0ZmNjbmE5czk3",
+            // "https://www.linkedin.com/company/tupagina",
+          ],
+        })}
+      </Script>
+      {/* carrousel */}
+      <Script id="homepage-product-list" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: products.map((p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: `${process.env.NEXT_PUBLIC_APP_URL}/product/${p.slug}`,
+          })),
+        })}
+      </Script>
     </>
   );
 }
