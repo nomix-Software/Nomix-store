@@ -14,6 +14,7 @@ import {
 import { ImageInput, Select, TextField } from "@/components";
 import Textarea from "@/components/ui/Textarea";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 type Producto = {
   id: number;
@@ -80,12 +81,19 @@ export default function EditProductPage() {
   const handleSave = async () => {
     try {
       if (!producto) return;
+      if (!producto.imagenes.length && !imagenesNuevas.length) {
+        toast.error("EL producto debe tener al menos 1 imagen");
+      }
       const formData = new FormData();
       // Agregamos los archivos nuevos al FormData
-      imagenesNuevas.forEach((file) => {
-        formData.append("images", file);
-      });
-      const savedImages = await uploadImagesToCloudinary(formData);
+      if (imagenesNuevas.length) {
+        imagenesNuevas.forEach((file) => {
+          formData.append("images", file);
+        });
+      }
+      const savedImages = imagenesNuevas.length
+        ? await uploadImagesToCloudinary(formData)
+        : null;
       // Agregamos el resto de la data como JSON (producto sin imagenes)
       formData.append(
         "producto",
@@ -102,14 +110,14 @@ export default function EditProductPage() {
       setProducto(createdProduct);
       // Si se subieron imágenes nuevas, las agregamos al producto
       if (createdProduct) {
-        alert("Producto actualizado");
+        toast.success("Producto actualizado con exito");
         setImagenesNuevas([]);
       } else {
-        alert("Error al guardar");
+        toast.error("Error al guardar actualización de producto");
       }
     } catch (error) {
       console.error(error);
-      alert("Error al guardar producto");
+      toast.error("Error al guardar actualización de producto");
     }
   };
 
