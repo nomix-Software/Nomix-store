@@ -44,7 +44,6 @@ export const Product = ({
       router.push(`/auth/login?redirect_uri=/`);
       return;
     }
-
     e.preventDefault();
     if (sinStock) return;
 

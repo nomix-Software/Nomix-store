@@ -42,3 +42,4 @@ export * from "./products/Autocomplete";
 export * from "./checkout/AutocompleteLocation";
 export * from './HomeSections';
 export * from "./CostoEnvio";
+export * from "./ui/AutoScrollableMarquee";

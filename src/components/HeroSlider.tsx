@@ -53,6 +53,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
                     fill
                     className="!object-contain !rounded-xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    priority
                   />
                 </div>
               </div>

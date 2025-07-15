@@ -2,6 +2,7 @@ export const revalidate = 60;
 
 import {
   AboutSection,
+  AutoScrollableMarquee,
   BenefitsSection,
   HeroBanner,
   Product,
@@ -26,17 +27,7 @@ async function MyApp() {
           <h2>Productos más vendidos</h2>
           <p>Descubrí las diferentes versiones más elegidas.</p>
         </div>
-        <div className="maylike-products-wrapper">
-          <div className="marquee">
-            <div className="maylike-products-container track ">
-              {products.map((item) => (
-                <div className="!w-[250px] !h-[250px]" key={item._id}>
-                  <Product product={{ ...item, id: Number(item._id) }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <AutoScrollableMarquee products={products}/>
         <div className=" flex w-full justify-center">
           <Link href={"/catalogo"}>
             <button
@@ -129,5 +120,7 @@ export async function generateMetadata() {
     },
   };
 }
+
+
 
 export default MyApp;

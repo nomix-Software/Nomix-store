@@ -17,7 +17,7 @@ export const getRelatedProducts = async (
   }[]
 > => {
   const relatedProducts = await prisma.producto.findMany({
-    take: 8,
+    take: 10,
     orderBy: {
       nombre: "asc", // o 'createdAt' si tenés ese campo
     },
@@ -35,7 +35,6 @@ export const getRelatedProducts = async (
       },
     },
     where: {
-      ...(marcaId && { marcaId }), // solo si existe marcaId
       ...(categoriaId && { categoriaId }), // solo si existe categoriaId
     },
   });
