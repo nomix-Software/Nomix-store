@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { FiSave, FiTrash2 } from "react-icons/fi";
+import {  FiTrash2 } from "react-icons/fi";
 import {
   getProductDetail,
   getCategories,
