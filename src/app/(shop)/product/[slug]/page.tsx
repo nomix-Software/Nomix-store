@@ -54,7 +54,6 @@ const ProductDetails = async ({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
-  console.log({ productDetail });
   return (
     <div>
       <div className="product-detail-container">
