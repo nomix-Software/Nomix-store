@@ -90,7 +90,6 @@ const ProductDetails = async ({
       <RelatedProducts
         productId={productDetail.id}
         categoriaId={productDetail.categoria.id}
-        marcaId={productDetail.marca.id}
       />
       <Script id="product-jsonld" type="application/ld+json">
         {JSON.stringify({
