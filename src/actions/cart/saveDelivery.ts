@@ -1,25 +1,32 @@
-'use server'
+"use server";
 
-import prisma from '@/lib/prisma'
+import prisma from "@/lib/prisma";
 
 type EntregaForm = {
-  carritoId?: number
-  tipo: 'RETIRO' | 'ENVIO'
-  puntoRetiro?: string
-  direccion?: string
-  ciudad?: string
-  provincia?: string
-  codigoPostal?: string
-  pais?: string
-  contacto?: string
-  telefono?: string
-  observaciones?: string
-  ventaId?: number
-  costoEnvio?: number // Nuevo campo
-}
+  carritoId?: number;
+  tipo: "RETIRO" | "ENVIO";
+  puntoRetiro?: string;
+  direccion?: string;
+  ciudad?: string;
+  provincia?: string;
+  codigoPostal?: string;
+  pais?: string;
+  contacto?: string;
+  telefono?: string;
+  observaciones?: string;
+  ventaId?: number;
+  costoEnvio?: number; // Nuevo campo
+};
 
 export async function saveDelivery(data: EntregaForm) {
   try {
+    if (data.carritoId) {
+      await prisma.entrega.deleteMany({
+        where: {
+          carritoId: data.carritoId,
+        },
+      });
+    }
     await prisma.entrega.create({
       data: {
         carritoId: data.carritoId,
@@ -36,12 +43,15 @@ export async function saveDelivery(data: EntregaForm) {
         ventaId: data.ventaId || null,
         costoEnvio: data.costoEnvio ?? null, // Nuevo campo
       },
-    })
+    });
 
-   return { status:'success'}
+    return { status: "success" };
   } catch (error) {
-    console.error('Error guardando entrega:', error)
+    console.error("Error guardando entrega:", error);
     // throw new Error('No se pudo guardar la información de entrega.')
-    return {status:'failed', message:'No se pudo guardar la información de entrega.'}
+    return {
+      status: "failed",
+      message: "No se pudo guardar la información de entrega.",
+    };
   }
 }
