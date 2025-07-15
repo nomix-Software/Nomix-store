@@ -16,7 +16,7 @@ interface ProductSliderProps {
 export function AutoScrollableMarquee({ products }: ProductSliderProps) {
 
   return (
-    <div className="relative group">
+    <div className="relative group !mx-5 !px-5">
       {/* Sombras laterales */}
       <div className="pointer-events-none absolute left-0 top-0 h-full w-10 z-10 bg-gradient-to-r from-white to-transparent" />
       <div className="pointer-events-none absolute right-0 top-0 h-full w-10 z-10 bg-gradient-to-l from-white to-transparent" />
