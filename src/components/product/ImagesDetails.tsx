@@ -21,6 +21,7 @@ export const ImagesDetails = ({ images }: Props) => {
                         width={700}
                         height={500}
                         className="product-detail-image sm:min-w-[400px] sm:min-h-auto sm:!max-w-[500px]"
+                        priority
                     />
                 )}
             </div>
