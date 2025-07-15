@@ -121,130 +121,128 @@ const AddProductPage = () => {
   //   const categories = ["Pañales", "Higiene", "Accesorios"];
   //   const brands = ["Huggies", "Pampers", "Johnson's"];
 if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center !mt-2 ">
-      <div className="bg-white shadow-xl rounded-xl !p-8 w-full max-w-2xl">
-        <h1 className="text-3xl font-bold text-center mb-6 text-[#324d67]">
-          Agregar nuevo producto
-        </h1>
+return (
+  <div className="p-6 max-w-3xl !mx-auto">
+    <h1 className="!text-3xl !font-extrabold !flex !items-center !gap-2 !mb-6 !text-[#324d67] !justify-center">
+      Nuevo producto
+    </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Nombre */}
-          <TextField
-            label="Nombre"
-            name="name"
-            value={product.name}
-            onChange={handleChange}
-            errors={errors}
-            helperText="Nombre identificatorio del producto."
-            placeholder="Ej: Pañal Huggies"
-          />
+    <div className="!bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8 !space-y-5">
+      <form onSubmit={handleSubmit} className="!space-y-5">
+        <TextField
+          label="Nombre"
+          name="name"
+          value={product.name}
+          onChange={handleChange}
+          errors={errors}
+          helperText="Nombre identificatorio del producto."
+          placeholder="Ej: Pañal Huggies"
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
+        />
 
-          {/* Descripción */}
-          <Textarea
-            label="Descripción"
-            name="description"
-            value={product.description}
-            onChange={handleChange}
-            placeholder="Breve descripción del producto"
-            helperText="Detalle del producto, presentación, unidades, etc."
-          />
+        <Textarea
+          label="Descripción"
+          name="description"
+          value={product.description}
+          onChange={handleChange}
+          placeholder="Breve descripción del producto"
+          helperText="Detalle del producto, presentación, unidades, etc."
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-2xl !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white !resize-none"
+        />
 
-          {/* Precio */}
-          <TextField
-            type="number"
-            name="price"
-            label="Precio ($)"
-            helperText="Precio del producto en pesos."
-            value={product.price}
-            onChange={handleChange}
-            placeholder="Ej: 1999.99"
-            errors={errors}
-          />
-          {/* Stock */}
-          <TextField
-            type="number"
-            name="stock"
-            label="Stock"
-            helperText="Stock inicial"
-            value={product.stock}
-            onChange={handleChange}
-            placeholder="3"
-            errors={errors}
-          />
+        <TextField
+          type="number"
+          name="price"
+          label="Precio ($)"
+          helperText="Precio del producto en pesos."
+          value={product.price}
+          onChange={handleChange}
+          placeholder="Ej: 1999.99"
+          errors={errors}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
+        />
 
-          {/* Categoría */}
-          <Select
-            label="Categoría"
-            name="category"
-            value={product.category}
-            onChange={handleChange}
-            helperText="Selecciona una categoría del producto."
-            errors={errors}
-            options={categories.map(({ id, nombre }) => ({
-              id: id.toString(),
-              nombre,
-            }))}
-            buttonAction={
-              <Modal
-                callback={async (value) => {
-                  const newCategory = await setCategorie(value);
-                  setCategories([...categories, newCategory]);
-                  toast.success("Categoría creada correctamente.");
-                }}
-                buttonLabel="Crear nueva categoría"
-                title="Crear nueva categoría"
-              />
-            }
-          />
+        <TextField
+          type="number"
+          name="stock"
+          label="Stock"
+          helperText="Stock inicial"
+          value={product.stock}
+          onChange={handleChange}
+          placeholder="3"
+          errors={errors}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
+        />
 
-          {/* Marca */}
-          <Select
-            label="Marca"
-            name="brand"
-            value={product.brand}
-            onChange={handleChange}
-            helperText="Selecciona una marca del producto."
-            errors={errors}
-            options={brands.map(({ id, nombre }) => ({
-              id: id.toString(),
-              nombre,
-            }))}
-            buttonAction={
-              <Modal
-                callback={async (value) => {
-                  const newBrands = await setBrand(value);
-                  setBrands([...brands, newBrands]);
-                  toast.success("Marca creada correctamente.");
-                }}
-                buttonLabel="+"
-                title="Crear nueva marca"
-              />
-            }
-          />
+        <Select
+          label="Categoría"
+          name="category"
+          value={product.category}
+          onChange={handleChange}
+          helperText="Selecciona una categoría del producto."
+          errors={errors}
+          options={categories.map(({ id, nombre }) => ({
+            id: id.toString(),
+            nombre,
+          }))}
+          buttonAction={
+            <Modal
+              callback={async (value) => {
+                const newCategory = await setCategorie(value);
+                setCategories([...categories, newCategory]);
+                toast.success("Categoría creada correctamente.");
+              }}
+              buttonLabel="Crear nueva categoría"
+              title="Crear nueva categoría"
+            />
+          }
+        />
 
-          {/* Imagen */}
-          <ImageInput
-            multiple
-            label="Agrega una imagen"
-            errors={errors}
-            onChange={(e) => {
-              if (!e.target.files?.length) return;
-              setImages([...images, ...Array.from(e.target.files)]);
-              e.target.value = "";
-            }}
-          />
+        <Select
+          label="Marca"
+          name="brand"
+          value={product.brand}
+          onChange={handleChange}
+          helperText="Selecciona una marca del producto."
+          errors={errors}
+          options={brands.map(({ id, nombre }) => ({
+            id: id.toString(),
+            nombre,
+          }))}
+          buttonAction={
+            <Modal
+              callback={async (value) => {
+                const newBrands = await setBrand(value);
+                setBrands([...brands, newBrands]);
+                toast.success("Marca creada correctamente.");
+              }}
+              buttonLabel="+"
+              title="Crear nueva marca"
+            />
+          }
+        />
 
-          {/* Carrusel de Imágenes */}
-          <div className="!my-4">
-            <span className="block text-sm font-medium mb-2">
+        <ImageInput
+          multiple
+          label="Agrega una imagen"
+          errors={errors}
+          onChange={(e) => {
+            if (!e.target.files?.length) return;
+            setImages([...images, ...Array.from(e.target.files)]);
+            e.target.value = "";
+          }}
+        />
+
+        {images.length > 0 && (
+          <div className="mt-4">
+            <h2 className="!text-base !font-semibold !mb-2 !text-[#324d67]">
               Imágenes del producto
-            </span>
+            </h2>
             <div className="flex overflow-x-auto gap-4">
               {images.map((file, index) => (
                 <div
                   key={`${index}-${file.name}`}
-                  className="relative w-40 h-40 border rounded-lg overflow-hidden"
+                  className="relative w-40 h-40 border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
                 >
                   <Image
                     src={URL.createObjectURL(file)}
@@ -255,7 +253,7 @@ if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
                   />
                   <button
                     onClick={() => handleDeleteImage(file.name)}
-                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full cursor-pointer"
+                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full cursor-pointer shadow"
                     title="Eliminar imagen"
                   >
                     <FiTrash2 size={16} />
@@ -264,18 +262,19 @@ if(isLoading.loading) return <LoadingOverlay text={isLoading.message} />
               ))}
             </div>
           </div>
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-red-600 text-white !p-2 rounded-2xl hover:bg-red-700 cursor-pointer !mt-8"
+        )}
 
-          >
-            Guardar producto
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          className="!w-full cursor-pointer !bg-[#f02d34] !text-white !p-3 !rounded-full !font-semibold !text-base !shadow-sm hover:!bg-[#d12a2f] !transition disabled:!opacity-60 disabled:!cursor-not-allowed !mt-2"
+        >
+          Guardar producto
+        </button>
+      </form>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default AddProductPage;

@@ -126,9 +126,9 @@ export default function EditProductPage() {
     return <div className="p-6 text-red-600">Producto no encontrado</div>;
 
   return (
-    <div className="max-w-2xl !mx-auto !p-4">
-      <h1 className="!text-3xl !font-extrabold !flex !items-center !gap-2 !mb-6 !text-[#324d67]">
-        <FiSave /> Editar Producto
+    <div className="p-6 max-w-3xl !mx-auto">
+      <h1 className="!text-3xl !font-extrabold !flex !items-center !gap-2 !mb-6 !text-[#324d67] !justify-center">
+        Editar Producto
       </h1>
 
       <div className="!bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8 !space-y-5">
