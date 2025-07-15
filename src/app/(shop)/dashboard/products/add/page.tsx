@@ -147,8 +147,7 @@ return (
           onChange={handleChange}
           placeholder="Breve descripción del producto"
           helperText="Detalle del producto, presentación, unidades, etc."
-          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-2xl !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white !resize-none"
-        />
+ className="!mt-1 !block !w-full !border !border-gray-200 !rounded-2xl !shadow-sm !p-3 !text-base !text-gray-800 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white !resize"        />
 
         <TextField
           type="number"
