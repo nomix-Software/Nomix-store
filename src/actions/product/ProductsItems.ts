@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export const getProducts = async () => {
   const productos = await prisma.producto.findMany({
-    take: 7,
+    take: 10,
     orderBy: {
       nombre: "asc", // o 'createdAt' si tenés ese campo
     },

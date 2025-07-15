@@ -10,8 +10,8 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt", // para incluir info adicional en el token
-    maxAge: 15 * 60, // 15 minutos
-    updateAge: 5 * 60, // se renueva cada 5 minutos si hay actividad
+    maxAge: 60 * 60, // 60 minutos
+    updateAge: 120 * 60, // se renueva cada 120 minutos si hay actividad
   },
   providers: [
     GoogleProvider({

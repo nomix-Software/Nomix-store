@@ -2,6 +2,7 @@ export const revalidate = 60;
 
 import {
   AboutSection,
+  AutoScrollableMarquee,
   BenefitsSection,
   HeroBanner,
   Product,
@@ -37,6 +38,7 @@ async function MyApp() {
             </div>
           </div>
         </div>
+        <AutoScrollableMarquee products={products}/>
         <div className=" flex w-full justify-center">
           <Link href={"/catalogo"}>
             <button
@@ -129,5 +131,7 @@ export async function generateMetadata() {
     },
   };
 }
+
+
 
 export default MyApp;
