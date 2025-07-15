@@ -3,7 +3,7 @@
 import { useState, FormEvent, useEffect } from "react";
 // import { markPedidoEntregado } from "@/actions/markPedidoEntregado"; // Simulado más abajo
 import { MdSearch } from "react-icons/md";
-import { getMisPedidos,  Pedido  } from "@/actions";
+import { getMisPedidos, Pedido } from "@/actions";
 import { useSession } from "next-auth/react";
 import { PedidoCard, TextField } from "@/components";
 
@@ -17,30 +17,35 @@ export default function PedidosPage() {
     (async () => {
       if (session.status !== "authenticated" || !session.data.user.email)
         return;
-      setLoading(true)
+      setLoading(true);
       const misPedidos = await getMisPedidos({
         skip: 0,
         take: 30,
         email: session.data.user.email,
       });
-          if(misPedidos.length === 0) setStatusMessage('No se encontraron resultados')
+      if (misPedidos.length === 0)
+        setStatusMessage("No se encontraron resultados");
 
       setPedidos(misPedidos);
-      setLoading(false)
+      setLoading(false);
     })();
   }, [session.status]);
 
   const handleSubmit = async (e: FormEvent) => {
-    if(!session.data?.user.email) return
+    if (!session.data?.user.email) return;
     e.preventDefault();
     setLoading(true);
     setStatusMessage("");
-    const result = await getMisPedidos({ pedidoId:Number(pedidoId.trim()), skip:0, take:30, email: session.data?.user.email});
-    if(result.length === 0) setStatusMessage('No se encontraron resultados')
+    const result = await getMisPedidos({
+      pedidoId: Number(pedidoId.trim()),
+      skip: 0,
+      take: 30,
+      email: session.data?.user.email,
+    });
+    if (result.length === 0) setStatusMessage("No se encontraron resultados");
     setPedidos(result);
     setLoading(false);
   };
-
 
   return (
     <div className="!p-6 !max-w-3xl !mx-auto">
@@ -48,7 +53,10 @@ export default function PedidosPage() {
         Buscar pedido
       </h1>
 
-      <form onSubmit={handleSubmit} className="!flex !gap-4 !mb-6 !justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="!flex !gap-4 !mb-6 !justify-center !items-center"
+      >
         <TextField
           type="number"
           name="pedidoId"
@@ -60,7 +68,8 @@ export default function PedidosPage() {
 
         <button
           type="submit"
-          className="!flex !items-center !gap-2 !bg-[#f02d34] hover:!bg-[#d12a2f] !text-white !rounded-full !px-5 !py-3 !font-semibold !shadow-sm !transition"
+          className="!flex !items-center !gap-2 !bg-[#f02d34] hover:!bg-[#d12a2f] !text-white !rounded-full !px-4 !py-3 !font-semibold !shadow-sm !transition !cursor-pointer"
+          style={{ height: "44px" }}
         >
           <MdSearch size={20} />
           Buscar
@@ -78,7 +87,9 @@ export default function PedidosPage() {
       )}
 
       {!loading && statusMessage && (
-        <p className="!mt-4 !text-center !text-green-700 !font-medium">{statusMessage}</p>
+        <p className="!mt-4 !text-center !text-green-700 !font-medium">
+          {statusMessage}
+        </p>
       )}
     </div>
   );
