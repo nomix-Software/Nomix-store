@@ -6,10 +6,9 @@ import { AutoScrollableMarquee } from "../ui/AutoScrollableMarquee";
 
 interface Props {
   categoriaId: number;
-  marcaId: number;
   productId: number;
 }
-export const RelatedProducts = ({ categoriaId, marcaId, productId }: Props) => {
+export const RelatedProducts = ({ categoriaId, productId }: Props) => {
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<ProductItem[]>([]);
 
@@ -18,7 +17,6 @@ export const RelatedProducts = ({ categoriaId, marcaId, productId }: Props) => {
       try {
         const fetchedRelatedProducts = await getRelatedProducts(
           categoriaId,
-          marcaId
         );
         setRelatedProducts(
           fetchedRelatedProducts.filter(

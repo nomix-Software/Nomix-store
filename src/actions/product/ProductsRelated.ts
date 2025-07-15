@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 
 export const getRelatedProducts = async (
   categoriaId: number,
-  marcaId: number
 ): Promise<
   {
     _id: string;

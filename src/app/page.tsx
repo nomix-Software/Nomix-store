@@ -5,7 +5,6 @@ import {
   AutoScrollableMarquee,
   BenefitsSection,
   HeroBanner,
-  Product,
   TestimonialsSection,
 } from "@/components";
 import React from "react";
