@@ -126,15 +126,18 @@ export default function EditProductPage() {
     return <div className="p-6 text-red-600">Producto no encontrado</div>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Editar Producto</h1>
+    <div className="max-w-2xl !mx-auto !p-4">
+      <h1 className="!text-3xl !font-extrabold !flex !items-center !gap-2 !mb-6 !text-[#324d67]">
+        <FiSave /> Editar Producto
+      </h1>
 
-      <div className="space-y-5">
+      <div className="!bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8 !space-y-5">
         <TextField
           label="Nombre"
           name="nombre"
           value={producto.nombre}
           onChange={handleChange}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
         />
 
         <Textarea
@@ -142,6 +145,7 @@ export default function EditProductPage() {
           name="descripcion"
           value={producto.descripcion}
           onChange={handleChange}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-2xl !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white !resize-none"
         />
 
         <TextField
@@ -150,6 +154,7 @@ export default function EditProductPage() {
           name="precio"
           value={producto.precio.toString()}
           onChange={handleChange}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
         />
 
         <TextField
@@ -158,6 +163,7 @@ export default function EditProductPage() {
           name="stock"
           value={producto.stock.toString()}
           onChange={handleChange}
+          className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
         />
 
         <Select
@@ -185,6 +191,7 @@ export default function EditProductPage() {
             id: m.id.toString(),
           }))}
         />
+
         {producto.promocionId && (
           <TextField
             label="Código de Promoción"
@@ -196,19 +203,20 @@ export default function EditProductPage() {
                 promocionId: e.target.value ? Number(e.target.value) : null,
               })
             }
+            className="!mt-1 !block !w-full !border !border-gray-200 !rounded-full !shadow-sm !p-3 !text-base !text-gray-800 !placeholder-gray-400 focus:!border-[#f02d34] focus:!ring-2 focus:!ring-[#f02d34]/20 !outline-none !bg-white"
           />
         )}
 
         {/* Carrusel de Imágenes */}
         <div>
-          <span className="block text-sm font-medium mb-2">
+          <h2 className="!text-base !font-semibold !mb-2 !text-[#324d67]">
             Imágenes del producto
-          </span>
+          </h2>
           <div className="flex overflow-x-auto gap-4">
             {producto.imagenes.map((img) => (
               <div
                 key={img.id}
-                className="relative w-40 h-40 border rounded-lg overflow-hidden"
+                className="relative w-40 h-40 border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
               >
                 <Image
                   src={img.url}
@@ -219,7 +227,7 @@ export default function EditProductPage() {
                 />
                 <button
                   onClick={() => handleDeleteImage(img.id)}
-                  className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full"
+                  className="cursor-pointer absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full shadow"
                   title="Eliminar imagen"
                 >
                   <FiTrash2 size={16} />
@@ -228,6 +236,7 @@ export default function EditProductPage() {
             ))}
           </div>
         </div>
+
         {/* Agregar nuevas imágenes */}
         <ImageInput
           multiple
@@ -243,14 +252,14 @@ export default function EditProductPage() {
         />
         {imagenesNuevas.length > 0 && (
           <div className="mt-4">
-            <span className="block text-sm font-medium mb-2">
+            <h2 className="!text-base !font-semibold !mb-2 !text-[#324d67]">
               Nuevas imágenes (aún no subidas)
-            </span>
+            </h2>
             <div className="flex overflow-x-auto gap-4">
               {imagenesNuevas.map((file, i) => (
                 <div
                   key={i}
-                  className="relative w-40 h-40 border rounded-lg overflow-hidden"
+                  className="relative w-40 h-40 border border-gray-200 rounded-2xl shadow-sm overflow-hidden"
                 >
                   <Image
                     src={URL.createObjectURL(file)}
@@ -267,9 +276,9 @@ export default function EditProductPage() {
 
         <button
           onClick={handleSave}
-          className="mt-4 flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+          className="!w-full cursor-pointer !bg-[#f02d34] !text-white !p-3 !rounded-full !font-semibold !text-base !shadow-sm hover:!bg-[#d12a2f] !transition disabled:!opacity-60 disabled:!cursor-not-allowed !mt-2"
         >
-          <FiSave size={18} /> Guardar cambios
+          Guardar cambios
         </button>
       </div>
     </div>
