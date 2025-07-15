@@ -2,7 +2,6 @@
 import { getRelatedProducts } from "@/actions";
 import { ProductItem } from "@/interfaces";
 import React, { useEffect, useState } from "react";
-import { Product } from "../Product";
 import { AutoScrollableMarquee } from "../ui/AutoScrollableMarquee";
 
 interface Props {
