@@ -43,3 +43,7 @@ export * from "./checkout/AutocompleteLocation";
 export * from './HomeSections';
 export * from "./CostoEnvio";
 export * from "./ui/AutoScrollableMarquee";
+export * from "./ui/Button";
+export * from "./ui/Card";
+export * from "./ui/CardContent";
+export * from "./ui/Badge";
