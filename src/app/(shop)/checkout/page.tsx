@@ -136,10 +136,10 @@ export default function SeleccionEntregaPage() {
       />
       <form onSubmit={async (e) => {
         e.preventDefault();
-        if (tipoEntrega === 'RETIRO' && sucursalSeleccionada === null) return alert("Selecciona una sucursal");
-        if (tipoEntrega === 'ENVIO' && !direccionEntrega?.address) return alert("Selecciona una dirección válida para el envío");
+        if (tipoEntrega === 'RETIRO' && sucursalSeleccionada === null) return toast.error("Selecciona una sucursal");
+        if (tipoEntrega === 'ENVIO' && !direccionEntrega?.address) return toast.error("Selecciona una dirección válida para el envío");
         if(!(Boolean(data?.user.email))){
-          alert('se venció tu sesión')
+          toast.error('se venció tu sesión')
           router.push( `/auth/login?redirec_uri=${encodeURIComponent('/checkout')}`)
           return
         }
