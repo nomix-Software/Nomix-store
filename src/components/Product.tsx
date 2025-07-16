@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { formatPrice } from "@/utils/formatPrice";
 
 export interface ProductProps {
   product: {
@@ -118,7 +119,7 @@ export const Product = ({
             </p>
           </div>
 
-          <p className={priceClasses}>${price}</p>
+          <p className={priceClasses}>{ formatPrice(price) }</p>
         </Link>
       </div>
     </div>

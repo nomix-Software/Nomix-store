@@ -19,14 +19,16 @@ async function MyApp() {
     <>
       <div className="!pt-0 !mt-0">
         <HeroBanner />
-        <BenefitsSection />
+
         <AboutSection />
+        <BenefitsSection />
+
         <TestimonialsSection />
         <div className="products-heading">
           <h2>Productos más vendidos</h2>
           <p>Descubrí las diferentes versiones más elegidas.</p>
         </div>
-        <AutoScrollableMarquee products={products}/>
+        <AutoScrollableMarquee products={products} />
         <div className=" flex w-full justify-center">
           <Link href={"/catalogo"}>
             <button
@@ -119,7 +121,5 @@ export async function generateMetadata() {
     },
   };
 }
-
-
 
 export default MyApp;
