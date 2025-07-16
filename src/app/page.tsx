@@ -11,6 +11,7 @@ import React from "react";
 import { getProducts, getLatestProducts } from "@/actions";
 import Link from "next/link";
 import Script from "next/script";
+import Image from "next/image";
 
 async function MyApp() {
   const products = await getProducts();
@@ -19,14 +20,16 @@ async function MyApp() {
     <>
       <div className="!pt-0 !mt-0">
         <HeroBanner />
-        <BenefitsSection />
+
         <AboutSection />
+        <BenefitsSection />
+
         <TestimonialsSection />
         <div className="products-heading">
           <h2>Productos más vendidos</h2>
           <p>Descubrí las diferentes versiones más elegidas.</p>
         </div>
-        <AutoScrollableMarquee products={products}/>
+        <AutoScrollableMarquee products={products} />
         <div className=" flex w-full justify-center">
           <Link href={"/catalogo"}>
             <button
@@ -119,7 +122,5 @@ export async function generateMetadata() {
     },
   };
 }
-
-
 
 export default MyApp;

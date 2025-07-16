@@ -29,6 +29,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         <meta name="theme-color" content="#f02d34" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <meta name="google-site-verification" content="iN8BjG0udt6TIsq5Jv2WQJrcSVkUowaMxRg9Au5yJ2Y" />
+        <meta name="keywords" content="ecommerce, tecnologia, auriculares, parlantes, cargadores, tablets, comprar online, ofertas"/>
       </head>
       <body>
         <Script
