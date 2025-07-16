@@ -11,7 +11,6 @@ import React from "react";
 import { getProducts, getLatestProducts } from "@/actions";
 import Link from "next/link";
 import Script from "next/script";
-import Image from "next/image";
 
 async function MyApp() {
   const products = await getProducts();

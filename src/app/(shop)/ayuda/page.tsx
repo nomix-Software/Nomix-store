@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 // src/app/ayuda/page.tsx
@@ -21,7 +22,7 @@ export default function AyudaPage() {
         <p className="text-base text-[#324d67] !leading-relaxed">
           Navegá nuestro <span className="font-semibold">catálogo</span>,
           seleccioná el producto que te interesa y hacé clic en{" "}
-          <span className="italic">"Agregar al carrito"</span>. Una vez que
+          <span className="italic">Agregar al carrito</span>. Una vez que
           tengas todos los productos que querés, accedé al carrito y seguí los
           pasos para confirmar tu compra.
         </p>
@@ -127,7 +128,7 @@ export default function AyudaPage() {
               pantalla. Luego, cuando Mercado Pago nos notifica que el pago fue
               aprobado, tu compra se registra automáticamente y podés consultar
               el estado del pedido desde la sección
-              <span className="font-medium">"Mis pedidos"</span> en el menú
+              <span className="font-medium">Mis pedidos</span> en el menú
               lateral.
             </p>
           </div>
@@ -155,7 +156,7 @@ export default function AyudaPage() {
             </h3>
             <p className="text-base text-gray-700 !leading-relaxed">
               Podés hacer el seguimiento de tu compra ingresando a la sección{" "}
-              <span className="font-medium">"Mis pedidos"</span> desde el menú
+              <span className="font-medium">Mis pedidos</span> desde el menú
               lateral o visitando directamente la página{" "}
               <span className="font-medium">/mis-pedidos</span>. Ahí vas a ver
               el estado actual y el detalle de cada uno de tus pedidos
@@ -172,7 +173,7 @@ export default function AyudaPage() {
               electrónico con el resumen de tu compra y un enlace directo al
               detalle de tu pedido. De todas formas, podés consultarlo en
               cualquier momento desde la sección{" "}
-              <span className="font-medium">"Mis pedidos"</span>.
+              <span className="font-medium">Mis pedidos</span>.
             </p>
           </div>
         </div>
@@ -304,6 +305,62 @@ export default function AyudaPage() {
           . Atención únicamente por chat de WhatsApp.
         </p>
       </section>
+      <Script id="faq-jsonld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "¿Necesito registrarme para comprar?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Sí, es necesario crear una cuenta para poder realizar compras. No se permite la compra como invitado.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "¿Cómo sé si mi compra fue procesada?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Una vez aprobado el pago por Mercado Pago, se registra automáticamente tu compra. Podés ver el estado y detalle de tu pedido desde la sección 'Mis pedidos'.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "¿Puedo cancelar o modificar mi compra?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "No directamente desde la tienda online. Para cambios o cancelaciones, deberás contactarnos por WhatsApp, Instagram o Facebook.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "¿A dónde realizan envíos?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Realizamos envíos únicamente dentro de Córdoba Capital. Para envíos fuera de esta zona, comunicate con nosotros por los canales indicados.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "¿Qué medios de pago aceptan?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Aceptamos todos los medios disponibles en Mercado Pago, excepto efectivo. Para pagos en efectivo, te esperamos en nuestra sucursal.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "¿Cómo hago el seguimiento de mi pedido?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Podés seguir el estado de tu compra desde la sección 'Mis pedidos'. También recibirás un email con el detalle una vez aprobado el pago.",
+              },
+            },
+          ],
+        })}
+      </Script>
     </main>
   );
 }
