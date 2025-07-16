@@ -78,6 +78,11 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       href: "/mis-favoritos",
       icon: FaHeart, // ❤️ ícono de favoritos
     },
+        {
+      label: "Ayuda",
+      href: "/ayuda",
+      icon: FiHelpCircle, // ❓ ícono de ayuda
+    },
   ];
   const guestOptions = [
     {
