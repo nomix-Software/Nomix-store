@@ -12,7 +12,6 @@ export default function RaspaYGana() {
   const [chosen, setChosen] = useState<number[]>([]);
   const [revealed, setRevealed] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [winningNumbers, setWinningNumbers] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [prizeClaimed, setPrizeClaimed] = useState(false);
@@ -21,8 +20,7 @@ export default function RaspaYGana() {
   useEffect(() => {
     const fetchWinningNumbers = async () => {
       setIsLoading(true);
-      const { numeros, premioReclamado, usuarioYaJugo } = await getOrGenerateWinningNumbers();
-      setWinningNumbers(numeros);
+      const { premioReclamado, usuarioYaJugo } = await getOrGenerateWinningNumbers();
       setPrizeClaimed(premioReclamado);
       setUserHasPlayed(usuarioYaJugo);
       setIsLoading(false);
@@ -50,6 +48,7 @@ export default function RaspaYGana() {
       const response = await playRaspaGana(chosen);
       setResult(response.message);
     } catch (error) {
+      console.error(error);
       setResult("Ocurrió un error. Por favor, intenta de nuevo.");
     } finally {
       setIsSubmitting(false);

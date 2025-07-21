@@ -10,8 +10,6 @@ export async function sendCouponWonEmail(usuario: string, codigoCupon: string, p
     },
   });
 
-  const url = `${process.env.NEXT_PUBLIC_APP_URL}/`;
-
   const header = `
     <div style="background-color: #324d67; padding: 20px; text-align: center;">
       <h1 style="color: white; margin: 0;">CYE TECH</h1>
