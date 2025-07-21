@@ -26,6 +26,7 @@ model User {
   sessions  Session[]
   favoritos Favorito[]
 
+  cuponesAsignados   CuponDescuento[]
   PasswordResetToken PasswordResetToken[]
 }
 
@@ -199,6 +200,8 @@ model CuponDescuento {
   maxUsos     Int?     // Nuevo campo: máximo de usos globales
   ventas      Venta[]
   carritos    Carrito[] // Relación inversa para Prisma
+  usuarioId   String? // ID del usuario al que está asignado (opcional)
+  usuario     User?   @relation(fields: [usuarioId], references: [id])
 }
 
 model MovimientoFinanciero {
