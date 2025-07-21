@@ -107,7 +107,7 @@ export async function playRaspaGana(chosenNumbers: number[]) {
       const premio = getPremio(matchCount);
 
       if (!premio) {
-        return { success: false, message: "No ganaste esta vez. ¡Probá mañana!" };
+        return { success: false, message: `Tuviste ${matchCount} aciertos. No es suficiente para ganar un premio. ¡Más suerte mañana!` };
       }
 
       const couponCode = generateCouponCode();
