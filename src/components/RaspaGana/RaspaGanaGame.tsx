@@ -1,17 +1,30 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { CardContent } from "../ui/CardContent";
+import { getOrGenerateWinningNumbers } from "@/actions";
 
 const MAX_ATTEMPTS = 10;
 const NUMBER_POOL = 90;
-const WINNING_NUMBERS = [3, 14, 27, 32, 48, 60, 68, 80, 85, 90]; // simulado
 
 export default function RaspaYGana() {
   const [chosen, setChosen] = useState<number[]>([]);
   const [revealed, setRevealed] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [winningNumbers, setWinningNumbers] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWinningNumbers = async () => {
+      setIsLoading(true);
+      const { numeros } = await getOrGenerateWinningNumbers();
+      setWinningNumbers(numeros);
+      setIsLoading(false);
+    };
+
+    fetchWinningNumbers();
+  }, []);
 
   const toggleNumber = (n: number) => {
     if (revealed) return;
@@ -32,13 +45,21 @@ export default function RaspaYGana() {
   const play = () => {
     if (chosen.length === 0) return;
     setRevealed(true);
-    const match = chosen.filter((n) => WINNING_NUMBERS.includes(n)).length;
+    const match = chosen.filter((n) => winningNumbers.includes(n)).length;
     if (match >= 3) {
       setResult(`🎉 ¡Ganaste un cupón de descuento de ${getPremio(match)}!`);
     } else {
       setResult("😢 No ganaste esta vez. ¡Probá mañana!");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center text-gray-600">
+        <p>Cargando el juego de hoy...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl !mx-auto !p-4 grid md:grid-cols-3 gap-8">
@@ -58,9 +79,9 @@ export default function RaspaYGana() {
               key={num}
               onClick={() => toggleNumber(num)}
               className={`w-10 h-10 rounded-full text-sm font-semibold transition-colors duration-200
-                ${revealed && WINNING_NUMBERS.includes(num) ? "!bg-green-500 !text-white" : ""}
+                ${revealed && winningNumbers.includes(num) ? "!bg-green-500 !text-white" : ""}
                 ${chosen.includes(num) ? "!bg-[#f02d34] !text-white" : "!bg-gray-200 !text-gray-800"}
-                ${revealed && !WINNING_NUMBERS.includes(num) ? "opacity-50" : ""}
+                ${revealed && !winningNumbers.includes(num) ? "opacity-50" : ""}
               `}
               disabled={revealed}
             >

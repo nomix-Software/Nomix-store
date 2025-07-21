@@ -41,5 +41,8 @@ export * from './auth/reset-password/sendPasswordResetEmail'
 export * from './sendEmail/sendPurchaseEmail'
 export * from './sendEmail/sendOrderStatusEmail'
 
+export * from './raspa-gana/raspaGana'
+
+
 
 

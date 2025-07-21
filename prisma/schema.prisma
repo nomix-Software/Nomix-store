@@ -28,6 +28,7 @@ model User {
 
   cuponesAsignados   CuponDescuento[]
   PasswordResetToken PasswordResetToken[]
+  juegosGanados      JuegoRaspaGanaDiario[] @relation("JuegosGanados")
 }
 
 enum RolUsuario {
@@ -202,6 +203,15 @@ model CuponDescuento {
   carritos    Carrito[] // Relación inversa para Prisma
   usuarioId   String? // ID del usuario al que está asignado (opcional)
   usuario     User?   @relation(fields: [usuarioId], references: [id])
+}
+
+model JuegoRaspaGanaDiario {
+  id               Int      @id @default(autoincrement())
+  fecha            DateTime @unique @db.Date
+  numerosGanadores Int[]
+  creadoEn         DateTime @default(now())
+  ganadorId        String?  @unique // Solo un ganador por día
+  ganador          User?    @relation("JuegosGanados", fields: [ganadorId], references: [id])
 }
 
 model MovimientoFinanciero {
