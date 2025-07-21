@@ -15,12 +15,16 @@ export default function RaspaYGana() {
   const [winningNumbers, setWinningNumbers] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prizeClaimed, setPrizeClaimed] = useState(false);
+  const [userHasPlayed, setUserHasPlayed] = useState(false);
 
   useEffect(() => {
     const fetchWinningNumbers = async () => {
       setIsLoading(true);
-      const { numeros } = await getOrGenerateWinningNumbers();
+      const { numeros, premioReclamado, usuarioYaJugo } = await getOrGenerateWinningNumbers();
       setWinningNumbers(numeros);
+      setPrizeClaimed(premioReclamado);
+      setUserHasPlayed(usuarioYaJugo);
       setIsLoading(false);
     };
 
@@ -56,6 +60,33 @@ export default function RaspaYGana() {
     return (
       <div className="max-w-6xl !mx-auto !p-4 text-center text-gray-600">
         <p>Cargando el juego de hoy...</p>
+      </div>
+    );
+  }
+
+  if (prizeClaimed) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center">
+        <Card>
+          <CardContent className="!p-6">
+            <h2 className="text-2xl font-bold text-[#f02d34] !mb-3">¡El premio de hoy ya fue reclamado!</h2>
+            <p className="text-gray-700">Un afortunado jugador ya se llevó el cupón del día. ¡Mucha suerte para mañana!</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (userHasPlayed) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center">
+        <Card>
+          <CardContent className="!p-6">
+            <h2 className="text-2xl font-bold text-[#f02d34] !mb-3">Ya hiciste tu intento de hoy</h2>
+            <p className="text-gray-700">¡Gracias por participar! Recordá que solo se permite un intento por día.</p>
+            <p className="text-gray-700 !mt-2">¡Volvé mañana para probar tu suerte de nuevo!</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }

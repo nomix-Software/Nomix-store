@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
+import { sendCouponWonEmail } from '../sendEmail/sendCouponWonEmail';
 
 const NUMBER_POOL = 90;
 const WINNING_NUMBERS_COUNT = 10;
@@ -24,11 +25,14 @@ function generateWinningNumbers(): number[] {
 /**
  * Obtiene o crea los números ganadores para el día actual.
  * Los busca en la base de datos y, si no existen, los genera y los guarda.
- * @returns {Promise<{ numeros: number[] }>}
+ * @returns {Promise<{ numeros: number[]; premioReclamado: boolean; usuarioYaJugo: boolean; }>}
  */
 export async function getOrGenerateWinningNumbers() {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalizamos a la medianoche para la consulta
+
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
 
   try {
     // 1. Buscar si ya existen números para hoy
@@ -44,10 +48,24 @@ export async function getOrGenerateWinningNumbers() {
       });
     }
 
-    return { numeros: juegoDeHoy.numerosGanadores };
+    let usuarioYaJugo = false;
+    if (userId && juegoDeHoy) {
+      const intento = await prisma.juegoRaspaGanaIntento.findUnique({
+        where: {
+          usuarioId_juegoId: {
+            usuarioId: userId,
+            juegoId: juegoDeHoy.id,
+          },
+        },
+      });
+      usuarioYaJugo = !!intento;
+    }
+
+    return { numeros: juegoDeHoy.numerosGanadores, premioReclamado: !!juegoDeHoy.ganadorId, usuarioYaJugo };
+
   } catch (error) {
     console.error("Error en getOrGenerateWinningNumbers:", error);
-    return { numeros: generateWinningNumbers() }; // Fallback para que el juego no se rompa
+    return { numeros: generateWinningNumbers(), premioReclamado: false, usuarioYaJugo: false }; // Fallback
   }
 }
 
@@ -80,11 +98,12 @@ const getPremio = (matches: number): { porcentaje: number; descripcion: string }
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function playRaspaGana(chosenNumbers: number[]) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.email) {
     return { success: false, message: "Necesitás iniciar sesión para jugar." };
   }
   const userId = session.user.id;
+  const userEmail = session.user.email;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -103,13 +122,34 @@ export async function playRaspaGana(chosenNumbers: number[]) {
         return { success: false, message: "Alguien ya se llevó el premio de hoy. ¡Más suerte mañana!" };
       }
 
+      // Validar si el usuario ya jugó hoy
+      const intentoPrevio = await tx.juegoRaspaGanaIntento.findUnique({
+        where: {
+          usuarioId_juegoId: {
+            usuarioId: userId,
+            juegoId: juegoDeHoy.id,
+          },
+        },
+      });
+
+      if (intentoPrevio) {
+        return { success: false, message: "Ya participaste hoy. ¡Volvé a intentarlo mañana!" };
+      }
+
+      // Registrar el intento del usuario ANTES de procesar el resultado.
+      await tx.juegoRaspaGanaIntento.create({
+        data: { usuarioId: userId, juegoId: juegoDeHoy.id },
+      });
+
       const matchCount = chosenNumbers.filter((n) => juegoDeHoy.numerosGanadores.includes(n)).length;
       const premio = getPremio(matchCount);
 
       if (!premio) {
+        // El usuario jugó pero no ganó. El intento ya está registrado.
         return { success: false, message: `Tuviste ${matchCount} aciertos. No es suficiente para ganar un premio. ¡Más suerte mañana!` };
       }
 
+      // El usuario ganó.
       const couponCode = generateCouponCode();
       const validUntil = new Date();
       validUntil.setDate(validUntil.getDate() + 7); // Cupón válido por 7 días
@@ -120,11 +160,22 @@ export async function playRaspaGana(chosenNumbers: number[]) {
 
       await tx.juegoRaspaGanaDiario.update({ where: { id: juegoDeHoy.id }, data: { ganadorId: userId } });
 
-      return { success: true, message: `🎉 ¡Felicidades! Ganaste un cupón de ${premio.porcentaje}% de descuento. Tu código es: ${couponCode}` };
+      return {
+        success: true,
+        message: `🎉 ¡Felicidades! Ganaste un cupón de ${premio.porcentaje}% de descuento. Revisa tu correo para ver el código.`,
+        coupon: {
+          code: couponCode,
+          percentage: premio.porcentaje,
+        },
+      };
     });
 
-    revalidatePath('/jugar'); // Revalida la página del juego
-    return result;
+    if (result.success && result.coupon) {
+      await sendCouponWonEmail(userEmail, result.coupon.code, result.coupon.percentage);
+    }
+
+    revalidatePath('/raspa-gana'); // Revalida la página del juego
+    return { success: result.success, message: result.message };
   } catch (error) {
     console.error("Error en playRaspaGana:", error);
     return { success: false, message: "Ocurrió un error al procesar tu jugada. Inténtalo de nuevo." };

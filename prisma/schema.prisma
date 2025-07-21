@@ -29,6 +29,7 @@ model User {
   cuponesAsignados   CuponDescuento[]
   PasswordResetToken PasswordResetToken[]
   juegosGanados      JuegoRaspaGanaDiario[] @relation("JuegosGanados")
+  intentosJuego      JuegoRaspaGanaIntento[]
 }
 
 enum RolUsuario {
@@ -212,6 +213,17 @@ model JuegoRaspaGanaDiario {
   creadoEn         DateTime @default(now())
   ganadorId        String?  @unique // Solo un ganador por día
   ganador          User?    @relation("JuegosGanados", fields: [ganadorId], references: [id])
+  intentos         JuegoRaspaGanaIntento[]
+}
+
+model JuegoRaspaGanaIntento {
+  id        Int                  @id @default(autoincrement())
+  usuario   User                 @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  juego     JuegoRaspaGanaDiario @relation(fields: [juegoId], references: [id])
+  juegoId   Int
+  creadoEn  DateTime             @default(now())
+  @@unique([usuarioId, juegoId])
 }
 
 model MovimientoFinanciero {
