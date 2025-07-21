@@ -79,6 +79,11 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       icon: FaHeart, // ❤️ ícono de favoritos
     },
         {
+      label: "Ofertas",
+      href: "/ofertas",
+      icon: FaTags, // 🏷️ ícono de ofertas
+    },
+        {
       label: "Ayuda",
       href: "/ayuda",
       icon: FiHelpCircle, // ❓ ícono de ayuda

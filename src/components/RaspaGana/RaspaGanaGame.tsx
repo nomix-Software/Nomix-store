@@ -1,17 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { CardContent } from "../ui/CardContent";
+import { getOrGenerateWinningNumbers, playRaspaGana } from "@/actions";
 
 const MAX_ATTEMPTS = 10;
 const NUMBER_POOL = 90;
-const WINNING_NUMBERS = [3, 14, 27, 32, 48, 60, 68, 80, 85, 90]; // simulado
 
 export default function RaspaYGana() {
   const [chosen, setChosen] = useState<number[]>([]);
   const [revealed, setRevealed] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prizeClaimed, setPrizeClaimed] = useState(false);
+  const [userHasPlayed, setUserHasPlayed] = useState(false);
+
+  useEffect(() => {
+    const fetchWinningNumbers = async () => {
+      setIsLoading(true);
+      const { premioReclamado, usuarioYaJugo } = await getOrGenerateWinningNumbers();
+      setPrizeClaimed(premioReclamado);
+      setUserHasPlayed(usuarioYaJugo);
+      setIsLoading(false);
+    };
+
+    fetchWinningNumbers();
+  }, []);
 
   const toggleNumber = (n: number) => {
     if (revealed) return;
@@ -22,23 +38,57 @@ export default function RaspaYGana() {
     }
   };
 
-  const getPremio = (number: number) => {
-    if (number === 3) return "5%";
-    if (number === 4) return "30%";
-    if (number === 5) return "60%";
-    if (number === 6) return "80%";
-  };
+  const play = async () => {
+    if (chosen.length === 0 || revealed || isSubmitting) return;
 
-  const play = () => {
-    if (chosen.length === 0) return;
+    setIsSubmitting(true);
     setRevealed(true);
-    const match = chosen.filter((n) => WINNING_NUMBERS.includes(n)).length;
-    if (match >= 3) {
-      setResult(`🎉 ¡Ganaste un cupón de descuento de ${getPremio(match)}!`);
-    } else {
-      setResult("😢 No ganaste esta vez. ¡Probá mañana!");
+
+    try {
+      const response = await playRaspaGana(chosen);
+      setResult(response.message);
+    } catch (error) {
+      console.error(error);
+      setResult("Ocurrió un error. Por favor, intenta de nuevo.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center text-gray-600">
+        <p>Cargando el juego de hoy...</p>
+      </div>
+    );
+  }
+
+  if (prizeClaimed) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center">
+        <Card>
+          <CardContent className="!p-6">
+            <h2 className="text-2xl font-bold text-[#f02d34] !mb-3">¡El premio de hoy ya fue reclamado!</h2>
+            <p className="text-gray-700">Un afortunado jugador ya se llevó el cupón del día. ¡Mucha suerte para mañana!</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (userHasPlayed) {
+    return (
+      <div className="max-w-6xl !mx-auto !p-4 text-center">
+        <Card>
+          <CardContent className="!p-6">
+            <h2 className="text-2xl font-bold text-[#f02d34] !mb-3">Ya hiciste tu intento de hoy</h2>
+            <p className="text-gray-700">¡Gracias por participar! Recordá que solo se permite un intento por día.</p>
+            <p className="text-gray-700 !mt-2">¡Volvé mañana para probar tu suerte de nuevo!</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl !mx-auto !p-4 grid md:grid-cols-3 gap-8">
@@ -58,9 +108,8 @@ export default function RaspaYGana() {
               key={num}
               onClick={() => toggleNumber(num)}
               className={`w-10 h-10 rounded-full text-sm font-semibold transition-colors duration-200
-                ${revealed && WINNING_NUMBERS.includes(num) ? "!bg-green-500 !text-white" : ""}
                 ${chosen.includes(num) ? "!bg-[#f02d34] !text-white" : "!bg-gray-200 !text-gray-800"}
-                ${revealed && !WINNING_NUMBERS.includes(num) ? "opacity-50" : ""}
+                ${revealed && !chosen.includes(num) ? "opacity-50" : ""}
               `}
               disabled={revealed}
             >
@@ -73,10 +122,10 @@ export default function RaspaYGana() {
           <div className="text-center">
             <Button
               onClick={play}
-              disabled={chosen.length === 0}
+              disabled={chosen.length === 0 || revealed || isSubmitting}
               className="!mb-4 cursor-pointer"
             >
-              ¡Raspar!
+              {isSubmitting ? "Procesando..." : "¡Raspar!"}
             </Button>
           </div>
         )}

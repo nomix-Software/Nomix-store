@@ -26,7 +26,10 @@ model User {
   sessions  Session[]
   favoritos Favorito[]
 
+  cuponesAsignados   CuponDescuento[]
   PasswordResetToken PasswordResetToken[]
+  juegosGanados      JuegoRaspaGanaDiario[] @relation("JuegosGanados")
+  intentosJuego      JuegoRaspaGanaIntento[]
 }
 
 enum RolUsuario {
@@ -199,6 +202,28 @@ model CuponDescuento {
   maxUsos     Int?     // Nuevo campo: máximo de usos globales
   ventas      Venta[]
   carritos    Carrito[] // Relación inversa para Prisma
+  usuarioId   String? // ID del usuario al que está asignado (opcional)
+  usuario     User?   @relation(fields: [usuarioId], references: [id])
+}
+
+model JuegoRaspaGanaDiario {
+  id               Int      @id @default(autoincrement())
+  fecha            DateTime @unique @db.Date
+  numerosGanadores Int[]
+  creadoEn         DateTime @default(now())
+  ganadorId        String?  @unique // Solo un ganador por día
+  ganador          User?    @relation("JuegosGanados", fields: [ganadorId], references: [id])
+  intentos         JuegoRaspaGanaIntento[]
+}
+
+model JuegoRaspaGanaIntento {
+  id        Int                  @id @default(autoincrement())
+  usuario   User                 @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  juego     JuegoRaspaGanaDiario @relation(fields: [juegoId], references: [id])
+  juegoId   Int
+  creadoEn  DateTime             @default(now())
+  @@unique([usuarioId, juegoId])
 }
 
 model MovimientoFinanciero {
