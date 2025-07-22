@@ -9,15 +9,15 @@ async function main() {
   // await prisma.venta.deleteMany(); // Luego elimina las ventas
   // await prisma.carrito.deleteMany();
   // Crear usuario
-//  await prisma.user.update({ 
-//     where:{ email : 'marcosgaliano96@gmail.com'}, data: { rol : 'ADMIN'}
+ const user =await prisma.user.update({ 
+    where:{ email : 'estre_96@hotmail.com.ar'}, data: { rol : 'ADMIN'}
 
-//   });
+  });
 // const product = await prisma.producto.findFirst({ where:{ slug: 'pizarra-capibara'} })
 //usuarioId:'cmbfp5rsv0000mmg4e60jej34'
- const product = await prisma.user.delete({ where:{ id: 'cmbfp5rsv0000mmg4e60jej34'} })
+//  const product = await prisma.user.delete({ where:{ id: 'cmbfp5rsv0000mmg4e60jej34'} })
 //  const product = await prisma.venta.findMany({ where:{ usuarioId: 'cmci9cihn0000ea32wat9wfxs'} })
-  console.log({product})
+  console.log({user})
 // console.log({product})
 //   await prisma.imagenProducto.deleteMany({
 //   where: { productoId: 36 },

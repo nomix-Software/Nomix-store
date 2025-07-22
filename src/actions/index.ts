@@ -41,5 +41,6 @@ export * from './auth/reset-password/sendPasswordResetEmail'
 export * from './sendEmail/sendPurchaseEmail'
 export * from './sendEmail/sendOrderStatusEmail'
 export * from './sendEmail/sendCouponWonEmail'
+export * from './sendEmail/sendWebhookErrorEmail'
 
 export * from './raspa-gana/raspaGana'
