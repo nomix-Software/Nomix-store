@@ -210,11 +210,7 @@ export async function POST(req: Request) {
     // Buscar el carrito asociado a la preferencia
     carrito = await prisma.carrito.findFirst({
       where: { preferenceId },
-      include: {
-        usuario: true,
-        items: { include: { producto: true } },
-        cupon: true,
-      },
+      ...carritoConDetallesQuery,
     });
     if (!carrito || !carrito.usuarioId) {
       console.log("[WEBHOOK] - No se encontró el carrito o usuario asociado");

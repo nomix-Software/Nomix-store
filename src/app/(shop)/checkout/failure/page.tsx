@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 
 export default function FailurePage() {
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState<string | null>(null);
 
   const empresaWhatsapp = "5493512196753"; // Reemplazar con el número real en formato internacional
   const mensaje = encodeURIComponent(
@@ -32,7 +31,6 @@ export default function FailurePage() {
         );
         const data = await res.json();
         if (data && data.status) {
-          setStatus(data.status);
         } else {
           console.error("No se pudo verificar el estado de la compra.");
         }
