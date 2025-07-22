@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { sendPurchaseEmail, sendWebhookErrorEmail } from "@/actions/index";
 import { Prisma } from "@prisma/client";
 import axios from "axios";
@@ -55,22 +56,45 @@ export async function POST(req: Request) {
 
   try {
     console.log("[WEBHOOK] - Inicio POST MercadoPago");
-    // Validar autenticidad del webhook usando la clave secreta de Mercado Pago
-    const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-    const receivedSecret = req.headers.get("x-signature");
-    console.log("[WEBHOOK] - Header x-signature:", receivedSecret );
-    console.log("[WEBHOOK] - Header x-signature desarmado:", receivedSecret?.split(',')[1].trim() );
-    const body = await req.json(); // Usar la request original aquí
+
+    const body = await req.json();
     console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
-    if (!mpSecret || receivedSecret?.split(',')[1].trim() !== mpSecret) {
-      console.log("[WEBHOOK] - Webhook inválido: clave incorrecta");
+    const paymentId = extractPaymentId(body);
+
+    // --- Validación de la firma del Webhook (HMAC-SHA256) ---
+    const webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    const signatureHeader = req.headers.get("x-signature");
+    const requestId = req.headers.get("x-request-id");
+
+    if (!webhookSecret || !signatureHeader || !paymentId) {
+      console.error("[WEBHOOK] - Error: Faltan datos para validar la firma.");
       return NextResponse.json(
-        { error: "No autorizado. Webhook inválido." },
-        { status: 401 }
+        { error: "Faltan datos de validación." },
+        { status: 400 }
       );
     }
 
-    const paymentId = extractPaymentId(body);
+    const parts = signatureHeader.split(",").reduce((acc, part) => {
+      const [key, value] = part.split("=");
+      acc[key.trim()] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    const ts = parts.ts;
+    const v1 = parts.v1;
+
+    const manifest = `id:${paymentId};request-id:${requestId};ts:${ts};`;
+    const hmac = crypto.createHmac("sha256", webhookSecret);
+    hmac.update(manifest);
+    const sha = hmac.digest("hex");
+
+    if (sha !== v1) {
+      console.error("[WEBHOOK] - Error: Firma del webhook inválida.");
+      return NextResponse.json(
+        { error: "Firma inválida." },
+        { status: 401 }
+      );
+    }
     console.log("[WEBHOOK]" + "paymentId:", paymentId);
 
     if (!paymentId) {
