@@ -58,10 +58,11 @@ export async function POST(req: Request) {
     // Validar autenticidad del webhook usando la clave secreta de Mercado Pago
     const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     const receivedSecret = req.headers.get("x-signature");
-    console.log("[WEBHOOK] - Header x-signature:", receivedSecret);
+    console.log("[WEBHOOK] - Header x-signature:", receivedSecret );
+    console.log("[WEBHOOK] - Header x-signature desarmado:", receivedSecret?.split(',')[1].trim() );
     const body = await req.json(); // Usar la request original aquí
     console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
-    if (!mpSecret || receivedSecret !== mpSecret) {
+    if (!mpSecret || receivedSecret?.split(',')[1].trim() !== mpSecret) {
       console.log("[WEBHOOK] - Webhook inválido: clave incorrecta");
       return NextResponse.json(
         { error: "No autorizado. Webhook inválido." },
