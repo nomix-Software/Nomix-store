@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { sendPurchaseEmail } from "@/actions";
+import { sendPurchaseEmail, sendWebhookErrorEmail } from "@/actions/index";
+import { Prisma } from "@prisma/client";
 import axios from "axios";
 // Utilidad para extraer preferenceId y paymentId del body del webhook
 function extractPaymentId(body: {
@@ -13,19 +14,35 @@ function extractPaymentId(body: {
   return null;
 }
 
+const carritoConDetallesQuery = Prisma.validator<Prisma.CarritoDefaultArgs>()({
+  include: {
+    usuario: true,
+    items: { include: { producto: true } },
+    cupon: true,
+  },
+});
+
+type CarritoConDetalles = Prisma.CarritoGetPayload<typeof carritoConDetallesQuery>;
 
 export async function POST(req: Request) {
+  // Clonar la request para poder leer el body en el catch si es necesario
+  const reqClone = req.clone();
+
+  // Declarar variables fuera del try para que estén disponibles en el catch
+  let carrito: CarritoConDetalles | null = null;
+  let total: number = 0;
+
   try {
     console.log("[WEBHOOK] - Inicio POST MercadoPago", );
     // Validar autenticidad del webhook usando la clave secreta de Mercado Pago
     const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     const receivedSecret = req.headers.get("x-signature");
     console.log("[WEBHOOK] - Header x-signature:", receivedSecret);
-    const body = await req.json();
+    const body = await req.json(); // Usar la request original aquí
     console.log("[WEBHOOK] - Body recibido:", JSON.stringify(body));
     if (!mpSecret || receivedSecret !== mpSecret) {
       console.log("[WEBHOOK] - Webhook inválido: clave incorrecta");
-      // return NextResponse.json({ error: "No autorizado. Webhook inválido." }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado. Webhook inválido." }, { status: 401 });
     }
 
     const  paymentId  = extractPaymentId(body);
@@ -45,6 +62,12 @@ export async function POST(req: Request) {
 );
 const paymentData = mpResponse.data;
 const preferenceId = paymentData.preference_id;
+
+if (!preferenceId) {
+  console.error(`[WEBHOOK] - No se encontró preference_id para el paymentId: ${paymentId}`);
+  return NextResponse.json({ error: "Datos de pago incompletos desde Mercado Pago." }, { status: 400 });
+}
+
 const mpStatus = paymentData.status;
 
 console.log("[WEBHOOK] - preferenceId:", preferenceId, "status:", mpStatus);
@@ -62,7 +85,7 @@ console.log("[WEBHOOK] - preferenceId:", preferenceId, "status:", mpStatus);
     }
 
     // Buscar el carrito asociado a la preferencia
-    const carrito = await prisma.carrito.findFirst({
+    carrito = await prisma.carrito.findFirst({
       where: { preferenceId },
       include: {
         usuario: true,
@@ -70,14 +93,14 @@ console.log("[WEBHOOK] - preferenceId:", preferenceId, "status:", mpStatus);
         cupon: true,
       },
     });
-    if (!carrito || !carrito.usuario) {
+    if (!carrito || !carrito.usuarioId) {
       console.log("[WEBHOOK] - No se encontró el carrito o usuario asociado");
       return NextResponse.json({ error: "No se encontró el carrito o usuario asociado." }, { status: 404 });
     }
 
     const carritoItems = carrito.items;
     const cupon = carrito.cupon;
-    let total = carritoItems.reduce(
+    total = carritoItems.reduce(
       (acc, item) => acc + item.producto.precio * item.cantidad,
       0
     );
@@ -118,66 +141,106 @@ console.log("[WEBHOOK] - preferenceId:", preferenceId, "status:", mpStatus);
         data: { nombre: "Mercado Pago" },
       });
     }
-    const venta = await prisma.venta.create({
-      data: {
-        usuarioId: carrito.usuario.id,
-        total,
-        estadoId: estadoInicial?.id || 1,
-        metodoPagoId: metodoPago?.id || 1,
-        cuponId: cuponId ?? null,
-        observacion: observacion,
-        paymentId,
-        productos: {
-          create: carritoItems.map((item) => ({
-            productoId: item.productoId,
-            cantidad: item.cantidad,
-            precioUnitario: item.producto.precio,
-            total: item.producto.precio * item.cantidad,
-          })),
-        },
+
+const ventaCreada = await prisma.$transaction(async (tx) => {
+  const venta = await tx.venta.create({
+    data: {
+      usuarioId: carrito?.usuario.id,
+      total,
+      estadoId: estadoInicial?.id || 1,
+      metodoPagoId: metodoPago?.id || 1,
+      cuponId: cuponId ?? null,
+      observacion: observacion,
+      paymentId,
+      productos: {
+        create: carritoItems.map((item) => ({
+          productoId: item.productoId,
+          cantidad: item.cantidad,
+          precioUnitario: item.producto.precio,
+          total: item.producto.precio * item.cantidad,
+        })),
       },
+      entrega: {connect: {carritoId: carrito?.id}  }
+    },
+  });
+  console.log("[WEBHOOK] - Venta creada con ID:", venta.id);
+
+  // Actualizar stock de productos
+  for (const item of carritoItems) {
+    await tx.producto.update({
+      where: { id: item.productoId },
+      data: { stock: { decrement: item.cantidad } },
     });
-    console.log("[WEBHOOK] - Venta creada con ID:", venta.id);
+  }
+  console.log("[WEBHOOK] - Stock actualizado");
 
-    // Actualizar stock de productos
-    for (const item of carritoItems) {
-      await prisma.producto.update({
-        where: { id: item.productoId },
-        data: { stock: { decrement: item.cantidad } },
-      });
-    }
-    console.log("[WEBHOOK] - Stock actualizado");
+  // Solo crea movimiento financiero y envía mail si el pago fue aprobado
+  if (mpStatus === "approved") {
+    await tx.movimientoFinanciero.create({
+      data: {
+        tipo: "INGRESO",
+        monto: total,
+        descripcion: `Venta ID ${venta.id} - Mercado Pago`,
+      },
+    })
+    console.log("[WEBHOOK] - Movimiento financiero creado");
+  }
+  // Limpiar carrito
+  await tx.carritoItem.deleteMany({
+    where: { carritoId: carrito?.id },
+  });
+  console.log("[WEBHOOK] - Carrito limpiado");
+  return venta
+})
 
-    // Actualizar entrega si existe
-    await prisma.entrega.updateMany({
-      where: { carritoId: carrito.id },
-      data: { ventaId: venta.id },
-    });
-    console.log("[WEBHOOK] - Entrega actualizada");
 
-    // Solo crea movimiento financiero y envía mail si el pago fue aprobado
-    if (mpStatus === "approved") {
-      await prisma.movimientoFinanciero.create({
-        data: {
-          tipo: "INGRESO",
-          monto: total,
-          descripcion: `Venta ID ${venta.id} - Mercado Pago`,
-        },
-      });
-      console.log("[WEBHOOK] - Movimiento financiero creado");
-      await sendPurchaseEmail(carrito.usuario.email, venta.id);
-      console.log("[WEBHOOK] - Email de compra enviado");
-    }
+  if (mpStatus === "approved") {
+    await sendPurchaseEmail(carrito.usuario.email, ventaCreada.id);
+    console.log("[WEBHOOK] - Email de compra enviado");
+  }
 
-    // Limpiar carrito
-    await prisma.carritoItem.deleteMany({
-      where: { carritoId: carrito.id },
-    });
-    console.log("[WEBHOOK] - Carrito limpiado");
+    
+
 
     return NextResponse.json({ success: true, estado: estadoVenta });
   } catch (err) {
-    console.error("Error en webhook de Mercado Pago:", err);
+    const error = err as Error;
+    console.error("[WEBHOOK_ERROR] - Error fatal en webhook de Mercado Pago:", error.message, error.stack);
+
+    // Notificar al administrador del error crítico
+    const bodyForError = await reqClone.json().catch(() => ({})); // Usar el clon de la request
+    const paymentIdForError = extractPaymentId(bodyForError);
+
+    let entrega = null;
+    if (carrito?.id) {
+      entrega = await prisma.entrega.findUnique({
+        where: { carritoId: carrito.id },
+      });
+    }
+
+    await sendWebhookErrorEmail({
+      paymentId: paymentIdForError,
+      preferenceId: carrito?.preferenceId,
+      errorMessage: error.message,
+      errorStack: error.stack,
+      usuario: carrito?.usuario ? { nombre: carrito.usuario.name, email: carrito.usuario.email } : null,
+      items: carrito?.items?.map(item => ({
+        nombre: item.producto.nombre,
+        cantidad: item.cantidad,
+        precio: item.producto.precio,
+      })) || null,
+      entrega: entrega ? {
+        tipo: entrega.tipo,
+        direccion: entrega.direccion,
+        puntoRetiro: entrega.puntoRetiro,
+        contacto: entrega.contacto,
+        telefono: entrega.telefono,
+        observaciones: entrega.observaciones,
+        costoEnvio: entrega.costoEnvio,
+      } : null,
+      total: total > 0 ? total : null,
+    });
+
     return NextResponse.json({ error: "Error interno del servidor." }, { status: 500 });
   }
 }
