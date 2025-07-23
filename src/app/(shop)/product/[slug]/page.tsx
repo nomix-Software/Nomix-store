@@ -19,11 +19,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const productDetail: ProductDetails | null = await getProductDetail(
-    (
-      await params
-    ).slug
-  );
+  const { slug } = await params;
+  const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) return {};
   return {
     title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
@@ -110,6 +107,28 @@ const ProductDetails = async ({
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
             itemCondition: "https://schema.org/NewCondition",
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "AR",
+              returnPolicyCategory:
+                "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 10,
+              returnMethod: "https://schema.org/ReturnByMail",
+              returnFees: "https://schema.org/ReturnShippingFees", // Indica que el cliente podría pagar el envío de la devolución, salvo fallas de fábrica.
+            },
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingDestination: {
+                "@type": "DefinedRegion",
+                addressCountry: "AR",
+              },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" }, // Tiempo de preparación: 0-1 día
+                transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 7, unitCode: "DAY" }, // Tiempo de tránsito: 3-7 días
+              },
+              // No se especifica un shippingRate porque el costo es variable.
+            },
           },
           // TODO: Descomentar y conectar a datos reales cuando tengas un sistema de reseñas.
           // Google penaliza los datos estructurados falsos.
