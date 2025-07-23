@@ -10,8 +10,7 @@ export const metadata: Metadata = {
   keywords: ['catálogo', 'productos', 'tecnología', 'comprar online', 'auriculares', 'parlantes', 'cargadores'],
 };
 
-const CatalogoPage = async ({ searchParams }: { searchParams?: Promise<{search: string}> }) => {
-  const searchUrl = await searchParams;
+const CatalogoPage =  () => {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-around !smb-4 items-center">
@@ -20,13 +19,13 @@ const CatalogoPage = async ({ searchParams }: { searchParams?: Promise<{search: 
         </h1>
         <div className="!mb-4 sm:hidden">
           <Suspense fallback={<div className="h-10 w-48 bg-gray-200 rounded-full animate-pulse" />}>
-            <SearchBar defaultValue={searchUrl?.search} />
+            <SearchBar  />
           </Suspense>
         </div>
         <Suspense fallback={<div className="h-10 w-64 bg-gray-200 rounded-full animate-pulse" />}>
           <div className="hidden md:flex">
             {/* searchBar desktop */}
-            <SearchBar defaultValue={searchUrl?.search} />
+            <SearchBar  />
           </div>
         </Suspense>
       </div>

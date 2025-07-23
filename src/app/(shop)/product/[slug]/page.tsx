@@ -61,16 +61,13 @@ const ProductDetails = async ({
 
         <div className="product-detail-desc">
           <h1 className="font-extrabold ">{productDetail.nombre}</h1>
-          <div className="reviews">
+          {/* TODO: Implementar un sistema de reseñas real. No usar datos falsos para evitar penalizaciones de Google. */}
+          {/* <div className="reviews">
             <div className="flex flex-row gap-1 items-center">
-              <AiFillStar />
-              <AiFillStar />
-              <AiFillStar />
-              <AiFillStar />
-              <AiOutlineStar />
+              <AiFillStar /><AiFillStar /><AiFillStar /><AiFillStar /><AiOutlineStar />
             </div>
             <p>(20)</p>
-          </div>
+          </div> */}
           <h4 className="font-bold">Detalle: </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
           {productDetail.stock <= 0 ? (
@@ -115,11 +112,9 @@ const ProductDetails = async ({
                 : "https://schema.org/OutOfStock",
             itemCondition: "https://schema.org/NewCondition",
           },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.0", // Reemplazá si tenés un sistema real
-            reviewCount: "20", // También reemplazable
-          },
+          // TODO: Descomentar y conectar a datos reales cuando tengas un sistema de reseñas.
+          // Google penaliza los datos estructurados falsos.
+          // "aggregateRating": { ... }
         })}
       </Script>
     </div>
