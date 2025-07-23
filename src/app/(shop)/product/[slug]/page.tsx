@@ -19,11 +19,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const productDetail: ProductDetails | null = await getProductDetail(
-    (
-      await params
-    ).slug
-  );
+  const { slug } = await params;
+  const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) return {};
   return {
     title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
