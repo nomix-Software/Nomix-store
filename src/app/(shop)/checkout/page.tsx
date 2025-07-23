@@ -1,6 +1,6 @@
 'use client'
 
-import { createCheckout, getCartByUser, saveCart, saveDelivery } from "@/actions";
+import { getCartByUser, placeOrder } from "@/actions";
 import { AutocompleteLocation, CostoEnvio, TextField } from "@/components";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import { useCartStore } from "@/store";
@@ -172,36 +172,30 @@ export default function SeleccionEntregaPage() {
               costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
             } as const;
 
-        // Guardar carrito y entrega antes de crear preferencia
-        const cuponId = cuponValidado?.id ?? undefined;
-        // Crear preferencia de pago y obtener preferenceId
-        const url = await createCheckout(
-          items.map((item) => ({
+        // 1. Agrupar todos los datos necesarios para la orden
+        const orderData = {
+          items: items.map((item) => ({
             id: String(item.id),
             title: item.nombre,
-            unit_price: cuponId ? calcularPrecioConDescuento(item.precio, cuponValidado?.porcentaje ?? 0) : item.precio,
+            unit_price: cuponValidado ? calcularPrecioConDescuento(item.precio, cuponValidado.porcentaje) : item.precio,
             quantity: item.cantidad,
           })),
-          data?.user.email as string,
-          tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0
-        );
-        // Extraer preferenceId de la url de Mercado Pago
-        let preferenceId: string | undefined = undefined;
-        if (url) {
-          const match = url.match(/pref_id=([^&]+)/);
-          if (match) preferenceId = match[1];
+          deliveryData: datosEntrega,
+          cuponId: cuponValidado?.id,
+          costoEnvio: tipoEntrega === 'ENVIO' && isDireccionValida ? costoEnvio : 0,
+        };
+
+        // 2. Llamar a la única acción atómica del servidor
+        const { ok, url, error } = await placeOrder(orderData);
+
+        if (!ok || !url) {
+          toast.error(error || "No se pudo procesar la orden. Intente nuevamente.");
+          return;
         }
-        // Guardar carrito con cuponId y preferenceId
-        const carrito = await saveCart(
-          items.map(product => ({ cantidad : product.cantidad, productoId: product.id})),
-          cuponId,
-          preferenceId
-        );
-        if(!carrito.id) return toast.error('Fallo en guardar carrito')
-        const entrega = await saveDelivery({...datosEntrega, carritoId: carrito.id})
-        if(entrega.status === 'failed') return toast.error('Fallo en guardar entrega')
-        toast.loading("Redirecting...");
-          if (url) window.location.href = url
+
+        // 3. Redirigir al usuario a la URL de pago de Mercado Pago
+        toast.loading("Redirigiendo al pago...");
+        window.location.href = url;
       
       }} className="!space-y-6 !mt-4 !bg-white !rounded-2xl !shadow-sm !border !border-gray-100 !w-full !px-4 !py-6 sm:!px-8 sm:!py-8">
         <div>

@@ -3,44 +3,54 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // LIMPIAR BASE DE DATOS (orden correcto)
-  // await prisma.entrega.deleteMany(); // Eliminar entregas antes de las ventas
-  // await prisma.carritoItem.deleteMany();
-  // await prisma.venta.deleteMany(); // Luego elimina las ventas
-  // await prisma.carrito.deleteMany();
-  // Crear usuario
- const user =await prisma.user.update({ 
-    where:{ email : 'estre_96@hotmail.com.ar'}, data: { rol : 'ADMIN'}
+  const ventaCorrectaId = 2;
+  const ventaIncorrectaId = 3;
 
-  });
-// const product = await prisma.producto.findFirst({ where:{ slug: 'pizarra-capibara'} })
-//usuarioId:'cmbfp5rsv0000mmg4e60jej34'
-//  const product = await prisma.user.delete({ where:{ id: 'cmbfp5rsv0000mmg4e60jej34'} })
-//  const product = await prisma.venta.findMany({ where:{ usuarioId: 'cmci9cihn0000ea32wat9wfxs'} })
-  console.log({user})
-// console.log({product})
-//   await prisma.imagenProducto.deleteMany({
-//   where: { productoId: 36 },
-// });
+  console.log("Iniciando script de corrección de datos...");
 
-// await prisma.carritoItem.deleteMany({
-//   where: { productoId: 36 },
-// });
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 1. Encontrar la información de entrega de la venta incorrecta (ID 3)
+      const entregaDeVenta3 = await tx.entrega.findFirst({
+        where: { ventaId: ventaIncorrectaId },
+      });
 
-// await prisma.ventaProducto.deleteMany({
-//   where: { productoId: 36 },
-// });
+      if (!entregaDeVenta3) {
+        throw new Error(
+          `No se encontró información de entrega para la venta con ID ${ventaIncorrectaId}. Puede que el script ya se haya ejecutado.`
+        );
+      }
+      console.log(
+        `- Entrega (ID: ${entregaDeVenta3.id}) encontrada, asociada a la venta incorrecta ${ventaIncorrectaId}.`
+      );
 
-// await prisma.favorito.deleteMany({
-//   where: { productoId: 36 },
-// });
+      // 2. Re-asociar esa entrega a la venta correcta (ID 2)
+      await tx.entrega.update({
+        where: { id: entregaDeVenta3.id },
+        data: { ventaId: ventaCorrectaId },
+      });
+      console.log(
+        `- Entrega re-asociada a la venta correcta (ID: ${ventaCorrectaId}).`
+      );
 
-// // Finalmente, borrás el producto
-// await prisma.producto.delete({
-//   where: { id: 36 },
-// });
-  
-  console.log("Seed limpio y cargado con productos electrónicos.");
+      // 3. Eliminar la venta incorrecta (ID 3)
+      // Se eliminan posibles productos asociados a la venta incorrecta para evitar errores.
+      await tx.ventaProducto.deleteMany({
+        where: { ventaId: ventaIncorrectaId },
+      });
+
+      await tx.venta.delete({
+        where: { id: ventaIncorrectaId },
+      });
+      console.log(`- Venta incorrecta (ID: ${ventaIncorrectaId}) eliminada.`);
+    });
+
+    console.log("✅ Transacción completada con éxito.");
+  } catch (error) {
+    console.error("🔴 ERROR: La transacción falló y se revirtieron los cambios.");
+    console.error(error);
+    process.exit(1);
+  }
 }
 
 main()
