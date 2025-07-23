@@ -110,6 +110,15 @@ const ProductDetails = async ({
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
             itemCondition: "https://schema.org/NewCondition",
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "AR",
+              returnPolicyCategory:
+                "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 10,
+              returnMethod: "https://schema.org/ReturnByMail",
+              returnFees: "https://schema.org/ReturnShippingFees", // Indica que el cliente podría pagar el envío de la devolución, salvo fallas de fábrica.
+            },
           },
           // TODO: Descomentar y conectar a datos reales cuando tengas un sistema de reseñas.
           // Google penaliza los datos estructurados falsos.
