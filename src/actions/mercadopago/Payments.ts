@@ -21,34 +21,31 @@ type Item = {
 };
 
 export async function createCheckout(items: Item[], email: string, shippingCost?: number) {
-  const itemsWithShipping = shippingCost && shippingCost > 0
-    ? [
-        ...items,
-        {
-          id: 'envio',
-          title: 'Envío a domicilio',
-          unit_price: shippingCost,
-          quantity: 1,
-        },
-      ]
-    : items;
   const response = await preference.create({
     body: {
-      items: itemsWithShipping,
-      back_urls: {
-        success: "https://cyetech.com.ar/checkout/success",
-        failure: "https://cyetech.com.ar/checkout/failure",
-        pending: "https://cyetech.com.ar/checkout/pending",
-      },
-      auto_return: "approved",
+      items: items,
       payer: {
         email,
       },
+      shipments: {
+        cost: shippingCost && shippingCost > 0 ? shippingCost : 0,
+        mode: 'not_specified',
+      },
+      back_urls: {
+        success: `${process.env.NEXT_PUBLIC_URL}/checkout/success`,
+        failure: `${process.env.NEXT_PUBLIC_URL}/checkout/failure`,
+        pending: `${process.env.NEXT_PUBLIC_URL}/checkout/pending`,
+      },
+      auto_return: "approved",
+      notification_url: `${process.env.NEXT_PUBLIC_URL}/api/mercadopago/webhook`,
       payment_methods: {
         excluded_payment_types: [{ id: 'ticket' }], // Deshabilita efectivo (Rapipago/PagoFacil/Boleto)
       },
     },
   });
 
-  return  response.init_point;
+  return {
+    url: response.init_point,
+    preferenceId: response.id,
+  };
 }

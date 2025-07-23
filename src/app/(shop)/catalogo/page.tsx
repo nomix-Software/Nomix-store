@@ -1,8 +1,17 @@
-import { Catalogue, Filters, ModalMobileFilters } from "@/components";
+import { Catalogue, Filters, ModalMobileFilters } from '@/components';
+import { CatalogueSkeleton, FiltersSkeleton } from '@/components/ui/skeletons';
 import SearchBar from "@/components/ui/SearchBar";
 import React, { Suspense } from "react";
+import { Metadata } from 'next';
 
-const CatalogoPage = () => {
+export const metadata: Metadata = {
+  title: 'Catálogo de Productos | CyE Tech',
+  description: 'Explorá nuestro catálogo completo de productos de tecnología. Encontrá los mejores auriculares, parlantes, cargadores y más. ¡Comprá online en CyE Tech!',
+  keywords: ['catálogo', 'productos', 'tecnología', 'comprar online', 'auriculares', 'parlantes', 'cargadores'],
+};
+
+const CatalogoPage = async ({ searchParams }: { searchParams?: Promise<{search: string}> }) => {
+  const searchUrl = await searchParams;
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-around !smb-4 items-center">
@@ -10,30 +19,30 @@ const CatalogoPage = () => {
           Catálogo
         </h1>
         <div className="!mb-4 sm:hidden">
-          <Suspense fallback={<div>Cargando Input</div>}>
-            <SearchBar defaultValue={undefined} />
+          <Suspense fallback={<div className="h-10 w-48 bg-gray-200 rounded-full animate-pulse" />}>
+            <SearchBar defaultValue={searchUrl?.search} />
           </Suspense>
         </div>
-        <Suspense fallback={<div>Cargando input...</div>}>
+        <Suspense fallback={<div className="h-10 w-64 bg-gray-200 rounded-full animate-pulse" />}>
           <div className="hidden md:flex">
             {/* searchBar desktop */}
-            <SearchBar />
+            <SearchBar defaultValue={searchUrl?.search} />
           </div>
         </Suspense>
       </div>
       <div className="flex flex-row w-full sm:gap-10">
         {/* filtros desktop */}
-        <Suspense fallback={<div></div>}>
+        <Suspense fallback={<FiltersSkeleton />}>
           <div className="hidden md:block min-w-[260px] max-w-[320px]">
             <Filters />
           </div>
         </Suspense>
         {/* filtros mobile  */}
-        <Suspense fallback={<div></div>}>
+        <Suspense>
           <ModalMobileFilters />
         </Suspense>
         {/* productos */}
-        <Suspense fallback={<div></div>}>
+        <Suspense fallback={<CatalogueSkeleton />}>
           <div className="flex-1">
             <Catalogue />
           </div>
