@@ -119,6 +119,19 @@ const ProductDetails = async ({
               returnMethod: "https://schema.org/ReturnByMail",
               returnFees: "https://schema.org/ReturnShippingFees", // Indica que el cliente podría pagar el envío de la devolución, salvo fallas de fábrica.
             },
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingDestination: {
+                "@type": "DefinedRegion",
+                addressCountry: "AR",
+              },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" }, // Tiempo de preparación: 0-1 día
+                transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 7, unitCode: "DAY" }, // Tiempo de tránsito: 3-7 días
+              },
+              // No se especifica un shippingRate porque el costo es variable.
+            },
           },
           // TODO: Descomentar y conectar a datos reales cuando tengas un sistema de reseñas.
           // Google penaliza los datos estructurados falsos.
