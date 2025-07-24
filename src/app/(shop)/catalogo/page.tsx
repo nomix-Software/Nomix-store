@@ -6,8 +6,8 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 import {  getProductsFiltered } from '@/actions';
 
-// Revalidar la página cada hora para mantenerla actualizada
-export const revalidate = 3600;
+// Revalidar la página cada 10 minutos (600 segundos) para mantenerla actualizada sin sobrecargar la base de datos.
+export const revalidate = 600;
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
