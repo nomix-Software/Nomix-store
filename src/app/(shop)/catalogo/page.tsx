@@ -9,18 +9,38 @@ import {  getProductsFiltered } from '@/actions';
 // Revalidar la página cada hora para mantenerla actualizada
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: 'Catálogo de Productos | CyE Tech',
-  description: 'Explorá nuestro catálogo completo de productos de tecnología. Encontrá los mejores auriculares, parlantes, cargadores y más. ¡Comprá online en CyE Tech!',
-  keywords: ['catálogo', 'productos', 'tecnología', 'comprar online', 'auriculares', 'parlantes', 'cargadores'],
-  openGraph: {
-    title: "Catálogo de Productos | CyE Tech",
-    description: "Explora nuestro catálogo completo de artículos tecnológicos.",
-    type: "website",
-    url: "https://cyetech.com.ar/catalogo",
-    images: ["/og-image-catalogo.png"], // Te recomiendo crear una imagen para esto
-  },
-};
+export async function generateMetadata({ searchParams }: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams;
+  const categorie = (resolvedSearchParams?.categorie as string) || "";
+  const brand = (resolvedSearchParams?.brand as string) || "";
+
+  let title = 'Catálogo de Productos | CyE Tech';
+  let description = 'Explorá nuestro catálogo completo de productos de tecnología. Encontrá los mejores auriculares, parlantes, cargadores y más. ¡Comprá online en CyE Tech!';
+
+  if (categorie) {
+    const capitalizedCategorie = categorie.charAt(0).toUpperCase() + categorie.slice(1);
+    title = `Catálogo de ${capitalizedCategorie} | CyE Tech`;
+    description = `Encontrá los mejores ${categorie.toLowerCase()} en CyE Tech. Calidad y precios increíbles.`;
+  } else if (brand) {
+    const capitalizedBrand = brand.charAt(0).toUpperCase() + brand.slice(1);
+    title = `Productos marca ${capitalizedBrand} | CyE Tech`;
+    description = `Descubrí todos los productos de la marca ${brand} disponibles en CyE Tech.`;
+  }
+
+  return {
+    title,
+    description,
+    keywords: ['catálogo', 'productos', 'tecnología', 'comprar online', 'auriculares', 'parlantes', 'cargadores', categorie, brand].filter(Boolean),
+    openGraph: {
+      title,
+      description,
+      url: `${process.env.NEXT_PUBLIC_URL}/catalogo`,
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_URL}/catalogo`,
+    },
+  };
+}
 
 const CatalogoPage = async ({
   searchParams,
@@ -56,23 +76,30 @@ const CatalogoPage = async ({
     "itemListElement": initialData.products.map((product, index) => ({
       "@type": "ListItem",
       "position": index + 1,
-      "url": `${process.env.NEXT_PUBLIC_URL}/product/${product.slug.current}`
+      "name": product.name,
+      "image": product.image,
+      "url": `${process.env.NEXT_PUBLIC_URL}/product/${product.slug.current}`,
     }))
   };
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-around !smb-4 items-center">
-        <h1 className="products-heading !text-start font-extrabold text-4xl">
-          Catálogo
+      <div className="text-center !mb-8 !px-4">
+        <h1 className=" products-heading text-3xl md:text-4xl font-extrabold text-gray-800 !mb-2">
+          Catálogo de Productos Tecnológicos
         </h1>
+        <p className="text-gray-600 max-w-3xl !mx-auto !mb-2">
+          Explorá nuestra selección completa de artículos de tecnología. Encontrá los mejores auriculares, parlantes, cargadores y accesorios con la mejor calidad y precio.
+        </p>
+      </div>
+      <div className="flex flex-col sm:flex-row justify-center !smb-4 items-center">
         <div className="!mb-4 sm:hidden">
           <Suspense fallback={<div className="h-10 w-48 bg-gray-200 rounded-full animate-pulse" />}>
             <SearchBar  />
           </Suspense>
         </div>
         <Suspense fallback={<div className="h-10 w-64 bg-gray-200 rounded-full animate-pulse" />}>
-          <div className="hidden md:flex">
+          <div className="hidden md:flex  !mb-2">
             {/* searchBar desktop */}
             <SearchBar  />
           </div>
