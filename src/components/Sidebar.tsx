@@ -55,6 +55,16 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       icon: FaClipboardCheck, // ✅ ícono de pedidos / entrega
     },
     adminCouponOption, // Nuevo ítem para cupones
+            {
+      label: "Ofertas",
+      href: "/ofertas",
+      icon: FaTags, // 🏷️ ícono de ofertas
+    },
+        {
+      label: "Ayuda",
+      href: "/ayuda",
+      icon: FiHelpCircle, // ❓ ícono de ayuda
+    },
   ];
 
   const clientOptions = [
