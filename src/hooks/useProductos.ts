@@ -1,30 +1,42 @@
 "use client";
-import { ProductItem } from "@/interfaces";
+import { ProductsFilteredResponse } from "@/actions";
 import { fetcher } from "@/lib/utils/fetcher";
-import {  useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
 
-
-
-export const useProducts = (PRODUCTS_KEY : string) => {
+export const useProducts = (
+  PRODUCTS_KEY: string,
+  initialData?: ProductsFilteredResponse
+) => {
   const [error, setError] = useState<Error | null>(null);
-
-
+  const search = useSearchParams();
+  if (initialData) {
+    if (
+      !search.get("search") &&
+      !search.get("brand") &&
+      !search.get("categories")
+    ) {
+      return { productos: initialData, isLoading: false, error: false };
+    }
+  } else {
+    console.log("llamando a productos");
+  }
   const {
     data,
     error: fetchError,
     isLoading,
-  } = useSWR( PRODUCTS_KEY , fetcher, {
+  } = useSWR<ProductsFilteredResponse>(PRODUCTS_KEY, fetcher, {
     revalidateOnFocus: false, // para que no vuelva a hacer fetch al cambiar de pestaña
     shouldRetryOnError: false, // evita reintentos automáticos
     onError: (err) => {
-        setError(err);
+      setError(err);
     },
+    fallbackData: initialData,
   });
   return {
     isLoading,
     isError: !!error || !!fetchError,
-    productos: data as {products:ProductItem[], filtrosDisponibles: {categorias: {nombre:string, cantidad:number}[], marcas: {nombre:string, cantidad:number}[]}, currentPage:number, totalPages:number}
+    productos: data,
   };
-  };
-
+};
