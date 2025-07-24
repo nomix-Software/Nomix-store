@@ -133,3 +133,7 @@ export async function getProductsFiltered({
     },
   };
 }
+
+export type ProductsFilteredResponse = Awaited<
+  ReturnType<typeof getProductsFiltered>
+>;
