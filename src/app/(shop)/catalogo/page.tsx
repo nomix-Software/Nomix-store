@@ -1,5 +1,5 @@
 import { Catalogue, Filters, ModalMobileFilters } from "@/components";
-import { CatalogueSkeleton, FiltersSkeleton } from '@/components/ui/skeletons';
+import {FiltersSkeleton } from '@/components/ui/skeletons';
 import SearchBar from "@/components/ui/SearchBar";
 import React, { Suspense } from "react";
 import { Metadata } from 'next';

@@ -1,15 +1,10 @@
 'use client'
 
 
-import { useSearchParams } from 'next/navigation'
 import React, { useEffect } from 'react'
 import { Product } from '../Product'
-
-import { LoadingOverlay } from '../ui/LoadingOverlay'
 import { Pagination } from '../ui/Pagination'
 import { useAvailableFilters } from '@/store'
-import { useProducts } from '@/hooks'
-import { MdErrorOutline } from 'react-icons/md'
 import { ProductsFilteredResponse } from '@/actions'
 
 export const Catalogue = ({ initialData }: { initialData: ProductsFilteredResponse }) => {
