@@ -55,16 +55,6 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
       icon: FaClipboardCheck, // ✅ ícono de pedidos / entrega
     },
     adminCouponOption, // Nuevo ítem para cupones
-            {
-      label: "Ofertas",
-      href: "/ofertas",
-      icon: FaTags, // 🏷️ ícono de ofertas
-    },
-        {
-      label: "Ayuda",
-      href: "/ayuda",
-      icon: FiHelpCircle, // ❓ ícono de ayuda
-    },
   ];
 
   const clientOptions = [
@@ -157,14 +147,14 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
 
             {/* Sidebar */}
             <motion.div
-              className="fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 !p-4 flex flex-col gap-4 justify-between"
+              className="fixed top-0 right-0 w-64 max-h-screen bg-white/75 shadow-lg z-50 !p-4 flex flex-col gap-4 overflow-y-auto"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ type: "tween", ease: "circOut", duration: 0.3 }}
             >
               <div className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center">
+                <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center border-b-1 !p-1">
                   ¡Hola de nuevo!
                 </h2>
                 {data?.user.email && (
@@ -180,7 +170,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
                       key={href}
                       href={href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"
+                      className="flex items-center gap-2 !p-2 hover:bg-gray-300 rounded"
                     >
                       <Icon size={20} color="#324d67" />
                       <span>{label}</span>
@@ -200,7 +190,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
                     );
                   }
                 }}
-                className="cursor-pointer mt-auto text-sm text-gray-500 hover:text-gray-700"
+                className="cursor-pointer text-sm text-gray-500 hover:!text-[#f02d34]"
               >
                 {getTextButton()}
               </button>
