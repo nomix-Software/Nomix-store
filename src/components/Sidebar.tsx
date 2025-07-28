@@ -127,7 +127,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   return (
     <>
       <button
-        className=" cursor-pointer  text-3xl text-red-500 hover:text-red-700 transition-colors duration-300"
+        className=" cursor-pointer  text-2xl text-[#324d67]  hover:text-gray-400 transition-colors duration-300"
         onClick={() => setIsOpen(true)}
       >
         <FaBars />
@@ -155,7 +155,8 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
             >
               <div className="flex flex-col gap-4">
                 <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center border-b-1 !p-1">
-                  ¡Hola de nuevo!
+                  {data?.user ? '¡Hola de nuevo!' : 'Menu'}
+                  
                 </h2>
                 {data?.user.email && (
                   <div className="!mb-2">
