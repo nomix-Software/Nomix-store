@@ -20,10 +20,6 @@ interface HeroSliderProps {
   products: Product[];
 }
 
-const truncateText = (text: string, maxLength: number) => {
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
-};
-
 export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
   return (
     <>
@@ -60,8 +56,8 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
         className="!w-full !h-full"
       >
         {products.map((product, index) => (
-          <SwiperSlide key={index}>
-              <div className="!relative !w-full !h-full !bg-gray-100">
+          <SwiperSlide key={product.slug || index}>
+              <div className="!relative !w-full !h-full !bg-transparent">
                 {/* Imagen de fondo, desenfocada y ampliada */}
                 <Image
                   src={product.imagenes?.[0]?.url || notFoundImage}
@@ -72,7 +68,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ products }) => {
                   className="!object-cover !blur-2xl !scale-110 !opacity-20"
                 />
                               {/* Contenedor para la imagen principal centrada */}
-                <div className="!absolute !inset-0 !flex !items-center !justify-center !p-4">
+                <div className="!absolute !inset-0 !flex !items-center !justify-center !p-4 !pt-0">
                   <Image
                     src={product.imagenes?.[0]?.url || notFoundImage}
                     alt={`Banner de ${product.nombre}`}
