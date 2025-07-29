@@ -8,7 +8,6 @@ import { useCartStore } from "@/store";
 import SearchBar from "./ui/SearchBar";
 import { CollapsibleFilterList } from "./ui/CollapsibleFilterList";
 import { useRouter, useSearchParams } from "next/navigation";
-import Avatar from "./ui/Avatar";
 import { useSession } from "next-auth/react";
 import { useProducts } from "@/hooks";
 
@@ -54,7 +53,7 @@ export const Navbar = () => {
         </div>
         <div className="w-full max-w-md">
           <Suspense fallback={<div className="h-10 w-full bg-gray-200 rounded-full animate-pulse" />}>
-            <SearchBar size="small" />
+            <SearchBar size="small" path={'/catalogo'} />
           </Suspense>
         </div>
       </div>

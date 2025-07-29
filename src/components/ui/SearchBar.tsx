@@ -8,9 +8,10 @@ import clsx from "clsx";
 interface Props {
   defaultValue?: string;
   size?: "small" | "medium";
+  path?:string
 }
 
-export default function SearchBar({ defaultValue = "", size = "medium" }: Props) {
+export default function SearchBar({ defaultValue = "", size = "medium", path }: Props) {
   const [input, setInput] = useState(defaultValue);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,7 +28,9 @@ export default function SearchBar({ defaultValue = "", size = "medium" }: Props)
     } else {
       params.delete(key);
     }
-    router.push(`${pathname}?${params.toString()}`);
+    const baseurl = path ? path : pathname
+    console.log({pathname})
+    router.push(`${baseurl}?${params.toString()}`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
