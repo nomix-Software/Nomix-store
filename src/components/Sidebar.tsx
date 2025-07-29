@@ -127,7 +127,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   return (
     <>
       <button
-        className=" cursor-pointer  text-2xl text-[#324d67]  hover:text-gray-400 transition-colors duration-300"
+        className=" cursor-pointer  text-2xl text-[#324d67]  hover:text-gray-400 transition-colors duration-300 sm:!hidden"
         onClick={() => setIsOpen(true)}
       >
         <FaBars />
