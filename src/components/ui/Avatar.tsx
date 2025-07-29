@@ -5,9 +5,10 @@ import { FaUser } from "react-icons/fa";
 interface AvatarProps {
   email?: string;
   size?: "small" | "medium" | "large";
+  label?:string
 }
 
-const Avatar: React.FC<AvatarProps> = ({ email, size = "small" }) => {
+const Avatar: React.FC<AvatarProps> = ({ email, size = "small", label }) => {
   // Consideramos "logueado" si hay un email y no es el placeholder "?"
   const isLoggedIn = email && email !== "?";
   const initial = isLoggedIn ? email.charAt(0).toUpperCase() : "";
@@ -44,7 +45,7 @@ const Avatar: React.FC<AvatarProps> = ({ email, size = "small" }) => {
         {isLoggedIn ? initial : <FaUser />}
       </div>
       <p className={clsx("text-gray-700 break-all text-center", styles.text)}>
-        {isLoggedIn ? email : "Iniciar Sesión"}
+        {isLoggedIn ? label : "Iniciar Sesión"}
       </p>
     </div>
   );

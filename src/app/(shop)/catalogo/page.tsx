@@ -98,12 +98,6 @@ const CatalogoPage = async ({
             <SearchBar  />
           </Suspense>
         </div>
-        <Suspense fallback={<div className="h-10 w-64 bg-gray-200 rounded-full animate-pulse" />}>
-          <div className="hidden md:flex  !mb-2">
-            {/* searchBar desktop */}
-            <SearchBar  />
-          </div>
-        </Suspense>
       </div>
       <div className="flex flex-row w-full sm:gap-10">
         {/* filtros desktop */}

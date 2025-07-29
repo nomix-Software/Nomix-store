@@ -20,17 +20,15 @@ import { FiHelpCircle } from "react-icons/fi";
 import { adminCouponOption } from "./adminCouponOption";
 
 interface SidebarProps {
-  role: "ADMIN" | "CLIENTE";
-  isAuthenticated: boolean;
+  role: "ADMIN" | "CLIENTE" | 'GUEST';
+  email?:string
 }
 
-export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
+export const Sidebar = ({  role, email }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { data } = useSession();
 
-  if (!isAuthenticated) return null;
 
   const adminOptions = [
     {
@@ -113,24 +111,25 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
   ];
 
   const options =
-    data?.user.role === "ADMIN"
+    role === "ADMIN"
       ? adminOptions
-      : data?.user.role === "CLIENTE"
+      : role === "CLIENTE"
       ? clientOptions
       : guestOptions;
 
   const getTextButton = () => {
-    if (data?.user) return "Cerrar sesión";
+    if (role !== 'GUEST') return "Cerrar sesión";
     else return "Iniciar Sesión";
   };
 
   return (
     <>
       <button
-        className=" cursor-pointer  text-2xl text-[#324d67]  hover:text-gray-400 transition-colors duration-300 sm:!hidden"
+        className=" !cursor-pointer  text-2xl text-[#324d67]  hover:text-gray-400 transition-colors duration-300 !mb-[-18px] "
         onClick={() => setIsOpen(true)}
       >
-        <FaBars />
+        {/* <FaBars /> */}
+        <Avatar email={email} label={email?.slice(0,8) + '...'} />
       </button>
 
       <AnimatePresence>
@@ -155,12 +154,12 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
             >
               <div className="flex flex-col gap-4">
                 <h2 className="text-xl font-semibold !mb-4 text-[#324d67] text-center border-b-1 !p-1">
-                  {data?.user ? '¡Hola de nuevo!' : 'Menu'}
+                  {role !== 'GUEST' ? '¡Hola de nuevo!' : 'Menu'}
                   
                 </h2>
-                {data?.user.email && (
+                {email && (
                   <div className="!mb-2">
-                    <Avatar email={data?.user.email} />
+                    <Avatar email={email} size="large"  label={email}/>
                     <br />
                     <hr className="!h-[1px]" />
                   </div>
@@ -182,7 +181,7 @@ export const Sidebar = ({ isAuthenticated }: SidebarProps) => {
 
               <button
                 onClick={async () => {
-                  if (data?.user) {
+                  if (role !== 'GUEST') {
                     signOut({ callbackUrl: "/" });
                   } else {
                     setIsOpen(false);
