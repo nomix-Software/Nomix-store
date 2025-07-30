@@ -2,9 +2,14 @@
 
 import prisma from "@/lib/prisma";
 
-export const getProducts = async () => {
+interface getProductsArgs { 
+  take?: number;
+  skip?: number;
+}
+export const getProducts = async (args: getProductsArgs) => {
   const productos = await prisma.producto.findMany({
-    take: 10,
+    take: args.take || 10,
+    skip: args.skip || 0,
     orderBy: {
       nombre: "asc", // o 'createdAt' si tenés ese campo
     },

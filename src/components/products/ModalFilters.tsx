@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Filters } from "./Filters";
 import { FaFilter, FaTimes } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
+import Filters from "./Filters";
 
-export const ModalMobileFilters = () => {
-    const search = useSearchParams()
+const ModalFiltersContent = () => {
+  const search = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -40,14 +40,13 @@ export const ModalMobileFilters = () => {
               </button>
             </div>
             <div className="flex flex-row justify-between">
-
               {/* Filtros (adaptados para mobile) */}
               <div>
                 <Suspense fallback={<div>Cargando filtros mobile</div>}>
-                <Filters isMobile />
+                  <Filters isMobile />
                 </Suspense>
               </div>
-                            {/* Barra de búsqueda (adaptada para mobile)
+              {/* Barra de búsqueda (adaptada para mobile)
               <div className="mb-4">
                 <Suspense fallback={<div>Cargando Input</div>}>
                 <SearchBar  defaultValue={search.get('search') || undefined}/>
@@ -60,3 +59,11 @@ export const ModalMobileFilters = () => {
     </>
   );
 };
+
+export default function ModalFilters() {
+  return (
+    <Suspense fallback={<div />}>
+      <ModalFiltersContent />
+    </Suspense>
+  );
+}

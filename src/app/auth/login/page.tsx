@@ -1,14 +1,19 @@
 "use client";
 
 import { registerUser } from "@/actions/auth/AuthRegister";
-import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword";
-import {TextField as UITextField } from "@/components";
+import { requestResetPassword } from "@/actions/auth/reset-password/requestResetPassword"; // Asegúrate que esta ruta es correcta
+import { TextField as UITextField } from "@/components";
 import { signIn } from "next-auth/react";
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import toast from "react-hot-toast";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useSearchParams } from "next/navigation";
 
-export default function AuthPage() {
+// El componente con la lógica del formulario ahora se llama AuthForm
+// y usa el hook `useSearchParams`
+function AuthForm() {
+  const searchParams = useSearchParams();
+
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
@@ -90,10 +95,7 @@ export default function AuthPage() {
                   toast.error("Usuario o contraseña incorrectos");
                   setIsLoading(false);
                 } else {
-                  const redirectUrl =
-                    new URLSearchParams(window.location.search).get(
-                      "redirect_uri"
-                    ) || "/";
+                  const redirectUrl = searchParams.get("redirect_uri") || "/";
                   window.location.href = redirectUrl;
                 }
               }
@@ -203,5 +205,17 @@ export default function AuthPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// El componente de la página ahora exporta por defecto un Suspense Boundary
+// que envuelve al formulario.
+export default function AuthPage() {
+  return (
+    // Suspense le dice a Next.js que espere a que AuthForm esté listo
+    // (después de leer los searchParams) y mientras tanto muestre el fallback.
+    <Suspense fallback={<div className="text-center p-8">Cargando...</div>}>
+      <AuthForm />
+    </Suspense>
   );
 }

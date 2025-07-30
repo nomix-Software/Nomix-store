@@ -12,7 +12,7 @@ import image1 from "../../public/images/imagen1.avif";
 import image2 from "../../public/images/imagen2.avif";
 import image3 from "../../public/images/imagen3.avif";
 export const AboutSection = () => (
-  <section className="!py-12 !bg-white !border-y !border-gray-200">
+  <section className="!py-12 !bg-white ">
     <div className="!max-w-4xl !mx-auto !px-4 sm:!px-8 flex flex-col !gap-4">
       <h1 className="!text-3xl sm:!text-4xl !font-extrabold !text-[#324d67] !mb-2 !text-center">
         Conocé CyE Tech

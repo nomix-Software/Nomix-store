@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import "./globals.css";
-import { ClientWrapper, Footer, Navbar } from "@/components";
+import { ClientWrapper, Footer } from "@/components";
 import { Toaster } from "react-hot-toast";
 import { AuthSessionProvider } from "@/components/SessionProvider";
 import Script from "next/script";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Cye Tech",
@@ -37,7 +38,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
           strategy="beforeInteractive"
         />
         <AuthSessionProvider>
-          <ClientWrapper />
+          <Suspense fallback={<div>Cargando...</div>}>
+            <ClientWrapper />
+          </Suspense>
           <div className="min-h-screen flex flex-col !mt-16">
             <header>
               <Navbar />
