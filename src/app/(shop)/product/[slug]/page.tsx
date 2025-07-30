@@ -1,5 +1,5 @@
 export const revalidate = 60; // en segundos
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 
 import type { ProductDetails } from "@/interfaces";
@@ -7,8 +7,7 @@ import type { ProductDetails } from "@/interfaces";
 import { getProductDetail, getProducts } from "@/actions";
 import { notFound } from "next/navigation";
 
-import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
-import { MdErrorOutline } from "react-icons/md";
+import {  ImagesDetails, RelatedProducts, AddToCartButton } from "@/components";
 import Script from "next/script";
 export async function generateStaticParams() {
   const productos = await getProducts({}); // o fetch a tu DB
@@ -50,13 +49,15 @@ const ProductDetails = async ({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
+
+
   return (
     <div>
       <div className="product-detail-container">
         <ImagesDetails images={productDetail.imagenes} />
 
         <div className="product-detail-desc">
-          <h1 className="font-extrabold ">{productDetail.nombre}</h1>
+          <h1 className="font-extrabold text-2xl">{productDetail.nombre}</h1>
           {/* TODO: Implementar un sistema de reseñas real. No usar datos falsos para evitar penalizaciones de Google. */}
           {/* <div className="reviews">
             <div className="flex flex-row gap-1 items-center">
@@ -64,19 +65,11 @@ const ProductDetails = async ({
             </div>
             <p>(20)</p>
           </div> */}
-          <h4 className="font-bold">Detalle: </h4>
+          <h4 className="font-semibold text-[#324d67] !text-[16px]">Detalle: </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
-          {productDetail.stock <= 0 ? (
-            <div className="inline-flex items-center gap-2 bg-red-200 text-red-800 text-base font-semibold !px-4 !py-1.5 !mt-6 mx-auto rounded-full !mb-4 shadow-sm">
-              <MdErrorOutline className="text-xl" />
-              Sin stock disponible
-            </div>
-          ) : (
-            <AddToCart
-              {...productDetail}
-              imagenURI={productDetail.imagenes[0].url}
-            />
-          )}
+          <Suspense fallback={<div>Cargando...</div>}>
+            <AddToCartButton productDetail={productDetail} />
+          </Suspense>
         </div>
       </div>
       {/* tambien te puede gustar */}

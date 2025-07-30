@@ -48,3 +48,4 @@ export * from "./ui/Card";
 export * from "./ui/CardContent";
 export * from "./ui/Badge";
 export * from "./ui/skeletons";
+export * from "./AddToCartButton";
