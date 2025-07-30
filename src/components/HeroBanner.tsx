@@ -13,11 +13,11 @@ if(!productsLatest) return null
       <div className="h-[450px] md:h-[500px] overflow-hidden relative">
         <HeroSlider products={productsLatest} />
         {/* Capa de superposición de texto */}
-        <div className="!absolute !inset-0 !flex !flex-col !items-center !justify-center !text-center !p-4 !z-20 !pointer-events-none">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-[#324d67] [text-shadow:0_2px_4px_rgba(255,255,255,0.7)]">
+        <div className="!absolute !inset-0 !flex !flex-col !items-center !justify-center  !text-center !p-4 !z-20 !pointer-events-none">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-[#324d67]  [text-shadow:0_2px_4px_rgba(255,255,255,0.7)]">
             Tecnología al Alcance de tu Mano
           </h1>
-          <p className="!mt-4 text-lg md:text-xl max-w-2xl text-gray-800 font-semibold [text-shadow:0_1px_3px_rgba(255,255,255,0.9)]">
+          <p className="!mt-4 text-lg md:text-xl max-w-2xl text-gray-800 font-bold  bg-white/25  [text-shadow:0_1px_3px_rgba(255,255,255,0.9)]">
             Descubrí las mejores ofertas en tus productos favoritos y equipate con lo último en tecnología.
           </p>
           <Link href="/catalogo"

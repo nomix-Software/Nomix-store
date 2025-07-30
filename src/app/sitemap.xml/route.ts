@@ -1,6 +1,8 @@
 'use server'
+
 import { ProductItem } from '@/interfaces';
 import { NextResponse } from 'next/server';
+import { getProducts } from '@/actions/product/ProductsItems';
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ;
@@ -10,15 +12,13 @@ export async function GET() {
     '/auth/login',
   ];
 
-  // Obtener productos dinámicamente desde el endpoint local
-  const res = await fetch(`${baseUrl}/api/products?take=2000`, { next: { revalidate: 3600 } });
-  let productUrls: string[] = [];
-  if (res.ok) {
-    const data = await res.json();
-    if (Array.isArray(data.products)) {
-      productUrls = data.products.map((p: ProductItem) => `/product/${p.slug.current}`);
-    }
-  }
+
+  // Obtener productos directamente desde la base de datos usando server action
+  // getProducts actualmente trae solo 10 productos, ajusta la función si necesitas más
+  const products: ProductItem[] = await getProducts({ take: 2000 });
+  const productUrls: string[] = Array.isArray(products)
+    ? products.map((p: ProductItem) => `/product/${p.slug.current}`)
+    : [];
 
   const urls = [...staticUrls, ...productUrls];
 

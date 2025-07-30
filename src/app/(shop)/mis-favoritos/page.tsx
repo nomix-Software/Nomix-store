@@ -9,7 +9,7 @@ import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function FavoritosPage() {
+ function FavoritosPage() {
   const { favoritos, isLoading, isError } = useFavorites();
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -72,3 +72,11 @@ export default function FavoritosPage() {
     </div>
   );
 }
+const  Page =()=> {
+  return (
+    <Suspense fallback={<LoadingOverlay text="Cargando favoritos..." />}>
+      <FavoritosPage />
+    </Suspense>
+  );
+}
+export default Page;

@@ -6,7 +6,7 @@ import OrderSummary from "@/components/checkout/OrderSummary";
 import { useCartStore } from "@/store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { calcularDistanciaKm } from '@/utils';
 import { validateCupon } from "@/actions/discount-coupons/validateCupon";
@@ -34,7 +34,7 @@ const opcionesRetiro = [
   },
 ];
 
-export default function SeleccionEntregaPage() {
+ function SeleccionEntregaPage() {
   const [tipoEntrega, setTipoEntrega] = useState<'RETIRO' | 'ENVIO'>('RETIRO');
   const [direccionEntrega, setDireccionEntrega] = useState<{
     address: string;
@@ -341,3 +341,10 @@ export default function SeleccionEntregaPage() {
     </div>
   );
 }
+
+const CheckoutPage = ()=>{
+  <Suspense fallback={<div>Cargando page...</div>}>
+    <SeleccionEntregaPage />
+  </Suspense>
+};
+export default CheckoutPage;

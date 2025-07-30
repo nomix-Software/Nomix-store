@@ -1,13 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { CollapsibleFilterList } from "../ui/CollapsibleFilterList";
 import { useAvailableFilters } from "@/store";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaTimesCircle } from "react-icons/fa";
 import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
 
-export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
+const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
   const { availableBrands, availableCategories } = useAvailableFilters((state) => state);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,3 +64,11 @@ export const Filters = ({ isMobile }: { isMobile?: boolean }) => {
     </div>
   );
 };
+
+export default function Filters({ isMobile }: { isMobile?: boolean }) {
+  return (
+    <Suspense fallback={<div />}> {/* Fallback simple para filtros */}
+      <FiltersContent isMobile={isMobile} />
+    </Suspense>
+  );
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { VentaStatus } from "@/interfaces/VentaStatus.interface";
 
@@ -85,4 +85,14 @@ const Success = () => {
   );
 };
 
-export default Success;
+const SuccessPage = () => {
+
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Success />
+    </Suspense>
+  );
+};
+
+
+export default SuccessPage;

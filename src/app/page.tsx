@@ -13,7 +13,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 async function MyApp() {
-  const products = await getProducts();
+  const products = await getProducts({});
 
   return (
     <>

@@ -2,10 +2,12 @@
 
 import { FaTimesCircle, FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function FailurePage() {
+function FailureContent() {
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
 
   const empresaWhatsapp = "5493512196753"; // Reemplazar con el número real en formato internacional
   const mensaje = encodeURIComponent(
@@ -14,7 +16,6 @@ export default function FailurePage() {
 
   useEffect(() => {
     const fetchVentaStatus = async () => {
-      const searchParams = new URLSearchParams(window.location.search);
       const paymentId = searchParams.get("payment_id");
       const preferenceId = searchParams.get("preference_id");
 
@@ -42,7 +43,7 @@ export default function FailurePage() {
     };
 
     fetchVentaStatus();
-  }, []);
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -89,4 +90,12 @@ export default function FailurePage() {
       </div>
     </div>
   );
+}
+
+export default function FailurePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center !px-4 bg-gray-50"><p className="text-lg text-gray-700 font-medium">Cargando...</p></div>}>
+      <FailureContent />
+    </Suspense>
+  )
 }

@@ -11,8 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useProducts } from "@/hooks";
 
-
-export const Navbar = () => {
+const NavbarContent = () => {
   const { setShowCart, showCart, items } = useCartStore((state) => state);
   const { productos }= useProducts('/api/products')
   const searchParams = useSearchParams();
@@ -83,3 +82,11 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={<div />}>
+      <NavbarContent />
+    </Suspense>
+  );
+}

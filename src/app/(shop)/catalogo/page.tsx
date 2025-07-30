@@ -1,10 +1,12 @@
-import { Catalogue, Filters, ModalMobileFilters } from "@/components";
+import { Catalogue } from "@/components";
 import {FiltersSkeleton } from '@/components/ui/skeletons';
 import SearchBar from "@/components/ui/SearchBar";
 import React, { Suspense } from "react";
 import { Metadata } from 'next';
 import Script from 'next/script';
 import {  getProductsFiltered } from '@/actions';
+import Filters from "@/components/products/Filters";
+import ModalFilters from "@/components/products/ModalFilters";
 
 // Revalidar la página cada 10 minutos (600 segundos) para mantenerla actualizada sin sobrecargar la base de datos.
 export const revalidate = 600;
@@ -108,11 +110,13 @@ const CatalogoPage = async ({
         </Suspense>
         {/* filtros mobile  */}
         <Suspense>
-          <ModalMobileFilters />
+          <ModalFilters/>
         </Suspense>
         {/* Productos - Ahora se renderizan en el servidor */}
         <div className="flex-1">
-          <Catalogue initialData={initialData} />
+          <Suspense fallback={<div>Cargando productos...</div>}>
+            <Catalogue initialData={initialData} />
+          </Suspense>
         </div>
       </div>
 

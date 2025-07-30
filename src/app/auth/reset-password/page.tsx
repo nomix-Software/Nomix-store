@@ -1,21 +1,21 @@
 "use client";
 
-import {  resetPassword } from "@/actions";
+import { resetPassword } from "@/actions";
 import { TextField, LoadingOverlay } from "@/components";
-import {  useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 import toast from "react-hot-toast";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const [form, setForm] = useState({ password: "", confirm: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  
   const handleSubmit = async (e: React.FormEvent) => {
-    const token =   new URLSearchParams(window.location.search).get('token') ?? '' //searchParams.get("token") ?? "";
+    const token = searchParams.get("token") ?? "";
 
     e.preventDefault();
     if (form.password !== form.confirm) {
@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
 
     setIsLoading(true);
     try {
-      const result = await resetPassword(token, form.password );
+      const result = await resetPassword(token, form.password);
       if (result?.error) {
         toast.error(result.error.message);
       } else {
@@ -84,5 +84,17 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+const ResetPasswordContent = () => {
+  return <ResetPasswordForm />;
+};
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

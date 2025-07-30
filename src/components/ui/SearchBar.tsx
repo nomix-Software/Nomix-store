@@ -1,17 +1,17 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 
 interface Props {
   defaultValue?: string;
   size?: "small" | "medium";
-  path?:string
+  path?: string;
 }
 
-export default function SearchBar({ defaultValue = "", size = "medium", path }: Props) {
+const SearchBarContent = ({ defaultValue = "", size = "medium", path }: Props) => {
   const [input, setInput] = useState(defaultValue);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,8 +28,8 @@ export default function SearchBar({ defaultValue = "", size = "medium", path }: 
     } else {
       params.delete(key);
     }
-    const baseurl = path ? path : pathname
-    console.log({pathname})
+    const baseurl = path ? path : pathname;
+    console.log({ pathname });
     router.push(`${baseurl}?${params.toString()}`);
   };
 
@@ -102,5 +102,13 @@ export default function SearchBar({ defaultValue = "", size = "medium", path }: 
         )}
       </div>
     </form>
+  );
+};
+
+export default function SearchBar(props: Props) {
+  return (
+    <Suspense fallback={<div />}>
+      <SearchBarContent {...props} />
+    </Suspense>
   );
 }

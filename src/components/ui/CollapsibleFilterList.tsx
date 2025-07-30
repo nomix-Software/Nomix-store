@@ -65,7 +65,12 @@ export function CollapsibleFilterList({
           {items.map(({ label, count }, index) => (
             <li
               key={`${label}-${index}`}
-              onClick={() => {onSelect?.(label); changeClose ? setOpen(false): null}}
+              onClick={() => {
+                onSelect?.(label);
+                if (changeClose) {
+                  setOpen(false);
+                }
+              }}
               className={clsx(
                 "!flex !justify-between !items-center !cursor-pointer !text-gray-700 !rounded-lg !px-2 hover:!bg-[#f02d34]/10 hover:!text-[#f02d34]",
                 styles.listItem

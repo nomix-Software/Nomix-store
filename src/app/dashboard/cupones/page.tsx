@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { FaTicketAlt } from "react-icons/fa";
 import { TextField } from "@/components";
 import toast from "react-hot-toast";
 import { createCupon, getAllCupons, deleteCupon } from "@/actions";
 import type { GetAllCuponsResponse } from "@/actions/discount-coupons/getAllCupons";
 
-export default function CuponesPage() {
+ function CuponesPage() {
   const [cupon, setCupon] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [validoHasta, setValidoHasta] = useState("");
@@ -144,3 +144,12 @@ export default function CuponesPage() {
     </div>
   );
 }
+
+const Page = () => {
+  return (
+    <Suspense fallback={<div>Cargando cupones...</div>}>
+      <CuponesPage />
+    </Suspense>
+  );
+}
+export default Page;

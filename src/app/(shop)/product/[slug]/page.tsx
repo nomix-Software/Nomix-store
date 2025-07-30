@@ -11,7 +11,7 @@ import { AddToCart, ImagesDetails, RelatedProducts } from "@/components";
 import { MdErrorOutline } from "react-icons/md";
 import Script from "next/script";
 export async function generateStaticParams() {
-  const productos = await getProducts(); // o fetch a tu DB
+  const productos = await getProducts({}); // o fetch a tu DB
   return productos.map((p) => ({ slug: p.slug.current }));
 }
 export async function generateMetadata({
