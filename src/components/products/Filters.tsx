@@ -8,7 +8,9 @@ import { FaTimesCircle } from "react-icons/fa";
 import { countFiltersAdded } from "@/lib/utils/countFiltersAdded";
 
 const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
-  const { availableBrands, availableCategories } = useAvailableFilters((state) => state);
+  const { availableBrands, availableCategories } = useAvailableFilters(
+    (state) => state
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -20,8 +22,14 @@ const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
   };
 
   return (
-    <div className={`${isMobile ? "block" : "hidden md:flex flex-col items-center"} w-full md:w-[150px]`}>
-      <h2 className="!text-lg !font-bold !text-gray-800 !mb-2 !px-6 w-full text-center hidden md:block">Filtrar</h2>
+    <div
+      className={`${
+        isMobile ? "block" : "hidden md:flex flex-col items-center"
+      } w-full md:w-[150px]`}
+    >
+      <h2 className="!text-lg !font-bold !text-gray-800 !mb-2 !px-6 w-full text-center hidden md:block">
+        Filtrar
+      </h2>
       <ul className="pl-6 flex flex-col gap-4 w-full">
         <CollapsibleFilterList
           items={availableCategories.map((filter) => ({
@@ -32,6 +40,7 @@ const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
           openDefault={true} // Abierto por defecto
           onSelect={(label) => {
             const search = new URLSearchParams(searchParams.toString());
+            if (search.has("page")) search.delete("page"); // Eliminar la página actual si existe
             search.set("categorie", label);
             router.push(`/catalogo?${search.toString()}`);
           }}
@@ -45,6 +54,8 @@ const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
           title="Marcas"
           onSelect={(label) => {
             const search = new URLSearchParams(searchParams.toString());
+            if (search.has("page")) search.delete("page"); // Eliminar la página actual si existe
+
             search.set("brand", label);
             router.push(`/catalogo?${search.toString()}`);
           }}
@@ -67,7 +78,9 @@ const FiltersContent = ({ isMobile }: { isMobile?: boolean }) => {
 
 export default function Filters({ isMobile }: { isMobile?: boolean }) {
   return (
-    <Suspense fallback={<div />}> {/* Fallback simple para filtros */}
+    <Suspense fallback={<div />}>
+      {" "}
+      {/* Fallback simple para filtros */}
       <FiltersContent isMobile={isMobile} />
     </Suspense>
   );
