@@ -172,6 +172,9 @@ export async function playRaspaGana(chosenNumbers: number[]) {
 
     if (result.success && result.coupon) {
       await sendCouponWonEmail(userEmail, result.coupon.code, result.coupon.percentage);
+      if(process.env.ADMIN_EMAIL){
+        await sendCouponWonEmail(process.env.ADMIN_EMAIL, result.coupon.code, result.coupon.percentage);
+      }
     }
 
     revalidatePath('/raspa-gana'); // Revalida la página del juego
