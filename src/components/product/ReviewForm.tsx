@@ -1,13 +1,24 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import Textarea from "@/components/ui/Textarea";
 
-export function ReviewForm({ productId, onCancel }: { productId: number; onCancel: () => void }) {
+import { createReview } from "@/actions";
+import toast from "react-hot-toast";
+
+type Props = {
+  productId: number;
+  onCancel: () => void;
+  onReviewSubmit?: () => void;
+};
+
+export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
   const [rating, setRating] = useState(5);
   const [hovered, setHovered] = useState<number | null>(null);
   const [comentario, setComentario] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const ratingLabels = [
     "Muy malo",
@@ -17,13 +28,35 @@ export function ReviewForm({ productId, onCancel }: { productId: number; onCance
     "Excelente"
   ];
 
-  // TODO: Lógica para guardar la review
+  // Lógica para guardar la review real
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // ...guardar review
-    setLoading(false);
-    onCancel();
+    try {
+      await createReview({ productId, rating, comentario });
+      if (onReviewSubmit) onReviewSubmit();
+      setComentario("");
+      // Forzar refresh de la página para sincronizar ambos bloques de ProductReviews
+      router.refresh();
+    } catch (err: unknown) {
+      if (typeof err === "object" && err && "message" in err && typeof (err as any).message === "string") {
+        const msg = (err as any).message as string;
+        if (msg.includes("Debes comprar el producto")) {
+          toast.error("Debes comprar el producto para dejar una reseña");
+        } else if (msg.includes("Ya dejaste una reseña")) {
+          toast.error("Ya dejaste una reseña para este producto");
+        } else {
+          toast.error("Ocurrió un error al enviar la reseña");
+        }
+      } else {
+        toast.error("Ocurrió un error al enviar la reseña");
+      }
+      // eslint-disable-next-line no-console
+      console.error(err);
+    } finally {
+      setLoading(false);
+      onCancel();
+    }
   };
 
   return (
