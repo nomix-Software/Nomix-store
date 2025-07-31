@@ -7,7 +7,7 @@ import type { ProductDetails } from "@/interfaces";
 import { getProductDetail, getProducts } from "@/actions";
 import { notFound } from "next/navigation";
 
-import {  ImagesDetails, RelatedProducts, AddToCartButton } from "@/components";
+import {  ImagesDetails, RelatedProducts, AddToCartButton, ProductReviews,  } from "@/components";
 import Script from "next/script";
 export async function generateStaticParams() {
   const productos = await getProducts({}); // o fetch a tu DB
@@ -58,19 +58,20 @@ const ProductDetails = async ({
 
         <div className="product-detail-desc">
           <h1 className="font-extrabold text-2xl">{productDetail.nombre}</h1>
-          {/* TODO: Implementar un sistema de reseñas real. No usar datos falsos para evitar penalizaciones de Google. */}
-          {/* <div className="reviews">
-            <div className="flex flex-row gap-1 items-center">
-              <AiFillStar /><AiFillStar /><AiFillStar /><AiFillStar /><AiOutlineStar />
-            </div>
-            <p>(20)</p>
-          </div> */}
+          {/* Estrellas y cantidad de reviews */}
+          <div className="!my-2">
+            <ProductReviews productId={productDetail.id} userHasBought={true} mode="summary" />
+          </div>
           <h4 className="font-semibold text-[#324d67] !text-[16px]">Detalle: </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
           <Suspense fallback={<div>Cargando...</div>}>
             <AddToCartButton productDetail={productDetail} />
           </Suspense>
         </div>
+      </div>
+      {/* Reseñas de clientes y formulario (solo listado y form, sin estrellas) */}
+      <div className="mt-8">
+        <ProductReviews productId={productDetail.id} userHasBought={true} mode="list" />
       </div>
       {/* tambien te puede gustar */}
       <RelatedProducts

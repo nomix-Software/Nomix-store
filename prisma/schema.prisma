@@ -1,3 +1,18 @@
+model Review {
+  id         Int      @id @default(autoincrement())
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  productoId Int
+  usuario    User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId  String
+  rating     Int      // 1 a 5 estrellas
+  comentario String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([productoId])
+  @@index([usuarioId])
+  @@unique([productoId, usuarioId]) // Un usuario solo puede dejar una reseña por producto
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,6 +40,7 @@ model User {
   accounts  Account[]
   sessions  Session[]
   favoritos Favorito[]
+  reviews      Review[]
 
   cuponesAsignados   CuponDescuento[]
   PasswordResetToken PasswordResetToken[]
@@ -123,6 +139,7 @@ model Producto {
   ventaItems   VentaProducto[]
   favoritos    Favorito[]
   activo       Boolean          @default(true)
+  reviews      Review[]
 }
 
 model ImagenProducto {
