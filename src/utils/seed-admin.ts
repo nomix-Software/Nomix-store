@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { sendCouponWonEmail } from "../actions/sendEmail/sendCouponWonEmail";
 
 const prisma = new PrismaClient();
 

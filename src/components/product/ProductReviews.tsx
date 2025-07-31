@@ -19,7 +19,10 @@ export function ProductReviews({ productId, userHasBought, mode = "full" }: { pr
       const data = await getReviews(productId);
       // Normalizar fechas a string para evitar problemas de serialización
       setReviews(
-        (data as any[]).map((r) => ({ ...r, createdAt: typeof r.createdAt === "string" ? r.createdAt : new Date(r.createdAt).toISOString() }))
+        data.map((r) => ({
+          ...r,
+          createdAt: typeof r.createdAt === "string" ? r.createdAt : new Date(r.createdAt).toISOString(),
+        }))
       );
     } finally {
       setLoading(false);

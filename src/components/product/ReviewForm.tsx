@@ -20,13 +20,7 @@ export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const ratingLabels = [
-    "Muy malo",
-    "Malo",
-    "Regular",
-    "Bueno",
-    "Excelente"
-  ];
+  const ratingLabels = ["Muy malo", "Malo", "Regular", "Bueno", "Excelente"];
 
   // Lógica para guardar la review real
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,8 +33,13 @@ export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
       // Forzar refresh de la página para sincronizar ambos bloques de ProductReviews
       router.refresh();
     } catch (err: unknown) {
-      if (typeof err === "object" && err && "message" in err && typeof (err as any).message === "string") {
-        const msg = (err as any).message as string;
+      if (
+        typeof err === "object" &&
+        err &&
+        "message" in err &&
+        typeof err.message === "string"
+      ) {
+        const msg = err.message as string;
         if (msg.includes("Debes comprar el producto")) {
           toast.error("Debes comprar el producto para dejar una reseña");
         } else if (msg.includes("Ya dejaste una reseña")) {
@@ -60,8 +59,13 @@ export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="!bg-white !border !px-1 !border-gray-200 !rounded-2xl !p-0 sm:!p-6 !mt-5 !shadow-sm !flex !flex-col !gap-2 !items-center">
-      <label className="!block !mb-2 !font-semibold !text-base !text-[#324d67]">Tu valoración:</label>
+    <form
+      onSubmit={handleSubmit}
+      className="!bg-white !border !px-1 !border-gray-200 !rounded-2xl !p-0 sm:!p-6 !mt-5 !shadow-sm !flex !flex-col !gap-2 !items-center"
+    >
+      <label className="!block !mb-2 !font-semibold !text-base !text-[#324d67]">
+        Tu valoración:
+      </label>
       <div className="!flex !gap-1 !mb-2 !justify-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
@@ -91,7 +95,9 @@ export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
         className="!mb-4 !w-full !min-h-[96px]"
         placeholder="Contanos tu experiencia..."
         value={comentario}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComentario(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          setComentario(e.target.value)
+        }
       />
       <div className="!flex !gap-3 !justify-center">
         <button

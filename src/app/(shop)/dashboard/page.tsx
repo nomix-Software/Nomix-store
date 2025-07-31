@@ -100,7 +100,7 @@ export default function AdminPage() {
 
             let value: string | number = item.quantity;
             if (item.title === "Producto_mas_vendido") {
-              value = `${item.quantity} - ${(item as any).name ?? ""}`;
+              value = `${item.quantity} - ${item .name ?? ""}`;
             } else if (item.title === "Total_ingresos" || item.title === "Pagos_recibidos") {
               value = `$${item.quantity.toLocaleString("es-AR", { minimumFractionDigits: 2 })}`;
             }
