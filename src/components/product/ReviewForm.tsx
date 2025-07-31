@@ -1,0 +1,121 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import Textarea from "@/components/ui/Textarea";
+
+import { createReview } from "@/actions";
+import toast from "react-hot-toast";
+
+type Props = {
+  productId: number;
+  onCancel: () => void;
+  onReviewSubmit?: () => void;
+};
+
+export function ReviewForm({ productId, onCancel, onReviewSubmit }: Props) {
+  const [rating, setRating] = useState(5);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [comentario, setComentario] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const ratingLabels = ["Muy malo", "Malo", "Regular", "Bueno", "Excelente"];
+
+  // Lógica para guardar la review real
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await createReview({ productId, rating, comentario });
+      if (onReviewSubmit) onReviewSubmit();
+      setComentario("");
+      // Forzar refresh de la página para sincronizar ambos bloques de ProductReviews
+      router.refresh();
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err &&
+        "message" in err &&
+        typeof err.message === "string"
+      ) {
+        const msg = err.message as string;
+        if (msg.includes("Debes comprar el producto")) {
+          toast.error("Debes comprar el producto para dejar una reseña");
+        } else if (msg.includes("Ya dejaste una reseña")) {
+          toast.error("Ya dejaste una reseña para este producto");
+        } else {
+          toast.error("Ocurrió un error al enviar la reseña");
+        }
+      } else {
+        toast.error("Ocurrió un error al enviar la reseña");
+      }
+      // eslint-disable-next-line no-console
+      console.error(err);
+    } finally {
+      setLoading(false);
+      onCancel();
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="!bg-white !border !px-1 !border-gray-200 !rounded-2xl !p-0 sm:!p-6 !mt-5 !shadow-sm !flex !flex-col !gap-2 !items-center"
+    >
+      <label className="!block !mb-2 !font-semibold !text-base !text-[#324d67]">
+        Tu valoración:
+      </label>
+      <div className="!flex !gap-1 !mb-2 !justify-center">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            type="button"
+            key={star}
+            className="focus:!outline-none !cursor-pointer"
+            onClick={() => setRating(star)}
+            onMouseEnter={() => setHovered(star)}
+            onMouseLeave={() => setHovered(null)}
+            aria-label={ratingLabels[star - 1]}
+          >
+            {star <= (hovered ?? rating) ? (
+              <AiFillStar className="!text-yellow-400 !text-2xl" />
+            ) : (
+              <AiOutlineStar className="!text-gray-300 !text-2xl" />
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="!mb-4 !h-5 !text-center">
+        <span className="!text-sm !text-gray-600 !font-medium">
+          {hovered ? ratingLabels[hovered - 1] : ratingLabels[rating - 1]}
+        </span>
+      </div>
+      <Textarea
+        name="comentario"
+        className="!mb-4 !w-full !min-h-[96px]"
+        placeholder="Contanos tu experiencia..."
+        value={comentario}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          setComentario(e.target.value)
+        }
+      />
+      <div className="!flex !gap-3 !justify-center">
+        <button
+          type="submit"
+          className="!bg-[#f02d34] cursor-pointer !text-white !px-6 !py-2 !rounded-full !font-semibold hover:!bg-[#d12a2f] !transition !shadow-sm"
+          disabled={loading}
+        >
+          Enviar reseña
+        </button>
+        <button
+          type="button"
+          className="!bg-gray-200 !text-gray-700 cursor-pointer !px-6 !py-2 !rounded-full !font-semibold hover:!bg-gray-300 !transition"
+          onClick={onCancel}
+          disabled={loading}
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  );
+}

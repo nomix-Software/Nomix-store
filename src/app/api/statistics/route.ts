@@ -1,3 +1,4 @@
+
 // app/api/mercado-pago/route.ts
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
@@ -60,9 +61,11 @@ export async function GET(
   }
 
   try {
+    // Total de cupones generados
+    const totalCupones = await prisma.cuponDescuento.count();
     // 1. Obtener pagos
     const paymentsRes = await fetch(
-      `${MERCADOPAGO_BASE}/v1/payments/search?sort=date_created&criteria=desc&limit=100`,
+      `${MERCADOPAGO_BASE}/v1/payments/search?sort=date_created&criteria=desc&limit=1000`,
       {
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -72,6 +75,12 @@ export async function GET(
 
     const paymentsData = await paymentsRes.json();
     const payments = paymentsData.results || [];
+
+    // Calcular el total de ingresos sumando el campo 'total' de todas las ventas efectivas
+    const totalIncome = await prisma.venta.aggregate({
+      _sum: { total: true },
+    });
+    const totalIngresos = totalIncome._sum.total || 0;
 
     // 2. Filtrar cobros por QR o Point
     const pointOrQrPayments = payments.filter(
@@ -137,10 +146,14 @@ export async function GET(
       },
     });
 
+
     // Total de productos activos
     const totalActiveProducts = await prisma.producto.count({
       where: { activo: true },
     });
+
+    // Total de usuarios registrados
+    const totalUsers = await prisma.user.count();
 
     // Histórico anual mensual de ventas hasta el mes actual
     const startYear = new Date(year, 0, 1);
@@ -185,6 +198,9 @@ export async function GET(
       { title: "Cobros_QR_Point", quantity: pointOrQrPayments.length },
       { title: "Ventas_mes", quantity: salesThisMonth },
       { title: "Productos_en_venta", quantity: totalActiveProducts },
+      { title: "Usuarios_registrados", quantity: totalUsers },
+      { title: "Total_ingresos", quantity: totalIngresos },
+      { title: "Cupones_generados", quantity: totalCupones },
       {
         title: "Producto_mas_vendido",
         quantity: bestSellingProduct?.totalQuantitySold ?? 0,

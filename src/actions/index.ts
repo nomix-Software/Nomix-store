@@ -47,3 +47,6 @@ export * from './raspa-gana/raspaGana'
 
 
 export * from "./sale/place-order";
+
+export * from "./reviews/getReviews";
+export * from "./reviews/createReview";

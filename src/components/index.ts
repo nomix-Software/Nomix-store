@@ -13,11 +13,13 @@ export * from "./sale/SectionDelivery";
 
 export * from "./products/RelatedProducts";
 export * from "./products/Catalogue";
-export * from "./product/AddToCart";
-export * from "./product/ImagesDetails";
 export * from "./products/TableProduct";
 export * from "./products/Filters";
 export * from "./products/ModalFilters";
+export * from "./product/AddToCart";
+export * from "./product/ImagesDetails";
+export * from "./product/ReviewForm";
+export * from "./product/ProductReviews";
 
 
 export *from './mis-pedidos/PedidosList'
@@ -48,3 +50,4 @@ export * from "./ui/Card";
 export * from "./ui/CardContent";
 export * from "./ui/Badge";
 export * from "./ui/skeletons";
+export * from "./AddToCartButton";

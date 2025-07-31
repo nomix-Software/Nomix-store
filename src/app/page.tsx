@@ -1,4 +1,4 @@
-export const revalidate = 60;
+export const revalidate = 60 * 60 * 2; // 2hs
 
 import {
   AboutSection,

@@ -47,6 +47,7 @@ export async function sendCouponWonEmail(usuario: string, codigoCupon: string, p
             <p style="font-size: 20px; font-weight: bold; color: #2e7d32; margin: 0;">${codigoCupon}</p>
           </div>
           <p>Podés usarlo en tu próxima compra. ¡No lo pierdas!</p>
+          <p style="color: #d32f2f; font-weight: bold; margin-top: 20px;">Atención: el cupón vence en 7 días. Solo tenés ese tiempo para realizar una compra y aprovechar el descuento.</p>
         </div>
         ${footer}
       </div>

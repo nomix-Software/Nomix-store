@@ -18,7 +18,7 @@ export default function Textarea({
   placeholder,
 }: TextareaProps) {
   return (
-    <div>
+    <div className="!w-full">
       <label className="block text-sm font-semibold text-gray-700 mb-1">
         {label}
       </label>

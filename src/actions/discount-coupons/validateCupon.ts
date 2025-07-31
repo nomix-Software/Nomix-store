@@ -2,10 +2,17 @@
 import prisma from '@/lib/prisma';
 
 export async function validateCupon({ codigo, userEmail }: { codigo: string; userEmail: string }) {
-  // Buscar cupón por código
-  const cupon = await prisma.cuponDescuento.findFirst({ where: { codigo } });
+  // Buscar cupón por código, incluyendo usuario asignado
+  const cupon = await prisma.cuponDescuento.findFirst({
+    where: { codigo },
+    include: { usuario: true },
+  });
   if (!cupon) {
     return { status: 'failed', message: 'Cupón inexistente' };
+  }
+  // Si el cupón tiene usuario asignado, solo ese usuario puede usarlo
+  if (cupon.usuarioId && cupon.usuario?.email && cupon.usuario.email !== userEmail) {
+    return { status: 'failed', message: 'Este cupón es exclusivo para otro usuario' };
   }
   // Verificar vigencia
   const ahora = new Date();

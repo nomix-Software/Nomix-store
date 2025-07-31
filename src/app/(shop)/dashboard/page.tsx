@@ -16,18 +16,21 @@ import {
   FiBarChart2,
   FiBox,
   FiStar,
+  FiUsers,
+  FiDollarSign,
+  FiGift,
 } from "react-icons/fi";
 import { LoadingOverlay } from "@/components";
-const ICONS: Record<
-  Exclude<DashboardItem["title"], "Historico_anual_ventas">,
-  JSX.Element
-> = {
+const ICONS: Record<string, JSX.Element> = {
   Ordenes: <FiShoppingCart className="text-blue-600" />,
   Pagos_recibidos: <FiCreditCard className="text-green-600" />,
   Cobros_QR_Point: <FiSmartphone className="text-purple-600" />,
   Ventas_mes: <FiBarChart2 className="text-orange-500" />,
   Productos_en_venta: <FiBox className="text-yellow-500" />,
   Producto_mas_vendido: <FiStar className="text-pink-500" />,
+  Usuarios_registrados: <FiUsers className="text-cyan-600" />,
+  Total_ingresos: <FiDollarSign className="text-green-700" />,
+  Cupones_generados: <FiGift className="text-fuchsia-600" />,
 };
 const formateLabel: Record<string, string> = {
   Ordenes: "Ordenes",
@@ -35,7 +38,10 @@ const formateLabel: Record<string, string> = {
   Cobros_QR_Point: "Cobros con QR o Point",
   Ventas_mes: "Ventas del mes",
   Productos_en_venta: "Productos en venta",
+  Usuarios_registrados: "Usuarios registrados",
   Producto_mas_vendido: "Producto mas vendido",
+  Total_ingresos: "Total de ingresos",
+  Cupones_generados: "Cupones generados",
   Historico_anual_ventas: "Historico de ventas",
 };
 type DashboardItem =
@@ -45,7 +51,10 @@ type DashboardItem =
         | "Pagos_recibidos"
         | "Cobros_QR_Point"
         | "Ventas_mes"
-        | "Productos_en_venta";
+        | "Productos_en_venta"
+        | "Usuarios_registrados"
+        | "Total_ingresos"
+        | "Cupones_generados";
       quantity: number;
     }
   | {
@@ -88,10 +97,13 @@ export default function AdminPage() {
           ?.filter((item) => item.title !== "Historico_anual_ventas")
           .map((item) => {
             const icon = ICONS[item.title as keyof typeof ICONS];
-            const value =
-              item.title === "Producto_mas_vendido" 
-                ? `${item.quantity} - ${(item).name ?? ""}`
-                : item.title === "Productos_en_venta" ? `${item.quantity}`:`$${item.quantity}`;
+
+            let value: string | number = item.quantity;
+            if (item.title === "Producto_mas_vendido") {
+              value = `${item.quantity} - ${item .name ?? ""}`;
+            } else if (item.title === "Total_ingresos" || item.title === "Pagos_recibidos") {
+              value = `$${item.quantity.toLocaleString("es-AR", { minimumFractionDigits: 2 })}`;
+            }
 
             return (
               <Card
