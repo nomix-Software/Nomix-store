@@ -7,3 +7,7 @@
     5-Correr el proyecto ` npm run dev`
 
 ### integracion con mercado pago https://github.com/goncy/next-mercadopago/blob/main/integraciones/checkout-pro/README.md
+
+## dominio de prueba de GCP https://next-app-765863353432.us-central1.run.app/catalogo
+
+## dominio comprado www.cyetech.com.ar
