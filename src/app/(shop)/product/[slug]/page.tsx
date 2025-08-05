@@ -7,7 +7,13 @@ import type { ProductDetails } from "@/interfaces";
 import { getProductDetail, getProducts } from "@/actions";
 import { notFound } from "next/navigation";
 
-import {  ImagesDetails, RelatedProducts, AddToCartButton, ProductReviews,  } from "@/components";
+import {
+  ImagesDetails,
+  RelatedProducts,
+  AddToCartButton,
+  ProductReviews,
+} from "@/components";
+import { formatPrice } from "@/utils/formatPrice";
 import Script from "next/script";
 export async function generateStaticParams() {
   const productos = await getProducts({}); // o fetch a tu DB
@@ -50,7 +56,6 @@ const ProductDetails = async ({
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
 
-
   return (
     <div>
       <div className="product-detail-container">
@@ -58,20 +63,34 @@ const ProductDetails = async ({
 
         <div className="product-detail-desc">
           <h1 className="font-extrabold text-2xl">{productDetail.nombre}</h1>
-          {/* Estrellas y cantidad de reviews */}
-          <div className="!my-2">
-            <ProductReviews productId={productDetail.id} userHasBought={true} mode="summary" />
+          <div className="!my-2 !flex !items-center !gap-4">
+            <ProductReviews
+              productId={productDetail.id}
+              userHasBought={true}
+              mode="summary"
+            />
           </div>
-          <h4 className="font-semibold text-[#324d67] !text-[16px]">Detalle: </h4>
+          <h4 className="font-semibold text-[#324d67] !text-[16px]">
+            Detalle:{" "}
+          </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
+        <div className="flex flex-col gap-2 !mt-4">
+          <span className="!text-2xl w-fit !font-bold !text-[#f02d34] !bg-[#fff0f0] !rounded-xl !px-4 !py-1 !shadow-sm">
+            {formatPrice(productDetail.precio)}
+          </span>
           <Suspense fallback={<div>Cargando...</div>}>
             <AddToCartButton productDetail={productDetail} />
           </Suspense>
         </div>
+        </div>
       </div>
       {/* Reseñas de clientes y formulario (solo listado y form, sin estrellas) */}
       <div className="mt-8">
-        <ProductReviews productId={productDetail.id} userHasBought={true} mode="list" />
+        <ProductReviews
+          productId={productDetail.id}
+          userHasBought={true}
+          mode="list"
+        />
       </div>
       {/* tambien te puede gustar */}
       <RelatedProducts
@@ -118,8 +137,18 @@ const ProductDetails = async ({
               },
               deliveryTime: {
                 "@type": "ShippingDeliveryTime",
-                handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" }, // Tiempo de preparación: 0-1 día
-                transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 7, unitCode: "DAY" }, // Tiempo de tránsito: 3-7 días
+                handlingTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 0,
+                  maxValue: 1,
+                  unitCode: "DAY",
+                }, // Tiempo de preparación: 0-1 día
+                transitTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 3,
+                  maxValue: 7,
+                  unitCode: "DAY",
+                }, // Tiempo de tránsito: 3-7 días
               },
               // No se especifica un shippingRate porque el costo es variable.
             },
