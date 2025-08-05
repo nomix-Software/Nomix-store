@@ -46,29 +46,29 @@ export const AboutSection = () => (
         </Link>{" "}
         para que estés al tanto de las últimas novedades y ofertas.
       </p>
-<div className="mt-8 flex justify-center gap-6 flex-wrap">
-  <Image
-    width={160}
-    height={160}
-    src={image1}
-    alt="Atención personalizada"
-    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
-  />
-  <Image
-    width={160}
-    height={160}
-    src={image2}
-    alt="Tecnología de calidad"
-    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
-  />
-  <Image
-    width={160}
-    height={160}
-    src={image3}
-    alt="Envíos rápidos"
-    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
-  />
-</div>
+      <div className="mt-8 flex justify-center gap-6 flex-wrap">
+        <Image
+          width={160}
+          height={160}
+          src={image1}
+          alt="Atención personalizada"
+          className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
+        />
+        <Image
+          width={160}
+          height={160}
+          src={image2}
+          alt="Tecnología de calidad"
+          className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
+        />
+        <Image
+          width={160}
+          height={160}
+          src={image3}
+          alt="Envíos rápidos"
+          className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl object-cover shadow-md"
+        />
+      </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center !gap-4 !mt-2">
         <div className="flex items-center !gap-2 !text-gray-600">
@@ -165,3 +165,4 @@ export const BenefitsSection = () => (
     </div>
   </section>
 );
+

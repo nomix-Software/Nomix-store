@@ -26,6 +26,9 @@ export *from './mis-pedidos/PedidosList'
 export *from './mis-pedidos/PedidoCard'
 
 
+export * from './home/RaspaGanaSection'
+
+
 export * from "./ui/TextField";
 export * from "./ui/Select";
 export * from "./ui/Textarea";

@@ -5,6 +5,7 @@ import {
   AutoScrollableMarquee,
   BenefitsSection,
   HeroBanner,
+  RaspaGanaSection,
   TestimonialsSection,
 } from "@/components";
 import React from "react";
@@ -17,27 +18,30 @@ async function MyApp() {
 
   return (
     <>
-      <div className="!pt-0 !mt-0">
-        <HeroBanner />
-
-        <AboutSection />
-        <BenefitsSection />
-
-        <TestimonialsSection />
-        <div className="products-heading">
-          <h2>Productos más vendidos</h2>
-          <p>Descubrí las diferentes versiones más elegidas.</p>
-        </div>
-        <AutoScrollableMarquee products={products} />
-        <div className=" flex w-full justify-center">
-          <Link href={"/catalogo"}>
-            <button
-              type="button"
-              className="bg-[#f02d34] cursor-pointer text-white rounded-2xl !py-2.5 !my-8 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:scale-110"
-            >
-              Ver más productos
-            </button>
-          </Link>
+      <div className="bg-white !pt-0 !mt-0 !min-h-screen w-full">
+        {/* Sección de productos destacados y beneficios */}
+        <div className="w-full">
+          <HeroBanner />
+          {/* Sección Raspa-Gana debajo del HeroBanner */}
+          <RaspaGanaSection/>
+          <AboutSection />
+          <BenefitsSection />
+          <TestimonialsSection />
+          <div className="products-heading !mt-12 w-full">
+            <h2 className="!text-2xl !font-bold !text-[#f02d34]">Productos más vendidos</h2>
+            <p className="!text-gray-700">Descubrí las diferentes versiones más elegidas.</p>
+          </div>
+          <AutoScrollableMarquee products={products} />
+          <div className="flex w-full justify-center">
+            <Link href={"/catalogo"}>
+              <button
+                type="button"
+                className="!bg-[#f02d34] cursor-pointer !text-white !rounded-2xl !py-2.5 !my-8 !px-4 !w-[170px] m-auto transform transition-transform duration-300 hover:!scale-110"
+              >
+                Ver más productos
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
       {/* WebSite con acción de búsqueda */}
@@ -61,11 +65,10 @@ async function MyApp() {
           "@type": "Organization",
           name: "CyE Tech",
           url: process.env.NEXT_PUBLIC_APP_URL,
-          logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`, // cambiá si tenés logo
+          logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
           sameAs: [
             "https://www.facebook.com/share/16efa9JMz1/",
             "https://www.instagram.com/cyetech/profilecard/?igsh=enl0ZmNjbmE5czk3",
-            // "https://www.linkedin.com/company/tupagina",
           ],
         })}
       </Script>
