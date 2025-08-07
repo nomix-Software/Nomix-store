@@ -17,20 +17,18 @@ import { usePathname, useRouter } from "next/navigation";
 import Avatar from "./ui/Avatar";
 import { FiHelpCircle } from "react-icons/fi";
 import { adminCouponOption } from "./adminCouponOption";
-import { CollapsibleFilterList } from "./ui/CollapsibleFilterList";
 
 interface SidebarProps {
   role: "ADMIN" | "CLIENTE" | 'GUEST';
   email?: string;
   mobile?: boolean;
-  productos?: any;
   onCategorySelect?: (label: string) => void;
   showCartIcon?: boolean;
   cartItems?: number;
   onCartClick?: () => void;
 }
 
-export const Sidebar = ({ role, email, mobile = false, productos, onCategorySelect, showCartIcon = false, cartItems = 0, onCartClick }: SidebarProps) => {
+export const Sidebar = ({ role, email}: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -134,7 +132,7 @@ export const Sidebar = ({ role, email, mobile = false, productos, onCategorySele
         className="!cursor-pointer text-2xl text-[#324d67] hover:text-gray-400 transition-colors duration-300"
         onClick={() => setIsOpen(true)}
       >
-        <Avatar email={email} label={email?.slice(0, 8) + '...'} />
+        <Avatar email={email} />
       </button>
 
       <AnimatePresence>
@@ -160,7 +158,7 @@ export const Sidebar = ({ role, email, mobile = false, productos, onCategorySele
                 </h2>
                 {email && (
                   <div className="!mb-2 flex flex-col items-center">
-                    <Avatar email={email} size="large" label={email} />
+                    <Avatar email={email} size="large" />
                     <span className="text-xs text-[#324d67] mt-1 break-all text-center">{email}</span>
                     <hr className="!h-[1px] !mt-2 w-full" />
                   </div>
