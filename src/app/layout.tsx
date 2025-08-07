@@ -45,7 +45,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <header>
               <Navbar />
             </header>
-            <main className="flex-1 ">{children}</main>
+            <main className="flex-1 !mt-20">{children}</main>
             <footer>
               <Footer />
             </footer>

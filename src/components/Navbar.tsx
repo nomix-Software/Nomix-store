@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useProducts } from "@/hooks";
 import Image from "next/image";
+import Avatar from "./ui/Avatar";
 
 const NavbarContent: React.FC = () => {
   const { setShowCart, showCart, items } = useCartStore((state) => state);
@@ -43,8 +44,8 @@ const NavbarContent: React.FC = () => {
       }
       lastScroll = y;
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -56,56 +57,107 @@ const NavbarContent: React.FC = () => {
         {/* Branding a la izquierda */}
         <div className="flex items-center !gap-2 min-w-0 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2 min-w-0">
-            <Image src="/images/logo.png" priority width={32} height={32} alt="Logo" className="h-9 w-9 object-contain" />
-            <span className="text-xl md:text-2xl font-bold text-[#324d67] truncate">CYE TECH</span>
+            <Image
+              src="/images/logo.png"
+              priority
+              width={32}
+              height={32}
+              alt="Logo"
+              className="h-9 w-9 object-contain"
+            />
+            <span className="text-xl md:text-2xl font-bold text-[#324d67] truncate">
+              CYE TECH
+            </span>
           </Link>
         </div>
         {/* SearchBar solo en desktop */}
         <div className="hidden md:flex justify-center items-center !px-2  w-2/3 ">
           <Suspense
-            fallback={<div className="h-10 w-full max-w-[400px] bg-gray-200 rounded-full animate-pulse" />}
+            fallback={
+              <div className="h-10 w-full max-w-[400px] bg-gray-200 rounded-full animate-pulse" />
+            }
           >
             <SearchBar size="small" path={"/catalogo"} />
           </Suspense>
         </div>
         {/* Acciones a la derecha */}
-        <div className="flex items-center !gap-3 flex-shrink-0">
-          <Sidebar
-            role={role ? role : "GUEST"}
-            email={data?.user.email || ""}
-            cartItems={items.length}
-            showCartIcon
-            mobile={true}
-          />
-          <button
+        <div className="flex items-center !gap-5 flex-shrink-0">
+                    <button
             type="button"
             className="cart-icon animate-bounce-cart"
             onClick={() => {
               if (!role) {
-                router.push(`/auth/login?redirect_uri=${encodeURIComponent(window.location.pathname)}`);
+                router.push(
+                  `/auth/login?redirect_uri=${encodeURIComponent(
+                    window.location.pathname
+                  )}`
+                );
               } else {
                 setShowCart(true);
               }
             }}
           >
             <span>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#324d67" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6h15l-1.5 9h-13z"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M6 6V4a2 2 0 0 1 2-2h2"/></svg>
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#324d67"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 6h15l-1.5 9h-13z" />
+                <circle cx="9" cy="20" r="1.5" />
+                <circle cx="18" cy="20" r="1.5" />
+                <path d="M6 6V4a2 2 0 0 1 2-2h2" />
+              </svg>
             </span>
             <span className="cart-item-qty">{items.length}</span>
           </button>
+          {data?.user.email ? (
+            <Sidebar
+              role={role ? role : "GUEST"}
+              email={data?.user.email || ""}
+              cartItems={items.length}
+              showCartIcon
+              mobile={true}
+            />
+          ) : (
+            <button
+              className="!cursor-pointer text-2xl text-[#324d67] hover:text-gray-400 transition-colors duration-300"
+              onClick={() =>
+                router.push(
+                  `/auth/login?redirect_uri=${encodeURIComponent(
+                    window.location.pathname
+                  )}`
+                )
+              }
+            >
+              <Avatar email={""} label={""} />
+            </button>
+          )}
+
         </div>
       </div>
 
       {/* Nivel medio y nivel inferior solo visibles en mobile y controlados por scroll */}
       <div
-        className={`md:!hidden w-full transition-all duration-300 ${showMobileLevels ? 'opacity-100 max-h-[500px]' : 'opacity-0 max-h-0 pointer-events-none'} overflow-hidden`}
-        style={{ transitionProperty: 'max-height, opacity' }}
+        className={`md:!hidden w-full transition-all duration-300 ${
+          showMobileLevels
+            ? "opacity-100 max-h-[500px]"
+            : "opacity-0 max-h-0 pointer-events-none"
+        } overflow-hidden`}
+        style={{ transitionProperty: "max-height, opacity" }}
       >
         {/* Nivel medio: searchbar solo en mobile */}
         <div className="flex items-center justify-center !px-4 !py-2 bg-white h-14">
           <div className="w-full max-w-md flex justify-center items-center">
             <Suspense
-              fallback={<div className="h-10 w-full max-w-md bg-gray-200 rounded-full animate-pulse" />}
+              fallback={
+                <div className="h-10 w-full max-w-md bg-gray-200 rounded-full animate-pulse" />
+              }
             >
               <SearchBar size="small" path={"/catalogo"} />
             </Suspense>
@@ -113,18 +165,24 @@ const NavbarContent: React.FC = () => {
         </div>
         {/* Nivel inferior: tabs scrolleables solo en mobile */}
         <div className="relative w-full bg-white">
-          <div className="flex items-center !gap-2 !px-4 !py-2 overflow-x-auto scrollbar-hide relative" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div
+            className="flex !items-center !gap-2 !px-4 !py-2 overflow-x-auto scrollbar-hide relative"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {productos?.filtrosDisponibles?.categorias?.length > 0 && (
-              <CollapsibleFilterList
-                items={productos.filtrosDisponibles.categorias.map(
-                  (cat: any) => ({ count: cat.cantidad, label: cat.nombre })
-                )}
-                size="small"
-                title="Categorías"
-                openDefault={false}
-                onSelect={handleCategorySelect}
-                changeClose
-              />
+              <div >
+
+                <CollapsibleFilterList
+                  items={productos.filtrosDisponibles.categorias.map(
+                    (cat: any) => ({ count: cat.cantidad, label: cat.nombre })
+                  )}
+                  size="small"
+                  title="Categorías"
+                  openDefault={false}
+                  onSelect={handleCategorySelect}
+                  changeClose
+                />
+              </div>
             )}
             {[
               { label: "Catálogo", href: "/catalogo" },
@@ -140,7 +198,7 @@ const NavbarContent: React.FC = () => {
               </Link>
             ))}
             {/* Fade para indicar scroll a la derecha */}
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent" />
+            {/* <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent" /> */}
           </div>
         </div>
       </div>

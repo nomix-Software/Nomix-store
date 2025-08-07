@@ -58,7 +58,7 @@ export function CollapsibleFilterList({
   const styles = sizeStyles[size];
 
   return (
-    <div ref={ref} className={clsx("!mb-1 !bg-white !rounded-2xl !shadow-sm !border !border-gray-100", styles.container, className)}>
+    <div ref={ref} className={clsx(" !bg-white !rounded-2xl !shadow-sm !border !border-gray-100", styles.container, className)}>
       <button
         type="button"
         className={clsx(

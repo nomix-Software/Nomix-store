@@ -9,7 +9,7 @@ export const HeroBanner: React.FC = async () => {
   const productsLatest = await getLatestProducts();
 if(!productsLatest) return null
   return (
-    <section className="relative !mt-15 sm:!mt-10 [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
+    <section className="relative  [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
       <div className="h-[450px] md:h-[500px] overflow-hidden relative">
         <HeroSlider products={productsLatest} />
         {/* Capa de superposición de texto */}
