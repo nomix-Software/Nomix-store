@@ -165,22 +165,47 @@ const NavbarContent: React.FC = () => {
         {/* Nivel inferior: tabs scrolleables solo en mobile */}
         <div className="relative w-full bg-white">
           <div
-            className="flex !items-center !gap-2 !px-4 !py-2 overflow-x-auto scrollbar-hide relative"
-            style={{ WebkitOverflowScrolling: "touch" }}
+            className="flex !items-center !gap-2 !px-4 !py-2 scrollbar-hide"
+            style={{ WebkitOverflowScrolling: "touch", overflowX: "auto", overflowY: "visible" }}
           >
             {productos?.filtrosDisponibles?.categorias?.length > 0 && (
-              <div >
-
-                <CollapsibleFilterList
-                  items={productos.filtrosDisponibles.categorias.map(
-                    (cat: { cantidad: number; nombre: string }) => ({ count: cat.cantidad, label: cat.nombre })
-                  )}
-                  size="small"
-                  title="Categorías"
-                  openDefault={false}
-                  onSelect={handleCategorySelect}
-                  changeClose
-                />
+              <div
+                className="scroll-auto bg-white flex items-center"
+                style={{ position: 'relative', zIndex: 50 }}
+              >
+                <div
+                  className="md:!hidden"
+                  style={{
+                    position: 'relative',
+                    zIndex: 100,
+                  }}
+                >
+                  {/* El botón/tab está alineado, pero el dropdown se fuerza a fixed/z-1000 vía prop especial */}
+                  <CollapsibleFilterList
+                    items={productos.filtrosDisponibles.categorias.map(
+                      (cat: { cantidad: number; nombre: string }) => ({ count: cat.cantidad, label: cat.nombre })
+                    )}
+                    size="small"
+                    title="Categorías"
+                    openDefault={false}
+                    onSelect={handleCategorySelect}
+                    changeClose
+                    buttonClassName="!px-4 !py-1 !h-7.5 !text-sm cursor-pointer !rounded-full !border !border-gray-300 !bg-gray-50 hover:!bg-gray-200 !font-medium !transition-colors !flex !items-center !text-[#324d67] !whitespace-nowrap"
+                    dropdownFixed
+                  />
+                </div>
+                <div className="hidden md:block">
+                  <CollapsibleFilterList
+                    items={productos.filtrosDisponibles.categorias.map(
+                      (cat: { cantidad: number; nombre: string }) => ({ count: cat.cantidad, label: cat.nombre })
+                    )}
+                    size="small"
+                    title="Categorías"
+                    openDefault={false}
+                    onSelect={handleCategorySelect}
+                    changeClose
+                  />
+                </div>
               </div>
             )}
             {[

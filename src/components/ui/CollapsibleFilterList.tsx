@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import clsx from "clsx";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
   size?: "small" | "medium"; // 'small' para una versión compacta, 'medium' para la normal
   changeClose?: boolean;
   className?: string; // Permite personalización externa
+  buttonClassName?: string; // Permite personalización del botón principal
+  dropdownFixed?: boolean; // Si true, el dropdown se renderiza fixed/z-1000 (para mobile)
 };
 
 export function CollapsibleFilterList({
@@ -21,9 +24,12 @@ export function CollapsibleFilterList({
   changeClose,
   size = "medium", // Por defecto 'small' para el Navbar
   className,
+  buttonClassName,
+  dropdownFixed,
 }: Props) {
   const [open, setOpen] = useState(openDefault || false);
   const ref = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState<{top: number, left: number, width: number} | null>(null);
 
   // Cerrar al hacer click fuera
   useEffect(() => {
@@ -36,6 +42,20 @@ export function CollapsibleFilterList({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
+
+  // Calcular posición del dropdown si es fixed
+  useEffect(() => {
+    if (open && dropdownFixed && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+      });
+    } else if (!open) {
+      setDropdownPos(null);
+    }
+  }, [open, dropdownFixed]);
 
   // Definición de clases para los tamaños
   const sizeStyles = {
@@ -63,7 +83,8 @@ export function CollapsibleFilterList({
         type="button"
         className={clsx(
           "!flex !justify-between !items-center !font-semibold !text-[#324d67] focus:!outline-none focus:!ring-2 focus:!ring-[#f02d34]/20 !transition-colors !duration-200 relative",
-          styles.button
+          styles.button,
+          buttonClassName
         )}
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
@@ -74,28 +95,68 @@ export function CollapsibleFilterList({
         </span>
       </button>
 
-      <div className="relative">
+      <div className={dropdownFixed ? undefined : "relative !z-50"}>
         {open && (
-          <ul className={clsx("!pt-1 !space-y-1", styles.list)}>
-            {items.map(({ label, count }, index) => (
-              <li
-                key={`${label}-${index}`}
-                onClick={() => {
-                  onSelect?.(label);
-                  if (changeClose) {
-                    setOpen(false);
-                  }
-                }}
-                className={clsx(
-                  "!flex !justify-between !items-center !cursor-pointer !text-gray-700 !rounded-lg !px-2 hover:!bg-[#f02d34]/10 hover:!text-[#f02d34]",
-                  styles.listItem
-                )}
-              >
-                <span>{label}</span>
-                <span className="!ml-2 !text-xs !text-gray-500 !font-semibold">{count}</span>
-              </li>
-            ))}
-          </ul>
+          dropdownFixed && dropdownPos && typeof window !== 'undefined' && document.body
+            ? createPortal(
+                <ul
+                  className={clsx("!pt-1 !space-y-1", styles.list)}
+                  style={{
+                    position: 'fixed',
+                    top: dropdownPos.top,
+                    left: dropdownPos.left,
+                    width: dropdownPos.width,
+                    zIndex: 2000,
+                    background: 'rgba(255,255,255,0.98)',
+                    borderRadius: '1rem',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                  }}
+                >
+                  {items.map(({ label, count }, index) => (
+                    <li
+                      key={`${label}-${index}`}
+                      onClick={() => {
+                        onSelect?.(label);
+                        if (changeClose) {
+                          setOpen(false);
+                        }
+                      }}
+                      className={clsx(
+                        "!flex !justify-between !items-center !cursor-pointer !text-gray-700 !rounded-lg !px-2 hover:!bg-[#f02d34]/10 hover:!text-[#f02d34]",
+                        styles.listItem
+                      )}
+                    >
+                      <span>{label}</span>
+                      <span className="!ml-2 !text-xs !text-gray-500 !font-semibold">{count}</span>
+                    </li>
+                  ))}
+                </ul>,
+                document.body
+              )
+            : (
+                <ul
+                  className={clsx("!pt-1 !space-y-1", styles.list)}
+                >
+                  {items.map(({ label, count }, index) => (
+                    <li
+                      key={`${label}-${index}`}
+                      onClick={() => {
+                        onSelect?.(label);
+                        if (changeClose) {
+                          setOpen(false);
+                        }
+                      }}
+                      className={clsx(
+                        "!flex !justify-between !items-center !cursor-pointer !text-gray-700 !rounded-lg !px-2 hover:!bg-[#f02d34]/10 hover:!text-[#f02d34]",
+                        styles.listItem
+                      )}
+                    >
+                      <span>{label}</span>
+                      <span className="!ml-2 !text-xs !text-gray-500 !font-semibold">{count}</span>
+                    </li>
+                  ))}
+                </ul>
+              )
         )}
       </div>
     </div>
