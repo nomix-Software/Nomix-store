@@ -1,5 +1,6 @@
 "use client";
 import React, { Suspense, useState } from "react";
+import clsx from "clsx";
 import Link from "next/link";
 import { Sidebar } from "./Sidebar";
 import { Cart } from "./Cart";
@@ -46,6 +47,9 @@ const NavbarContent: React.FC = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Estado para saber si el dropdown de categorías está abierto en mobile
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     // Usamos <nav> por semántica y `justify-between` para espaciar las secciones.
@@ -143,11 +147,13 @@ const NavbarContent: React.FC = () => {
 
       {/* Nivel medio y nivel inferior solo visibles en mobile y controlados por scroll */}
       <div
-        className={`md:!hidden w-full transition-all duration-300 ${
+        className={clsx(
+          "md:!hidden w-full transition-all duration-300",
           showMobileLevels
-            ? "opacity-100 max-h-[500px]"
-            : "opacity-0 max-h-0 pointer-events-none"
-        } overflow-hidden`}
+            ? "opacity-100"
+            : "opacity-0 !max-h-0 pointer-events-none",
+          !dropdownOpen && "!overflow-hidden"
+        )}
         style={{ transitionProperty: "max-height, opacity" }}
       >
         {/* Nivel medio: searchbar solo en mobile */}
@@ -165,8 +171,8 @@ const NavbarContent: React.FC = () => {
         {/* Nivel inferior: tabs scrolleables solo en mobile */}
         <div className="relative w-full bg-white">
           <div
-            className="flex !items-center !gap-2 !px-4 !py-2 scrollbar-hide"
-            style={{ WebkitOverflowScrolling: "touch", overflowX: "auto", overflowY: "visible" }}
+            className="flex !items-center !gap-2 !px-4 !py-2 "
+            style={{ WebkitOverflowScrolling: "touch", overflowX: dropdownOpen ? undefined :"auto", overflowY: "visible" }}
           >
             {productos?.filtrosDisponibles?.categorias?.length > 0 && (
               <div
@@ -191,7 +197,9 @@ const NavbarContent: React.FC = () => {
                     onSelect={handleCategorySelect}
                     changeClose
                     buttonClassName="!px-4 !py-1 !h-7.5 !text-sm cursor-pointer !rounded-full !border !border-gray-300 !bg-gray-50 hover:!bg-gray-200 !font-medium !transition-colors !flex !items-center !text-[#324d67] !whitespace-nowrap"
-                    dropdownFixed
+                    // Levantar estado open
+                    onOpen={() => setDropdownOpen(true)}
+                    onClose={() => setDropdownOpen(false)}
                   />
                 </div>
                 <div className="hidden md:block">
