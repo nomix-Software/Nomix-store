@@ -1,7 +1,6 @@
 "use client";
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { AiOutlineShopping } from "react-icons/ai";
 import { Sidebar } from "./Sidebar";
 import { Cart } from "./Cart";
 import { useCartStore } from "@/store";
@@ -135,7 +134,7 @@ const NavbarContent: React.FC = () => {
                 )
               }
             >
-              <Avatar email={""} label={""} />
+              <Avatar email={""} />
             </button>
           )}
 
@@ -174,7 +173,7 @@ const NavbarContent: React.FC = () => {
 
                 <CollapsibleFilterList
                   items={productos.filtrosDisponibles.categorias.map(
-                    (cat: any) => ({ count: cat.cantidad, label: cat.nombre })
+                    (cat: { cantidad: number; nombre: string }) => ({ count: cat.cantidad, label: cat.nombre })
                   )}
                   size="small"
                   title="Categorías"
@@ -209,7 +208,7 @@ const NavbarContent: React.FC = () => {
           {productos?.filtrosDisponibles?.categorias?.length > 0 && (
             <CollapsibleFilterList
               items={productos.filtrosDisponibles.categorias.map(
-                (cat: any) => ({ count: cat.cantidad, label: cat.nombre })
+                (cat: { cantidad: number; nombre: string }) => ({ count: cat.cantidad, label: cat.nombre })
               )}
               size="small"
               title="Categorías"
