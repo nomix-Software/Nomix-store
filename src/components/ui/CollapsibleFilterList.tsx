@@ -50,9 +50,13 @@ export function CollapsibleFilterList({
   // Llamar onOpen/onClose cuando cambia open
   useEffect(() => {
     if (open) {
-      onOpen && onOpen();
+      if(onOpen){
+        onOpen();
+      }
     } else {
-      onClose && onClose();
+      if(onClose){
+        onClose();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
