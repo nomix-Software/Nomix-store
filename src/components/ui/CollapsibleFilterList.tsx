@@ -88,9 +88,10 @@ export function CollapsibleFilterList({
         )}
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
+        style={{ width: '100%' }}
       >
-        <span>{title}</span>
-        <span className={clsx("!select-none !text-gray-400", styles.icon)}>
+        <span className="flex-1 text-left truncate">{title}</span>
+        <span className={clsx("!select-none !text-gray-400 ml-auto pr-1", styles.icon)}>
           {open ? "−" : "+"}
         </span>
       </button>
