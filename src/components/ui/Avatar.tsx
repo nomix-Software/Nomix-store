@@ -15,7 +15,7 @@ const Avatar: React.FC<AvatarProps> = ({ email, size = "small", label }) => {
 
   const sizeStyles = {
     small: {
-      container: "w-8 h-8",
+      container: "w-7 h-7",
       icon: "text-base",
       text: "text-xs",
     },
@@ -44,9 +44,6 @@ const Avatar: React.FC<AvatarProps> = ({ email, size = "small", label }) => {
       >
         {isLoggedIn ? initial : <FaUser />}
       </div>
-      <p className={clsx("text-gray-700 break-all text-center", styles.text)}>
-        {isLoggedIn ? label : "Iniciar Sesión"}
-      </p>
     </div>
   );
 };

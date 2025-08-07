@@ -163,7 +163,7 @@ export default function RaspaYGana() {
           </li>
         </ul>
         <p className="text-xs text-gray-500 !mt-4">
-          * Los premios son simulados por ahora. Versión beta sin valor real.
+          * En caso de ganar el premio, te llegará un cupón de descuento por email.
         </p>
       </div>
     </div>

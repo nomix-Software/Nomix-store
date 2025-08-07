@@ -1,3 +1,16 @@
+/* Ocultar barra de scroll horizontal en los tabs del navbar mobile */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.animate-bounce-cart {
+  animation: bounce-cart 1.2s infinite;
+}
+@keyframes bounce-cart {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(-6px); }
+  40% { transform: translateY(0); }
+  60% { transform: translateY(-4px); }
+  80% { transform: translateY(0); }
+}
 @import "tailwindcss";
 
 html,
