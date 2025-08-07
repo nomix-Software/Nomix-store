@@ -14,6 +14,8 @@ type Props = {
   className?: string; // Permite personalización externa
   buttonClassName?: string; // Permite personalización del botón principal
   dropdownFixed?: boolean; // Si true, el dropdown se renderiza fixed/z-1000 (para mobile)
+  onOpen?: () => void;
+  onClose?: () => void;
 };
 
 export function CollapsibleFilterList({
@@ -26,6 +28,8 @@ export function CollapsibleFilterList({
   className,
   buttonClassName,
   dropdownFixed,
+  onOpen,
+  onClose,
 }: Props) {
   const [open, setOpen] = useState(openDefault || false);
   const ref = useRef<HTMLDivElement>(null);
@@ -41,6 +45,16 @@ export function CollapsibleFilterList({
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  // Llamar onOpen/onClose cuando cambia open
+  useEffect(() => {
+    if (open) {
+      onOpen && onOpen();
+    } else {
+      onClose && onClose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Calcular posición del dropdown si es fixed
