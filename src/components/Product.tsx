@@ -19,12 +19,17 @@ export interface ProductProps {
     id: number;
     _id: string;
     stock?: number;
+    promocion?: {
+      id: number;
+      descripcion: string;
+      descuento: number;
+    } | null;
   };
   size?: "large" | "small";
 }
 
 export const Product = ({
-  product: { image, name, slug, price, id, _id, stock = 0 },
+  product: { image, name, slug, price, id, _id, stock = 0, promocion },
   size,
 }: ProductProps) => {
   const { favoritos, add, remove } = useFavorites();
@@ -101,6 +106,13 @@ export const Product = ({
               alt="product image"
             />
 
+            {/* Badge de descuento si hay promoción */}
+            {promocion && promocion.descuento > 0 && (
+              <div className="absolute top-3 left-3 z-20 bg-[#f02d34] text-white text-base md:text-lg font-extrabold !px-4 !py-2 rounded-xl shadow-lg animate-pulse ">
+                -{promocion.descuento}% OFF
+              </div>
+            )}
+
             {sinStock && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-sm md:text-base font-semibold z-20">
                 Sin stock
@@ -119,7 +131,18 @@ export const Product = ({
             </p>
           </div>
 
-          <p className={priceClasses}>{ formatPrice(price) }</p>
+          {promocion && promocion.descuento > 0 ? (
+            <div className="flex items-end gap-2 mt-1 min-h-[1.8em]">
+              <span className="text-gray-400 line-through text-xs md:text-sm font-semibold">
+                {formatPrice(price)}
+              </span>
+              <span className="text-[#f02d34] font-bold text-lg md:text-2xl leading-none">
+                {formatPrice(price * (1 - promocion.descuento / 100))}
+              </span>
+            </div>
+          ) : (
+            <p className={priceClasses}>{formatPrice(price)}</p>
+          )}
         </Link>
       </div>
     </div>

@@ -57,6 +57,11 @@ export const Sidebar = ({ role, email}: SidebarProps) => {
       icon: FaClipboardCheck, // ✅ ícono de pedidos / entrega
     },
     adminCouponOption, // Nuevo ítem para cupones
+    {
+      label: "Promociones",
+      href: "/dashboard/promociones",
+      icon: FaTags, // 🏷️ ícono de promociones
+    },
   ];
 
   const clientOptions = [

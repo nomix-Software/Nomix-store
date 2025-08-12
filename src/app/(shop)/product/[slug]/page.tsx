@@ -75,9 +75,25 @@ const ProductDetails = async ({
           </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
         <div className="flex flex-col gap-2 !mt-4">
-          <span className="!text-2xl w-fit !font-bold !text-[#f02d34] !bg-[#fff0f0] !rounded-xl !px-4 !py-1 !shadow-sm">
-            {formatPrice(productDetail.precio)}
-          </span>
+          {productDetail.promocion && productDetail.promocion.descuento > 0 ? (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-end gap-3">
+                <span className="text-gray-400 line-through text-base md:text-lg font-semibold">
+                  {formatPrice(productDetail.precio)}
+                </span>
+                <span className="text-[#f02d34] font-bold text-2xl md:text-3xl">
+                  {formatPrice(productDetail.precio * (1 - productDetail.promocion.descuento / 100))}
+                </span>
+                <span className="bg-[#f02d34] text-white text-xs md:text-sm font-bold px-2 py-1 rounded shadow animate-pulse">
+                  -{productDetail.promocion.descuento}% OFF
+                </span>
+              </div>
+            </div>
+          ) : (
+            <span className="!text-2xl w-fit !font-bold !text-[#f02d34] !bg-[#fff0f0] !rounded-xl !px-4 !py-1 !shadow-sm">
+              {formatPrice(productDetail.precio)}
+            </span>
+          )}
           <Suspense fallback={<div>Cargando...</div>}>
             <AddToCartButton productDetail={productDetail} />
           </Suspense>
