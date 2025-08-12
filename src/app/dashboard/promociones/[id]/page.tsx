@@ -1,6 +1,9 @@
 'use client'
 import { useState } from "react";
 import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
 
 // Simulación de datos de promoción
 const mockPromocion = {
@@ -11,7 +14,7 @@ const mockPromocion = {
 
 export default function EditarPromocionPage() {
   const [descripcion, setDescripcion] = useState(mockPromocion.descripcion);
-  const [descuento, setDescuento] = useState(mockPromocion.descuento);
+  const [descuento, setDescuento] = useState(mockPromocion.descuento.toString());
   const [error, setError] = useState("");
   const [deleted, setDeleted] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
@@ -19,7 +22,7 @@ export default function EditarPromocionPage() {
   // Lógica para editar promoción
   const handleEdit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!descripcion || descuento <= 0) {
+    if (!descripcion || Number(descuento) <= 0) {
       setError("Completa todos los campos correctamente.");
       return;
     }
@@ -39,8 +42,10 @@ export default function EditarPromocionPage() {
   if (deleted) {
     return (
       <div className="!p-6 max-w-xl !mx-auto">
-        <p className="text-green-700 font-bold !mb-4">Promoción eliminada correctamente.</p>
-  <Link href="/dashboard/promociones" className="text-blue-600 hover:underline transition-colors">Volver al listado</Link>
+        <Card className="!p-6 flex flex-col items-center">
+          <p className="text-green-700 font-bold mb-4">Promoción eliminada correctamente.</p>
+          <Link href="/dashboard/promociones" className="text-[#f02d34] underline cursor-pointer hover:text-[#d9292e] transition-colors">Volver al listado</Link>
+        </Card>
       </div>
     );
   }
@@ -48,39 +53,38 @@ export default function EditarPromocionPage() {
   return (
     <div className="!p-6 max-w-xl !mx-auto">
       <div className="mb-4">
-  <Link href="/dashboard/promociones" className="!text-[#f02d34] underline cursor-pointer">← Volver a promociones</Link>
+        <Link href="/dashboard/promociones" className="!text-[#f02d34] underline cursor-pointer hover:text-[#d9292e] transition-colors">← Volver a promociones</Link>
       </div>
-      <h1 className="text-2xl font-bold !mb-4">Editar Promoción</h1>
-  <form onSubmit={handleEdit} className="bg-white !rounded-2xl shadow !p-6 space-y-4">
-        <div>
-          <label className="block font-medium !mb-1">Descripción</label>
-          <input
-            type="text"
-            className="w-full border rounded !px-3 !py-2"
+      <Card className="!p-8">
+        <h1 className="text-2xl font-bold mb-6 text-[#324d67]">Editar Promoción</h1>
+        <form onSubmit={handleEdit} className="space-y-2">
+          <TextField
+            name="descripcion"
+            label="Descripción"
             value={descripcion}
             onChange={e => setDescripcion(e.target.value)}
             required
+            className="!mb-2"
           />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Descuento (%)</label>
-          <input
+          <TextField
+            name="descuento"
+            label="Descuento (%)"
             type="number"
-            className="w-full border rounded px-3 py-2"
             value={descuento}
-            onChange={e => setDescuento(Number(e.target.value))}
+            onChange={e => setDescuento(e.target.value)}
             min={1}
             max={100}
             required
+            className="!mb-2"
           />
-        </div>
-        {error && <div className="text-red-600">{error}</div>}
-        {editSuccess && <div className="text-green-700">Promoción actualizada correctamente.</div>}
-        <div className="flex gap-2">
-          <button type="submit" className="!bg-[#f02d34] !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Guardar cambios</button>
-          <button type="button" onClick={handleDelete} className="!bg-red-600 !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Eliminar promoción</button>
-        </div>
-      </form>
+          {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+          {editSuccess && <div className="text-green-700 text-sm mb-2">Promoción actualizada correctamente.</div>}
+          <div className="flex gap-2 mt-4">
+            <Button type="submit" className="!rounded-2xl !py-2.5 !px-4 !bg-[#f02d34] !text-white hover:!scale-110 transition-transform duration-300 cursor-pointer">Guardar cambios</Button>
+            <Button type="button" onClick={handleDelete} className="!rounded-2xl !py-2.5 !px-4 !bg-red-600 !text-white hover:!scale-110 transition-transform duration-300 cursor-pointer">Eliminar promoción</Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 }
