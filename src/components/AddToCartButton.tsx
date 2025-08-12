@@ -18,6 +18,15 @@ export const AddToCartButton: React.FC<Props> = ({ productDetail }) => {
   const { addToCart, setShowCart, items } = useCartStore();
   const alreadyInCart = items.some((item) => item.id === productDetail.id);
 
+  // Calcular precio con descuento si corresponde
+  // @ts-ignore: promocion puede venir de ProductDetails aunque no esté en Props
+  const tienePromo = !!(productDetail.promocion && productDetail.promocion.descuento > 0);
+  // @ts-ignore
+  const precioFinal = tienePromo && productDetail.promocion
+    // @ts-ignore
+    ? productDetail.precio * (1 - productDetail.promocion.descuento / 100)
+    : productDetail.precio;
+
   if (productDetail.stock <= 0) {
     return (
       <div className="inline-flex items-center gap-2 bg-red-200 text-red-800 text-base font-semibold px-4 py-1.5 mt-6 mx-auto rounded-full mb-4 shadow-sm">
@@ -49,7 +58,7 @@ export const AddToCartButton: React.FC<Props> = ({ productDetail }) => {
           nombre: productDetail.nombre,
           slug: productDetail.slug,
           cantidad: 1,
-          precio: productDetail.precio,
+          precio: precioFinal,
           stock: productDetail.stock,
           imagen: productDetail.imagenes[0]?.url || "",
         });
