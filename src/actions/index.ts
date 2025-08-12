@@ -50,3 +50,6 @@ export * from "./sale/place-order";
 
 export * from "./reviews/getReviews";
 export * from "./reviews/createReview";
+
+export * from "./promociones/createPromocion";
+export * from "./promociones/getPromociones";

@@ -1,25 +1,46 @@
 'use client'
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Card } from "@/components/ui/Card";
+import { createPromocion } from "@/actions";
 
 export default function NuevaPromocionPage() {
   const [descripcion, setDescripcion] = useState("");
   const [descuento, setDescuento] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [success, setSuccess] = useState(false);
+  const [loading, startTransition] = useTransition();
+  const [serverError, setServerError] = useState("");
+  const router = useRouter();
 
-  // Aquí iría la lógica para enviar el formulario a la API
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setServerError("");
+    setSuccess(false);
     const newErrors: { [key: string]: string } = {};
     if (!descripcion) newErrors.descripcion = "La descripción es obligatoria.";
     if (!descuento || isNaN(Number(descuento)) || Number(descuento) <= 0) newErrors.descuento = "El descuento debe ser mayor a 0.";
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-    // Lógica para crear la promoción
-    alert("Promoción creada (simulado)");
+    startTransition(async () => {
+      try {
+        await createPromocion({ descripcion, descuento: Number(descuento) });
+        toast.success("Promoción creada correctamente");
+        setSuccess(true);
+        setDescripcion("");
+        setDescuento("");
+        setTimeout(() => {
+          router.push("/dashboard/promociones");
+        }, 1200);
+      } catch (err: any) {
+        toast.error(err?.message || "Error al crear la promoción");
+        setServerError(err?.message || "Error al crear la promoción");
+      }
+    });
   };
 
   return (
@@ -29,7 +50,7 @@ export default function NuevaPromocionPage() {
       </div>
       <Card className="!p-8">
         <h1 className="text-2xl font-bold mb-6 text-[#324d67]">Nueva Promoción</h1>
-        <form onSubmit={handleSubmit} className="space-y-2">
+  <form onSubmit={handleSubmit} className="space-y-2">
           <TextField
             name="descripcion"
             label="Descripción"
@@ -53,7 +74,10 @@ export default function NuevaPromocionPage() {
             placeholder="Ej: 20"
             className="!mb-2"
           />
-          <Button type="submit" className="w-full mt-2 cursor-pointer">Crear promoción</Button>
+          {serverError && <div className="text-red-600 text-sm mb-2">{serverError}</div>}
+          <Button type="submit" className="w-full mt-2 cursor-pointer" disabled={loading}>
+            {loading ? "Creando..." : "Crear promoción"}
+          </Button>
         </form>
       </Card>
     </div>
