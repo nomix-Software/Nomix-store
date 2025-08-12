@@ -1,3 +1,5 @@
+export * from "./promociones/getProductosDePromocion";
+export * from "./promociones/relacionarProductos";
 export * from "./promociones/deletePromocion";
 export * from "./product/ProductsItems";
 export * from "./product/ProductDetail";
