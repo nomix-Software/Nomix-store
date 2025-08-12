@@ -112,7 +112,12 @@ const ProductDetails = async ({
             </span>
           )}
           <Suspense fallback={<div>Cargando...</div>}>
-            <AddToCartButton productDetail={productDetail} />
+            <AddToCartButton productDetail={{
+              ...productDetail,
+              precioOriginal: tienePromo ? productDetail.precio : undefined,
+              descuento: tienePromo && productDetail.promocion ? productDetail.promocion.descuento : undefined,
+              precio: tienePromo && productDetail.promocion ? precioPromo : productDetail.precio,
+            }} />
           </Suspense>
         </div>
         </div>

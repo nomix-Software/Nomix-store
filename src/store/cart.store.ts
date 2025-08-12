@@ -11,6 +11,8 @@ type Product = {
   cantidad: number;
   stock: number;
   imagen: string;
+  precioOriginal?: number;
+  descuento?: number;
 };
 
 type CartState = {
