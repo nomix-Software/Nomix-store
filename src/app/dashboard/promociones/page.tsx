@@ -3,6 +3,7 @@ import { getPromociones } from "@/actions";
 import { Card } from "@/components/ui/Card";
 import SearchBar from "@/components/ui/SearchBar";
 import Pagination from "@/components/ui/Pagination";
+import { Button } from "@/components/ui/Button";
 
 
 export default async function PromocionesDashboardPage({ searchParams }: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
@@ -32,7 +33,14 @@ export default async function PromocionesDashboardPage({ searchParams }: { searc
                 <span className="font-semibold text-[#324d67]">{promo.descripcion}</span>
                 <span className="bg-[#f02d34]/10 text-[#f02d34] font-bold rounded !px-3 !py-1 text-sm">{promo.descuento}%</span>
               </div>
-              <Link href={`/dashboard/promociones/${promo.id}`} className="text-sm text-blue-600 underline hover:text-blue-800 mt-2 self-end">Editar</Link>
+              <div className="flex !gap-2 !mt-2 self-end">
+                <Link href={`/dashboard/promociones/${promo.id}`}>
+                  <Button type="button" variant="secondary" className="!px-3 !py-1 !text-xs !rounded-lg cursor-pointer">Editar</Button>
+                </Link>
+                <Link href={`/dashboard/promociones/${promo.id}/productos`}>
+                  <Button type="button" variant="secondary" className="!px-3 !py-1 !text-xs !rounded-lg cursor-pointer">Productos</Button>
+                </Link>
+              </div>
             </Card>
           ))
         )}
