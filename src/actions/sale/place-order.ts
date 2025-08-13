@@ -30,9 +30,35 @@ export const placeOrder = async (orderData: OrderData) => {
     return { ok: false, url: null, error: 'Debe iniciar sesión para realizar un pedido.' };
   }
   try {
-    // 1. Crear la preferencia de pago usando la acción centralizada
+    // 1. Recalcular precios y descuentos vigentes desde la base de datos
+    const productIds = orderData.items.map((item) => Number(item.id));
+    const productos = await prisma.producto.findMany({
+      where: { id: { in: productIds } },
+      include: { promocion: true },
+    });
+
+    // Mapear los productos por id para acceso rápido
+    const productosMap = new Map(productos.map(p => [p.id, p]));
+
+    // 2. Armar los items con precios reales
+    const itemsValidados = orderData.items.map((item) => {
+      const producto = productosMap.get(Number(item.id));
+      if (!producto) throw new Error(`Producto no encontrado: ${item.id}`);
+      let precioFinal = producto.precio;
+      if (producto.promocion && producto.promocion.descuento > 0) {
+        precioFinal = Math.round(producto.precio * (1 - producto.promocion.descuento / 100));
+      }
+      return {
+        id: String(producto.id),
+        title: producto.nombre,
+        unit_price: precioFinal,
+        quantity: item.quantity,
+      };
+    });
+
+    // 3. Crear la preferencia de pago usando los precios validados
     const checkoutData = await createCheckout(
-      orderData.items,
+      itemsValidados,
       session.user.email,
       orderData.costoEnvio
     );
@@ -43,22 +69,24 @@ export const placeOrder = async (orderData: OrderData) => {
       throw new Error('No se pudo crear la preferencia de pago.');
     }
 
-    // 2. Guardar Carrito y Entrega en una única transacción atómica
+    // 4. Guardar Carrito y Entrega en una única transacción atómica
     await prisma.$transaction(async (tx) => {
+      // Eliminar carrito existente del usuario (si existe)
+      await tx.carrito.deleteMany({ where: { usuarioId: session.user.id! } });
+      // Crear nuevo carrito
       const carrito = await tx.carrito.create({
         data: {
           usuarioId: session.user.id!,
           cuponId: orderData.cuponId,
-          preferenceId: preferenceId, // Usamos el ID de createCheckout
+          preferenceId: preferenceId,
           items: {
-            create: orderData.items.map((item) => ({
+            create: itemsValidados.map((item) => ({
               productoId: Number(item.id),
               cantidad: item.quantity,
             })),
           },
         },
       });
-
       await tx.entrega.create({ data: { ...orderData.deliveryData, carritoId: carrito.id } });
     });
 

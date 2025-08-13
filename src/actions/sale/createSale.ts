@@ -52,12 +52,18 @@ export const createSale = async (
         metodoPagoId: newMetodoPago?.id || 1,
         cuponId: cuponId || null,
         productos: {
-          create: products.map((item) => ({
-            productoId: Number(item.producto._id),
-            cantidad: item.cantidad,
-            precioUnitario: item.producto.price,
-            total: item.producto.price * item.cantidad,
-          })),
+          create: products.map((item) => {
+            // Usar precio y descuento si existen en el producto del carrito
+            const precioUnitario = typeof item.producto.precio === 'number' ? item.producto.precio : item.producto.price;
+            const descuento = typeof item.producto.descuento === 'number' ? item.producto.descuento : undefined;
+            return {
+              productoId: Number(item.producto._id),
+              cantidad: item.cantidad,
+              precioUnitario,
+              descuento,
+              total: precioUnitario * item.cantidad,
+            };
+          }),
         },
       },
     });

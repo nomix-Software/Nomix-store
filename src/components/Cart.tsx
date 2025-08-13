@@ -55,7 +55,11 @@ export const Cart = () => {
               let precioOriginal = item.precioOriginal;
               let descuento = item.descuento;
               // Si no viene, pero el precio es menor al original, calcularlo
-              if (typeof precioOriginal === 'undefined' && item.precio < item.precioOriginal) {
+              if (
+                typeof precioOriginal === 'undefined' &&
+                typeof item.precioOriginal !== 'undefined' &&
+                item.precio < item.precioOriginal
+              ) {
                 precioOriginal = item.precioOriginal;
                 descuento = Math.round(100 - (item.precio / item.precioOriginal) * 100);
               }
