@@ -32,7 +32,7 @@ export default async function PromocionesDashboardPage({ searchParams }: { searc
       <div className="grid !gap-4 md:grid-cols-2 lg:grid-cols-3">
         {promociones.length === 0 ? (
           <Card className="col-span-full text-center !py-8">
-            <p className="text-gray-500">No hay promociones registradas aan.</p>
+            <p className="text-gray-500">No hay promociones registradas aún.</p>
           </Card>
         ) : (
           promociones.map((promo: { id: number; descripcion: string; descuento: number }) => (
