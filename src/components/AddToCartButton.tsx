@@ -3,6 +3,10 @@ import React from "react";
 import { useCartStore } from "@/store";
 import { MdErrorOutline } from "react-icons/md";
 
+interface Promocion {
+  descuento: number;
+}
+
 interface ProductDetailBase {
   id: number;
   nombre: string;
@@ -12,6 +16,7 @@ interface ProductDetailBase {
   imagenes: { url: string }[];
   precioOriginal?: number;
   descuento?: number;
+  promocion?: Promocion | null;
 }
 interface Props {
   productDetail: ProductDetailBase;
@@ -21,14 +26,6 @@ export const AddToCartButton: React.FC<Props> = ({ productDetail }) => {
   const { addToCart, setShowCart, items } = useCartStore();
   const alreadyInCart = items.some((item) => item.id === productDetail.id);
 
-  // Calcular precio con descuento si corresponde
-  // @ts-ignore: promocion puede venir de ProductDetails aunque no esté en Props
-  const tienePromo = !!(productDetail.promocion && productDetail.promocion.descuento > 0);
-  // @ts-ignore
-  const precioFinal = tienePromo && productDetail.promocion
-    // @ts-ignore
-    ? productDetail.precio * (1 - productDetail.promocion.descuento / 100)
-    : productDetail.precio;
 
   if (productDetail.stock <= 0) {
     return (

@@ -71,8 +71,14 @@ export const placeOrder = async (orderData: OrderData) => {
 
     // 4. Guardar Carrito y Entrega en una única transacción atómica
     await prisma.$transaction(async (tx) => {
-      // Eliminar carrito existente del usuario (si existe)
-      await tx.carrito.deleteMany({ where: { usuarioId: session.user.id! } });
+      // Buscar carrito existente del usuario
+      const carritoExistente = await tx.carrito.findFirst({ where: { usuarioId: session.user.id! } });
+      if (carritoExistente) {
+        // Eliminar primero los items asociados
+        await tx.carritoItem.deleteMany({ where: { carritoId: carritoExistente.id } });
+        // Luego eliminar el carrito
+        await tx.carrito.delete({ where: { id: carritoExistente.id } });
+      }
       // Crear nuevo carrito
       const carrito = await tx.carrito.create({
         data: {
@@ -87,7 +93,11 @@ export const placeOrder = async (orderData: OrderData) => {
           },
         },
       });
-      await tx.entrega.create({ data: { ...orderData.deliveryData, carritoId: carrito.id } });
+  // Quitar campos no existentes en el modelo Entrega
+  const entregaData = { ...orderData.deliveryData };
+  delete (entregaData as Record<string, unknown>)["lat"];
+  delete (entregaData as Record<string, unknown>)["lng"];
+  await tx.entrega.create({ data: { ...entregaData, carritoId: carrito.id } });
     });
 
     return { ok: true, url: checkoutUrl, error: null };

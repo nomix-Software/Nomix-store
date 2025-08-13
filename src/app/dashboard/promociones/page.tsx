@@ -27,17 +27,17 @@ export default async function PromocionesDashboardPage({ searchParams }: { searc
             <p className="text-gray-500">No hay promociones registradas aún.</p>
           </Card>
         ) : (
-          promociones.map((promo: any) => (
-            <Card key={promo.id} className="flex flex-col !gap-2 !p-4">
+          promociones.map((promo: { id: number; descripcion: string; descuento: number }) => (
+            <Card key={promo.id.toString()} className="flex flex-col !gap-2 !p-4">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-[#324d67]">{promo.descripcion}</span>
                 <span className="bg-[#f02d34]/10 text-[#f02d34] font-bold rounded !px-3 !py-1 text-sm">{promo.descuento}%</span>
               </div>
               <div className="flex !gap-2 !mt-2 self-end">
-                <Link href={`/dashboard/promociones/${promo.id}`}>
+                <Link href={`/dashboard/promociones/${promo.id.toString()}`}>
                   <Button type="button" variant="secondary" className="!px-3 !py-1 !text-xs !rounded-lg cursor-pointer">Editar</Button>
                 </Link>
-                <Link href={`/dashboard/promociones/${promo.id}/productos`}>
+                <Link href={`/dashboard/promociones/${promo.id.toString()}/productos`}>
                   <Button type="button" variant="secondary" className="!px-3 !py-1 !text-xs !rounded-lg cursor-pointer">Productos</Button>
                 </Link>
               </div>

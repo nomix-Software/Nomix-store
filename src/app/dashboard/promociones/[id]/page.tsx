@@ -47,8 +47,9 @@ export default function EditarPromocionPage() {
         setTimeout(() => {
           router.push("/dashboard/promociones");
         }, 1200);
-      } catch (err: any) {
-        toast.error(err?.message || "Error al actualizar la promoción");
+      } catch (err: unknown) {
+                const errorMessage = (err && typeof err === "object" && "message" in err) ? (err as { message?: string }).message : undefined;
+        toast.error(errorMessage || "Error al actualizar la promoción");
       }
     });
   };
@@ -62,8 +63,9 @@ export default function EditarPromocionPage() {
         setTimeout(() => {
           router.push("/dashboard/promociones");
         }, 1200);
-      } catch (err: any) {
-        toast.error(err?.message || "Error al eliminar la promoción");
+      } catch (err: unknown) {
+        const errorMessage = (err && typeof err === "object" && "message" in err) ? (err as { message?: string }).message : undefined;
+        toast.error(errorMessage || "Error al eliminar la promoción");
       }
     });
   };

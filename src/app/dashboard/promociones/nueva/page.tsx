@@ -12,15 +12,13 @@ export default function NuevaPromocionPage() {
   const [descripcion, setDescripcion] = useState("");
   const [descuento, setDescuento] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [success, setSuccess] = useState(false);
   const [loading, startTransition] = useTransition();
   const [serverError, setServerError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setServerError("");
-    setSuccess(false);
     const newErrors: { [key: string]: string } = {};
     if (!descripcion) newErrors.descripcion = "La descripción es obligatoria.";
     if (!descuento || isNaN(Number(descuento)) || Number(descuento) <= 0) newErrors.descuento = "El descuento debe ser mayor a 0.";
@@ -30,15 +28,15 @@ export default function NuevaPromocionPage() {
       try {
         await createPromocion({ descripcion, descuento: Number(descuento) });
         toast.success("Promoción creada correctamente");
-        setSuccess(true);
         setDescripcion("");
         setDescuento("");
         setTimeout(() => {
           router.push("/dashboard/promociones");
         }, 1200);
-      } catch (err: any) {
-        toast.error(err?.message || "Error al crear la promoción");
-        setServerError(err?.message || "Error al crear la promoción");
+      } catch (err: unknown) {
+        const errorMessage = (err && typeof err === "object" && "message" in err) ? (err as { message?: string }).message : undefined;
+        toast.error(errorMessage || "Error al crear la promoción");
+        setServerError(errorMessage || "Error al crear la promoción");
       }
     });
   };

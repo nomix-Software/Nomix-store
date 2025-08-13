@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { useProducts } from "@/hooks/useProductos";
 import SearchBar from "@/components/ui/SearchBar";
 import Pagination from "@/components/ui/Pagination";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { relacionarProductos, getProductosDePromocion } from "@/actions";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -16,12 +16,21 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 // Mantener seleccionados en localStorage para no perderlos al cambiar de página
 const STORAGE_KEY = "promo-productos-marcados";
 
+interface ProductoBasico {
+  _id: string;
+  name: string;
+}
+
+interface ProductoAsociado {
+  id: number;
+  nombre: string;
+}
+
 export default function AsociarProductosPage() {
   // Modal de confirmación para quitar producto
   const [modalOpen, setModalOpen] = useState(false);
-  const [productoAEliminar, setProductoAEliminar] = useState<any>(null);
+  const [productoAEliminar, setProductoAEliminar] = useState<ProductoBasico | null>(null);
   const searchParams = useSearchParams();
-  const router = useRouter();
   const search = searchParams.get("search") || "";
   const page = Number(searchParams.get("page") || 1);
   const { productos, isLoading, isError } = useProducts(
@@ -37,13 +46,13 @@ export default function AsociarProductosPage() {
     async function precargarAsociados() {
       if (!promocionId) return;
       try {
-        const productosAsociados = await getProductosDePromocion(promocionId);
+        const productosAsociados: ProductoAsociado[] = await getProductosDePromocion(promocionId);
         if (Array.isArray(productosAsociados)) {
-          setAsociados(productosAsociados.map((p: any) => p.id.toString()));
+          setAsociados(productosAsociados.map((p) => p.id.toString()));
           // También agregamos estos productos a productosMarcados para el colapsable
           setProductosMarcados((prev) => {
             // Adaptar shape para que coincida con el resto (._id y .name)
-            const nuevosMarcados = productosAsociados.map((p: any) => ({
+            const nuevosMarcados: ProductoBasico[] = productosAsociados.map((p) => ({
               _id: p.id.toString(),
               name: p.nombre,
             }));
@@ -60,7 +69,7 @@ export default function AsociarProductosPage() {
     precargarAsociados();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promocionId]);
-  const [productosMarcados, setProductosMarcados] = useState<any[]>([]);
+  const [productosMarcados, setProductosMarcados] = useState<ProductoBasico[]>([]);
 
   // Guardar seleccionados en localStorage al cambiar
   useEffect(() => {
@@ -86,7 +95,7 @@ export default function AsociarProductosPage() {
   }, [asociados, productos]);
 
   // Quitar producto con confirmación y actualización en DB
-  const handleQuitarClick = (producto: any) => {
+  const handleQuitarClick = (producto: ProductoBasico) => {
     setProductoAEliminar(producto);
     setModalOpen(true);
   };
@@ -108,8 +117,11 @@ export default function AsociarProductosPage() {
           .map((id) => Number(id)),
       });
       toast.success(`Producto quitado de la promoción`);
-    } catch (err: any) {
-      toast.error(err?.message || "Error al quitar producto");
+    } catch (err: unknown) {
+      const errorMsg = typeof err === "object" && err && "message" in err
+        ? String((err as { message?: string }).message)
+        : "Error al quitar producto";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
       setProductoAEliminar(null);
@@ -149,8 +161,11 @@ export default function AsociarProductosPage() {
         productoIds: asociados.map((id) => Number(id)),
       });
       toast.success("Productos asociados correctamente");
-    } catch (err: any) {
-      toast.error(err?.message || "Error al asociar productos");
+    } catch (err: unknown) {
+      const errorMsg = typeof err === "object" && err && "message" in err
+        ? String((err as { message?: string }).message)
+        : "Error al asociar productos";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -251,33 +266,35 @@ export default function AsociarProductosPage() {
               </button>
               {openResumen && (
                 <ul className="!space-y-2 max-h-64 overflow-y-auto !pr-1">
-                  {productosSeleccionados.map((producto) => (
-                    <li key={producto._id} className="flex items-center !gap-2">
-                      <span className="truncate flex-1">{producto.name}</span>
-                      <Button
-                        variant="secondary"
-                        className="!px-2 !py-1 !text-xs cursor-pointer hover:!bg-[#f02d34] hover:!text-white transition-colors duration-200"
-                        onClick={() => handleQuitarClick(producto)}
-                        disabled={loading}
-                      >
-                        Quitar
-                      </Button>
-                      {/* Modal de confirmación para quitar producto */}
-                      <ConfirmModal
-                        isOpen={modalOpen}
-                        onClose={() => setModalOpen(false)}
-                        onConfirm={handleConfirmQuitar}
-                        title="Quitar producto de la promoción"
-                        message={
-                          productoAEliminar
-                            ? `¿Estás seguro que deseas quitar "${productoAEliminar.name}" de la promoción?`
-                            : ""
-                        }
-                        confirmText="Quitar"
-                        cancelText="Cancelar"
-                      />
-                    </li>
-                  ))}
+                  {productosSeleccionados
+                    .filter((producto): producto is ProductoBasico => !!producto)
+                    .map((producto) => (
+                      <li key={producto._id} className="flex items-center !gap-2">
+                        <span className="truncate flex-1">{producto.name}</span>
+                        <Button
+                          variant="secondary"
+                          className="!px-2 !py-1 !text-xs cursor-pointer hover:!bg-[#f02d34] hover:!text-white transition-colors duration-200"
+                          onClick={() => handleQuitarClick(producto)}
+                          disabled={loading}
+                        >
+                          Quitar
+                        </Button>
+                        {/* Modal de confirmación para quitar producto */}
+                        <ConfirmModal
+                          isOpen={modalOpen}
+                          onClose={() => setModalOpen(false)}
+                          onConfirm={handleConfirmQuitar}
+                          title="Quitar producto de la promoción"
+                          message={
+                            productoAEliminar
+                              ? `¿Estás seguro que deseas quitar "${productoAEliminar.name}" de la promoción?`
+                              : ""
+                          }
+                          confirmText="Quitar"
+                          cancelText="Cancelar"
+                        />
+                      </li>
+                    ))}
                 </ul>
               )}
               {/* Botón guardar solo en desktop al costado */}
