@@ -37,31 +37,31 @@ import { useRouter } from "next/navigation";
 export default function EditProductPage() {
   const session = useSession();
   const router = useRouter();
-  if (session.status === "loading") return null;
-  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
-    if (typeof window !== "undefined") router.replace("/login");
-    return null;
-  }
   const { slug } = useParams();
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [marcas, setMarcas] = useState<Opcion[]>([]);
   const [categorias, setCategorias] = useState<Opcion[]>([]);
   const [imagenesNuevas, setImagenesNuevas] = useState<File[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const [productDetailDB, marcasDB, categoriasDB] = await Promise.all([
-        getProductDetail(slug as string),
-        getBrands(),
-        getCategories(),
-      ]);
-      setProducto(productDetailDB);
-      setMarcas(marcasDB);
-      setCategorias(categoriasDB);
-      setLoading(false);
-    })();
-  }, [slug]);
+  
+    useEffect(() => {
+      (async () => {
+        const [productDetailDB, marcasDB, categoriasDB] = await Promise.all([
+          getProductDetail(slug as string),
+          getBrands(),
+          getCategories(),
+        ]);
+        setProducto(productDetailDB);
+        setMarcas(marcasDB);
+        setCategorias(categoriasDB);
+        setLoading(false);
+      })();
+    }, [slug]);
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

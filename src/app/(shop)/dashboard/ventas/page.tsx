@@ -36,13 +36,6 @@ export type Venta = {
 export default function VentaForm() {
   const session = useSession();
   const router = useRouter();
-  if (session.status === "loading") return null;
-  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
-    if (typeof window !== "undefined") router.replace("/login");
-    return null;
-  }
-  // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
-
   const [metodosPago] = useState([
     { id: 1, nombre: "Efectivo" },
     { id: 2, nombre: "Tarjeta" },
@@ -63,6 +56,13 @@ export default function VentaForm() {
 
   const [errors, setErrors] = useState<Errors>({});
   const { allcuponsOptions }= useCupons()
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
+  // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
+
   // Funciones para manejar cambios
   const productsValidos = venta.productos.filter((p) =>
     Boolean(p.producto)

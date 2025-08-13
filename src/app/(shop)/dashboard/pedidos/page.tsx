@@ -10,11 +10,6 @@ import { useRouter } from "next/navigation";
 export default function PedidosPage() {
   const session = useSession();
   const router = useRouter();
-  if (session.status === "loading") return null;
-  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
-    if (typeof window !== "undefined") router.replace("/login");
-    return null;
-  }
   const [pedidoId, setPedidoId] = useState("");
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -36,6 +31,11 @@ export default function PedidosPage() {
       setLoading(false);
     })();
   }, [session.status]);
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     if (!session.data?.user.email) return;

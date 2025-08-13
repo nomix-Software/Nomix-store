@@ -14,16 +14,16 @@ import { useRouter } from "next/navigation";
 function AdminProductPage() {
   const session = useSession();
   const router = useRouter();
+  const search = useSearchParams()
+  const { productos, isLoading } = useProducts(
+    `/api/products?${search.toString()}`
+  );
   if (session.status === "loading") return null;
   if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
     if (typeof window !== "undefined") router.replace("/login");
     return null;
   }
-  const search = useSearchParams()
 
-  const { productos, isLoading } = useProducts(
-    `/api/products?${search.toString()}`
-  );
   const ProductsContent = () => (
     <>
       {isLoading ? (
