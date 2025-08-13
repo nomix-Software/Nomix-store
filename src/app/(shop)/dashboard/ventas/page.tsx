@@ -1,4 +1,8 @@
+
 "use client";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import {  saveDelivery } from "@/actions";
 import { createSale } from "@/actions/sale/createSale";
@@ -30,6 +34,13 @@ export type Venta = {
   }, 0);
 };
 export default function VentaForm() {
+  const session = useSession();
+  const router = useRouter();
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
   // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
 
   const [metodosPago] = useState([

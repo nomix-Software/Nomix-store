@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useMemo, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -11,6 +12,7 @@ import { useSearchParams, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { relacionarProductos, getProductosDePromocion } from "@/actions";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { useRouter } from "next/router";
 
 // TODO: Obtener productos asociados a la promo desde la API
 // Mantener seleccionados en localStorage para no perderlos al cambiar de página
@@ -38,6 +40,16 @@ export default function AsociarProductosPage() {
   );
   const params = useParams();
   const promocionId = Number(params.id);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/auth/login");
+    } else if (session.user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
   const [loading, setLoading] = useState(false);
   // Estado: ids seleccionados y productos seleccionados (acumulativo)
   const [asociados, setAsociados] = useState<string[]>([]);

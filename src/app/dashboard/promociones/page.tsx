@@ -4,19 +4,27 @@ import { Card } from "@/components/ui/Card";
 import SearchBar from "@/components/ui/SearchBar";
 import Pagination from "@/components/ui/Pagination";
 import { Button } from "@/components/ui/Button";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function PromocionesDashboardPage({ searchParams }: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/auth/login");
+  }
+  if (session.user.role !== "ADMIN") {
+    redirect("/");
+  }
   const params = await searchParams;
   const page = Number(params?.page) || 1;
-  // Extract the search string (e.g., 'q') from params, or set to undefined if not present
   const search = typeof params?.q === "string" ? params.q : Array.isArray(params?.q) ? params?.q[0] : undefined;
   const { promociones, totalPages } = await getPromociones({ search, page });
   return (
     <div className="!p-6">
       <div className="flex items-center justify-between !mb-6">
         <h1 className="text-2xl font-bold">Promociones</h1>
-        <Link href="/dashboard/promociones/nueva" className="!bg-[#f02d34] !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Nueva Promoción</Link>
+        <Link href="/dashboard/promociones/nueva" className="!bg-[#f02d34] !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Nueva Promoci3n</Link>
       </div>
       <div className="!mb-4">
         <SearchBar size="medium" path="/dashboard/promociones" />
@@ -24,7 +32,7 @@ export default async function PromocionesDashboardPage({ searchParams }: { searc
       <div className="grid !gap-4 md:grid-cols-2 lg:grid-cols-3">
         {promociones.length === 0 ? (
           <Card className="col-span-full text-center !py-8">
-            <p className="text-gray-500">No hay promociones registradas aún.</p>
+            <p className="text-gray-500">No hay promociones registradas aan.</p>
           </Card>
         ) : (
           promociones.map((promo: { id: number; descripcion: string; descuento: number }) => (

@@ -1,5 +1,7 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { FaTicketAlt } from "react-icons/fa";
 import { TextField } from "@/components";
 import toast from "react-hot-toast";
@@ -7,6 +9,17 @@ import { createCupon, getAllCupons, deleteCupon } from "@/actions";
 import type { GetAllCuponsResponse } from "@/actions/discount-coupons/getAllCupons";
 
  function CuponesPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/auth/login");
+    } else if (session.user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
   const [cupon, setCupon] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [validoHasta, setValidoHasta] = useState("");

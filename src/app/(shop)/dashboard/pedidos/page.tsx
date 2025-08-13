@@ -1,18 +1,24 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from "react";
-// import { markPedidoEntregado } from "@/actions/markPedidoEntregado"; // Simulado más abajo
 import { MdSearch } from "react-icons/md";
 import { getMisPedidos, Pedido } from "@/actions";
-import { useSession } from "next-auth/react";
 import { PedidoCard, TextField } from "@/components";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function PedidosPage() {
+  const session = useSession();
+  const router = useRouter();
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
   const [pedidoId, setPedidoId] = useState("");
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [pedidos, setPedidos] = useState<Pedido[] | null>(null);
-  const session = useSession();
   useEffect(() => {
     (async () => {
       if (session.status !== "authenticated" || !session.data.user.email)

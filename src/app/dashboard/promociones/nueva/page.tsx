@@ -1,6 +1,8 @@
+
 'use client'
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -15,6 +17,16 @@ export default function NuevaPromocionPage() {
   const [loading, startTransition] = useTransition();
   const [serverError, setServerError] = useState("");
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/auth/login");
+    } else if (session.user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

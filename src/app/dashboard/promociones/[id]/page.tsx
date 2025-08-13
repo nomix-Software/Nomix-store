@@ -1,8 +1,10 @@
 
+
 'use client';
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
@@ -12,11 +14,21 @@ import { getPromocionById, updatePromocion, deletePromocion } from "@/actions";
 export default function EditarPromocionPage() {
   const params = useParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const id = Number(params.id);
   const [descripcion, setDescripcion] = useState("");
   const [descuento, setDescuento] = useState("");
   const [error, setError] = useState("");
   const [loading, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/auth/login");
+    } else if (session.user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     async function fetchPromocion() {

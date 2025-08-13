@@ -69,7 +69,17 @@ type DashboardItem =
         quantity: number;
       }[];
     };
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 export default function AdminPage() {
+  const session = useSession();
+  const router = useRouter();
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
   const [data, setData] = useState<DashboardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
