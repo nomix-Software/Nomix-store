@@ -12,7 +12,7 @@ import { useSearchParams, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { relacionarProductos, getProductosDePromocion } from "@/actions";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 // TODO: Obtener productos asociados a la promo desde la API
 // Mantener seleccionados en localStorage para no perderlos al cambiar de página

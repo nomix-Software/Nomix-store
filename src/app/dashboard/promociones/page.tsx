@@ -24,7 +24,7 @@ export default async function PromocionesDashboardPage({ searchParams }: { searc
     <div className="!p-6">
       <div className="flex items-center justify-between !mb-6">
         <h1 className="text-2xl font-bold">Promociones</h1>
-        <Link href="/dashboard/promociones/nueva" className="!bg-[#f02d34] !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Nueva Promoci3n</Link>
+        <Link href="/dashboard/promociones/nueva" className="!bg-[#f02d34] !text-white !rounded-2xl !py-2.5 !px-4 hover:!scale-110 transition-transform duration-300">Nueva Promoción</Link>
       </div>
       <div className="!mb-4">
         <SearchBar size="medium" path="/dashboard/promociones" />
