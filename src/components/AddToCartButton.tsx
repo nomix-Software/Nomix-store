@@ -3,20 +3,29 @@ import React from "react";
 import { useCartStore } from "@/store";
 import { MdErrorOutline } from "react-icons/md";
 
+interface Promocion {
+  descuento: number;
+}
+
+interface ProductDetailBase {
+  id: number;
+  nombre: string;
+  slug: string;
+  precio: number;
+  stock: number;
+  imagenes: { url: string }[];
+  precioOriginal?: number;
+  descuento?: number;
+  promocion?: Promocion | null;
+}
 interface Props {
-  productDetail: {
-    id: number;
-    nombre: string;
-    slug: string;
-    precio: number;
-    stock: number;
-    imagenes: { url: string }[];
-  };
+  productDetail: ProductDetailBase;
 }
 
 export const AddToCartButton: React.FC<Props> = ({ productDetail }) => {
   const { addToCart, setShowCart, items } = useCartStore();
   const alreadyInCart = items.some((item) => item.id === productDetail.id);
+
 
   if (productDetail.stock <= 0) {
     return (
@@ -52,6 +61,8 @@ export const AddToCartButton: React.FC<Props> = ({ productDetail }) => {
           precio: productDetail.precio,
           stock: productDetail.stock,
           imagen: productDetail.imagenes[0]?.url || "",
+          precioOriginal: productDetail.precioOriginal,
+          descuento: productDetail.descuento,
         });
       }}
     >

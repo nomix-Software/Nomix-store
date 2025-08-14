@@ -51,6 +51,13 @@ export async function getProductsFiltered({
           select: { url: true },
           take: 1,
         },
+        promocion: {
+          select: {
+            id: true,
+            descripcion: true,
+            descuento: true,
+          },
+        },
       },
     }),
   ]);
@@ -126,6 +133,13 @@ export async function getProductsFiltered({
       price: p.precio,
       stock: p.stock,
       slug: { current: p.slug },
+      promocion: p.promocion
+        ? {
+            id: p.promocion.id,
+            descripcion: p.promocion.descripcion,
+            descuento: p.promocion.descuento,
+          }
+        : null,
     })),
     filtrosDisponibles: {
       marcas: marcasDisponibles,        // [{ nombre: "Pampers", cantidad: 3 }]

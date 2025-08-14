@@ -27,14 +27,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) return {};
+  const tienePromo = productDetail.promocion && productDetail.promocion.descuento > 0;
+  const precioPromo = tienePromo
+    ? productDetail.precio * (1 - productDetail.promocion!.descuento / 100)
+    : productDetail.precio;
   return {
     title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
-    description: productDetail.descripcion,
+    description: productDetail.descripcion + (tienePromo ? ` ¡Aprovechá ${productDetail.promocion?.descuento}% OFF! Precio promocional: ${formatPrice(precioPromo)}.` : ""),
     openGraph: {
       title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
-      description: productDetail.descripcion,
+      description: productDetail.descripcion + (tienePromo ? ` ¡Aprovechá ${productDetail.promocion?.descuento}% OFF! Precio promocional: ${formatPrice(precioPromo)}.` : ""),
       type: "website",
       images: [productDetail.imagenes ? productDetail.imagenes[0]?.url : ""],
+      ...(tienePromo && {
+        price: precioPromo,
+        priceCurrency: "ARS",
+        discount: productDetail.promocion?.descuento,
+        originalPrice: productDetail.precio,
+      }),
     },
     keywords: [
       productDetail.nombre,
@@ -44,6 +54,7 @@ export async function generateMetadata({
       "tecnología",
       "comprar",
       "accesorios",
+      ...(tienePromo ? ["descuento", "oferta", `${productDetail.promocion?.descuento}% OFF`] : []),
     ],
   };
 }
@@ -55,6 +66,12 @@ const ProductDetails = async ({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
+
+  // Variables para promoción y precio promocional
+  const tienePromo = !!(productDetail.promocion && productDetail.promocion.descuento > 0);
+  const precioPromo = tienePromo && productDetail.promocion
+    ? productDetail.precio * (1 - productDetail.promocion.descuento / 100)
+    : productDetail.precio;
 
   return (
     <div>
@@ -75,11 +92,32 @@ const ProductDetails = async ({
           </h4>
           <p className="whitespace-pre-line">{productDetail.descripcion}</p>
         <div className="flex flex-col gap-2 !mt-4">
-          <span className="!text-2xl w-fit !font-bold !text-[#f02d34] !bg-[#fff0f0] !rounded-xl !px-4 !py-1 !shadow-sm">
-            {formatPrice(productDetail.precio)}
-          </span>
+          {productDetail.promocion && productDetail.promocion.descuento > 0 ? (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-end gap-3">
+                <span className="text-gray-400 line-through text-base md:text-lg font-semibold">
+                  {formatPrice(productDetail.precio)}
+                </span>
+                <span className="text-[#f02d34] font-bold text-2xl md:text-3xl">
+                  {formatPrice(productDetail.precio * (1 - productDetail.promocion.descuento / 100))}
+                </span>
+                <span className="bg-[#f02d34] text-white text-xs md:text-sm font-bold px-2 py-1 rounded shadow animate-pulse">
+                  -{productDetail.promocion.descuento}% OFF
+                </span>
+              </div>
+            </div>
+          ) : (
+            <span className="!text-2xl w-fit !font-bold !text-[#f02d34] !bg-[#fff0f0] !rounded-xl !px-4 !py-1 !shadow-sm">
+              {formatPrice(productDetail.precio)}
+            </span>
+          )}
           <Suspense fallback={<div>Cargando...</div>}>
-            <AddToCartButton productDetail={productDetail} />
+            <AddToCartButton productDetail={{
+              ...productDetail,
+              precioOriginal: tienePromo ? productDetail.precio : undefined,
+              descuento: tienePromo && productDetail.promocion ? productDetail.promocion.descuento : undefined,
+              precio: tienePromo && productDetail.promocion ? precioPromo : productDetail.precio,
+            }} />
           </Suspense>
         </div>
         </div>
@@ -114,7 +152,13 @@ const ProductDetails = async ({
             "@type": "Offer",
             url: `${process.env.NEXT_PUBLIC_APP_URL}/product/${productDetail.slug}`,
             priceCurrency: "ARS",
-            price: productDetail.precio,
+            price: tienePromo ? precioPromo : productDetail.precio,
+            ...(tienePromo && {
+              priceValidUntil: undefined,
+              originalPrice: productDetail.precio,
+              discount: productDetail.promocion?.descuento,
+              description: `¡${productDetail.promocion?.descuento}% OFF! Precio promocional: ${formatPrice(precioPromo)}`,
+            }),
             availability:
               productDetail.stock > 0
                 ? "https://schema.org/InStock"
