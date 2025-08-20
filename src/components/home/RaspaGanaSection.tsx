@@ -47,7 +47,10 @@ export const RaspaGanaSection = () => {
           </Link>
         </div>
       )}
-      <div className="flex flex-col items-center gap-2 !mb-4">
+  <div className="flex flex-col items-center gap-2 !mb-4">
+      <p className="text-xs text-gray-500 mt-2 max-w-md text-center">
+        Si ganás, el cupón será enviado automáticamente a tu correo electrónico registrado.
+      </p>
         <span className="inline-flex items-center gap-2 !text-green-600 !font-semibold !text-lg">
           <FaGift className="!w-6 !h-6" />
           ¡Premios instantáneos!

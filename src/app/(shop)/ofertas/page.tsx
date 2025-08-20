@@ -1,7 +1,7 @@
 // app/(shop)/ofertas/page.tsx
 
 
-import { AutoScrollableMarquee, Badge, Button, RaspaGanaSection } from "@/components";
+import { AutoScrollableMarquee } from "@/components";
 import { getPromoProductsByCategory, PromoProductsByCategory } from '@/actions';
 import React from "react";
 
@@ -22,13 +22,8 @@ const OfertasPage = async () => {
         Ofertas y Promociones
       </h1>
       <p className="text-base text-gray-700 !leading-relaxed !mb-6">
-        En <span className="font-semibold">CyE Tech</span> trabajamos constantemente para acercarte lo mejor en tecnología al mejor precio. Descubrí nuestras últimas ofertas, productos en promoción y participá de juegos interactivos para ganar cupones de descuento.
+        En <span className="font-semibold">CyE Tech</span> trabajamos constantemente para acercarte lo mejor en tecnología al mejor precio. Descubrí nuestras últimas ofertas y productos en promoción.
       </p>
-
-      {/* Incentivo a jugar */}
-      <div className="!mb-10">
-        <RaspaGanaSection />
-      </div>
 
       {/* Marquees por categoría */}
       {promosByCategory.length === 0 && (
