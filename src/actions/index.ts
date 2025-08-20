@@ -1,3 +1,4 @@
+export * from "./product/filters/PromoProductsByCategory";
 export * from "./promociones/getProductosDePromocion";
 export * from "./promociones/relacionarProductos";
 export * from "./promociones/deletePromocion";
