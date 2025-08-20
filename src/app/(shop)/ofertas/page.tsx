@@ -1,11 +1,9 @@
 // app/(shop)/ofertas/page.tsx
 
-import Link from "next/link";
 
-
-import { FaRegStar } from "react-icons/fa"; // o cualquier otro que te guste
-
-import { Badge, Button } from "@/components";
+import { AutoScrollableMarquee, Badge, Button, RaspaGanaSection } from "@/components";
+import { getPromoProductsByCategory, PromoProductsByCategory } from '@/actions';
+import React from "react";
 
 export const metadata = {
   title: "Ofertas | CyE Tech",
@@ -13,50 +11,37 @@ export const metadata = {
     "Descubrí promociones, descuentos y oportunidades únicas para tus compras tecnológicas. Participá del nuevo juego Raspá y Ganá, ¡y obtené cupones exclusivos!",
 };
 
-export default function OfertasPage() {
+
+
+const OfertasPage = async () => {
+  const promosByCategory: PromoProductsByCategory[] = await getPromoProductsByCategory();
+
   return (
-    <div className="max-w-4xl !mx-auto !px-4 !py-12">
+    <div className="max-w-6xl !mx-auto !px-4 !py-12">
       <h1 className="text-3xl font-bold text-[#f02d34] !mb-4">
         Ofertas y Promociones
       </h1>
       <p className="text-base text-gray-700 !leading-relaxed !mb-6">
-        En <span className="font-semibold">CyE Tech</span> trabajamos
-        constantemente para acercarte lo mejor en tecnología al mejor precio.
-        Visitá esta sección para descubrir nuestras últimas ofertas, productos
-        en promoción, y juegos interactivos con los que podés ganar cupones de
-        descuento.
-        <br />
-        Participá en sorteos, accedé a beneficios especiales y mantenete atento
-        a nuestras novedades. ¡Siempre hay una oportunidad para ahorrar!
+        En <span className="font-semibold">CyE Tech</span> trabajamos constantemente para acercarte lo mejor en tecnología al mejor precio. Descubrí nuestras últimas ofertas, productos en promoción y participá de juegos interactivos para ganar cupones de descuento.
       </p>
 
-      <div className="bg-gray-50 rounded-2xl border !p-6 shadow-sm !mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-            🎯 Raspá y Ganá
-            <Badge className="bg-yellow-500 text-white uppercase !text-[10px] font-bold tracking-wide">
-              Beta
-            </Badge>
-          </h2>
-        </div>
-        <p className="text-sm text-gray-600 !leading-relaxed !mb-4">
-          Un juego divertido donde podés ganar cupones de descuento para usar en
-          tus compras. Elegí tus 3 números, raspá tu tarjeta virtual y descubrí
-          si ganaste.
-        </p>
-        <Link href="/raspa-gana">
-          <Button className="bg-[#f02d34] cursor-pointer text-white hover:brightness-110 transition-all duration-200">
-            <FaRegStar className="w-4 h-4 !mr-2" />
-            Probar suerte ahora
-          </Button>
-        </Link>
+      {/* Incentivo a jugar */}
+      <div className="!mb-10">
+        <RaspaGanaSection />
       </div>
 
-      <p className="text-sm text-gray-500 !leading-relaxed">
-        Esta funcionalidad se encuentra en fase <strong>Beta</strong>. Los
-        premios obtenidos actualmente no tienen validez real y se utilizan con
-        fines de prueba. Pronto activaremos recompensas reales.
-      </p>
+      {/* Marquees por categoría */}
+      {promosByCategory.length === 0 && (
+        <div className="text-center text-gray-500 my-10">No hay productos en promoción actualmente.</div>
+      )}
+      {promosByCategory.map(({ categoria, products }) => (
+        <div key={categoria} className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 pl-2">{categoria}</h2>
+          <AutoScrollableMarquee products={products} />
+        </div>
+      ))}
     </div>
   );
-}
+};
+
+export default OfertasPage;
