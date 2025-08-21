@@ -77,11 +77,39 @@ async function MyApp() {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ItemList",
-          itemListElement: products.map((p, i) => ({
-            "@type": "ListItem",
-            position: i + 1,
-            url: `${process.env.NEXT_PUBLIC_APP_URL}/product/${p.slug}`,
-          })),
+          itemListElement: products.map((p, i) => {
+            const item = {
+              "@type": "Product",
+              name: p.name,
+              image: p.image,
+              url: `${process.env.NEXT_PUBLIC_APP_URL}/product/${p.slug.current}`,
+              offers: {
+                "@type": "Offer",
+                price: p.price,
+                priceCurrency: "ARS",
+                availability: p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                itemCondition: "https://schema.org/NewCondition",
+                ...(p.promocion && p.promocion.descuento
+                  ? { discount: p.promocion.descuento, description: p.promocion.descripcion }
+                  : {}),
+              },
+              ...(typeof p.averageRating === "number" && p.reviewsCount > 0
+                ? {
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: p.averageRating.toFixed(1),
+                      reviewCount: p.reviewsCount,
+                    },
+                  }
+                : {}),
+            };
+            return {
+              "@type": "ListItem",
+              position: i + 1,
+              url: item.url,
+              item,
+            };
+          }),
         })}
       </Script>
     </>
@@ -90,18 +118,33 @@ async function MyApp() {
 
 export async function generateMetadata() {
   const productos = await getLatestProducts();
-  const principal = productos?.[0];
-  const heroImage = principal?.imagenes?.[0]?.url || "/not-found-image.png";
-  const title = principal?.nombre
-    ? `CyE Tech | Novedad: ${principal.nombre}`
+  const nombres = productos.map((p) => p.nombre).filter(Boolean);
+  const categorias = productos.map((p) => p.categoria?.nombre).filter(Boolean);
+  const marcas = productos.map((p) => p.marca?.nombre).filter(Boolean);
+  const heroImage = productos[0]?.imagenes?.[0]?.url || "/not-found-image.png";
+  const title = nombres.length
+    ? `CyE Tech | Novedades: ${nombres.slice(0, 3).join(", ")}`
     : "CyE Tech | Artículos tecnológicos";
-  const description = principal?.nombre
-    ? `¡Descubrí la última novedad en tecnología! ${principal.nombre} ya está disponible en CyE Tech. Innovación, calidad y el mejor precio para vos. No te pierdas este lanzamiento exclusivo y llevá tu experiencia al siguiente nivel.`
-    : "¡Descubrí las últimas novedades en tecnología! En CyE Tech encontrá productos innovadores, calidad y el mejor precio. No te pierdas nuestros lanzamientos exclusivos.";
+  const categoriasUnicas = Array.from(new Set(categorias));
+  const marcasUnicas = Array.from(new Set(marcas));
+  const description = nombres.length
+    ? `¡Descubrí las últimas novedades en tecnología! ${nombres.slice(0, 3).join(", ")}`
+      + (categoriasUnicas.length ? ` en categorías como ${categoriasUnicas.join(", ")}` : "")
+      + (marcasUnicas.length ? ` y marcas como ${marcasUnicas.join(", ")}` : "")
+      + ". Comprá online en Córdoba Capital y todo el país, con envío rápido, cuotas sin interés y promociones exclusivas en CyE Tech."
+    : "¡Descubrí las últimas novedades en tecnología! En CyE Tech encontrá productos innovadores, calidad y el mejor precio en Córdoba Capital y Argentina. No te pierdas nuestros lanzamientos exclusivos.";
+  const keywords = [
+    "tecnología", "comprar online", "ofertas", "novedades", "envío", "cuotas", "promociones", "CyE Tech",
+    "Córdoba", "Córdoba Capital", "Argentina", "envío Córdoba", "tecnología Córdoba", "comprar tecnología Córdoba",
+    ...nombres,
+    ...categorias,
+    ...marcas
+  ].filter(Boolean).join(", ");
 
   return {
     title,
     description,
+    keywords,
     openGraph: {
       title,
       description,
@@ -110,7 +153,7 @@ export async function generateMetadata() {
           url: heroImage,
           width: 1200,
           height: 630,
-          alt: principal?.nombre || "Imagen principal del Hero",
+          alt: nombres[0] || "Imagen principal del Hero",
         },
       ],
       type: "website",
