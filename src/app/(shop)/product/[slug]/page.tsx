@@ -27,32 +27,70 @@ export async function generateMetadata({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) return {};
-  const { averageRating, reviewsCount } = await getProductAggregateRating(productDetail.id);
   const tienePromo = productDetail.promocion && productDetail.promocion.descuento > 0;
   const precioPromo = tienePromo
     ? productDetail.precio * (1 - productDetail.promocion!.descuento / 100)
     : productDetail.precio;
-  // Palabras clave long tail sugeridas
-  const longTail = [
-    "botella de agua reutilizable Córdoba",
-    "botella para gimnasio térmica",
-    "vaso térmico portátil",
-    "botella de acero inoxidable para viajes",
-    "termo para bebidas frías y calientes",
-    "accesorios para deporte Córdoba",
-    "botella ecológica sin BPA",
-    "ofertas botellas térmicas",
-    "CyE Tech botellas envío Córdoba",
-    "regalo original deportistas Córdoba",
-    "tienda de electrónicos online Argentina",
-    "gadgets tecnológicos Córdoba",
-    "accesorios para celular Córdoba",
-    "auriculares inalámbricos Bluetooth Córdoba",
-    "aro de luz profesional para streaming",
-    "e-commerce tecnología con envío a domicilio",
-    "soluciones digitales para el hogar",
-    "ofertas en tecnología Córdoba"
-  ];
+  // Palabras clave long tail dinámicas
+  const nombre = productDetail.nombre;
+  const categoria = productDetail.categoria.nombre;
+  const marca = productDetail.marca.nombre;
+  const ubicacion = "Córdoba";
+  const tienda = "CyE Tech";
+const longTail = [
+    // Palabras clave existentes y muy efectivas (transaccionales y locales)
+    `${categoria} ${marca} ${ubicacion}`,
+    `comprar ${nombre} online ${ubicacion}`,
+    `${nombre} ${marca} ofertas ${ubicacion}`,
+    `${categoria} ${marca} precio en ${ubicacion}`,
+    `${nombre} ${categoria} ${marca} ${tienda} ${ubicacion}`,
+    `${categoria} ${marca} envío a domicilio ${ubicacion}`,
+    `${categoria} ${marca} cuotas sin interés ${ubicacion}`,
+    `mejor precio ${nombre} ${ubicacion}`,
+    `ofertas ${categoria} ${marca} ${ubicacion}`,
+    `comprar ${categoria} ${marca} en ${ubicacion}`,
+    `venta de ${categoria} ${marca} en ${ubicacion}`,
+    `mejores ${categoria} ${marca} ${ubicacion}`,
+    `ofertas ${nombre} ${ubicacion}`,
+    `dónde comprar ${nombre} en ${ubicacion}`,
+    `precio ${nombre} ${ubicacion}`,
+    `opiniones ${nombre} ${ubicacion}`,
+    `reseñas ${nombre} ${ubicacion}`,
+    `nuevo ${nombre} ${ubicacion}`,
+    `últimos lanzamientos ${categoria} ${ubicacion}`,
+    `productos ${categoria} ${marca} ${ubicacion}`,
+
+    // Nuevas combinaciones sugeridas para mayor especificidad e intención
+    // Preguntas y búsquedas informativas/comparativas
+    `¿dónde conseguir ${nombre} en ${ubicacion}?`,
+    `${nombre} características y precio ${ubicacion}`,
+    `${nombre} vs [otro modelo] ${ubicacion}`, // Ejemplo: Auriculares Bluetooth JBL Tune 510BT vs Tune 710BT Córdoba
+    `cómo conectar ${nombre} a [dispositivo]`, // Ejemplo: cómo conectar Auriculares Bluetooth JBL Tune 510BT a PC
+    `${nombre} duración batería`,
+    `${nombre} con micrófono para llamadas ${ubicacion}`,
+    `problemas ${nombre} no enciende`,
+    `solución ${nombre} no carga`,
+    `${nombre} para hacer deporte ${ubicacion}`,
+    `${nombre} para home office ${ubicacion}`,
+    `accesorios originales ${marca} ${categoria} ${ubicacion}`,
+    `tiendas de ${categoria} ${marca} en ${ubicacion} centro`,
+    `descuentos ${nombre} ${ubicacion}`,
+    `${categoria} inalámbricos ${marca} ${ubicacion}`,
+    `${categoria} baratos ${marca} ${ubicacion}`,
+    `${categoria} on ear ${marca} ${ubicacion}`, // Especificación del tipo de auricular
+    `${categoria} over ear ${marca} ${ubicacion}`,
+    `${categoria} in ear ${marca} ${ubicacion}`,
+    `${nombre} ${tienda} opiniones`,
+    `envío gratis ${categoria} ${marca} ${ubicacion}`,
+    `retiro en tienda ${categoria} ${marca} ${ubicacion}`,
+    `garantía ${nombre} ${ubicacion}`,
+    `servicio técnico ${marca} ${categoria} ${ubicacion}`,
+    `${nombre} para gamers ${ubicacion}`,
+    `${nombre} para escuchar música ${ubicacion}`,
+    `precio ${nombre} en ${tienda} ${ubicacion}`,
+    `stock ${nombre} ${ubicacion}`,
+    `mejor oferta ${nombre} ${ubicacion} hoy`
+];
   // Título SEO optimizado
   const seoTitle = `${productDetail.nombre} | ${productDetail.categoria.nombre} - CyE Tech Córdoba`;
   const title = seoTitle.length > 60 ? seoTitle.slice(0, 57) + '...' : seoTitle;
@@ -109,6 +147,7 @@ const ProductDetails = async ({
 
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
+  // Obtener averageRating y reviewsCount solo para el schema
   const { averageRating, reviewsCount } = await getProductAggregateRating(productDetail.id);
   // Variables para promoción y precio promocional
   const tienePromo = !!(productDetail.promocion && productDetail.promocion.descuento > 0);
