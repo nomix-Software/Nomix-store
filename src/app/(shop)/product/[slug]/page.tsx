@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 import type { ProductDetails } from "@/interfaces";
 
-import { getProductDetail, getProducts } from "@/actions";
+import { getProductAggregateRating, getProductDetail, getProducts } from "@/actions";
 import { notFound } from "next/navigation";
 
 import {
@@ -27,16 +27,52 @@ export async function generateMetadata({
   const { slug } = await params;
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) return {};
+  const { averageRating, reviewsCount } = await getProductAggregateRating(productDetail.id);
   const tienePromo = productDetail.promocion && productDetail.promocion.descuento > 0;
   const precioPromo = tienePromo
     ? productDetail.precio * (1 - productDetail.promocion!.descuento / 100)
     : productDetail.precio;
+  // Palabras clave long tail sugeridas
+  const longTail = [
+    "botella de agua reutilizable Córdoba",
+    "botella para gimnasio térmica",
+    "vaso térmico portátil",
+    "botella de acero inoxidable para viajes",
+    "termo para bebidas frías y calientes",
+    "accesorios para deporte Córdoba",
+    "botella ecológica sin BPA",
+    "ofertas botellas térmicas",
+    "CyE Tech botellas envío Córdoba",
+    "regalo original deportistas Córdoba",
+    "tienda de electrónicos online Argentina",
+    "gadgets tecnológicos Córdoba",
+    "accesorios para celular Córdoba",
+    "auriculares inalámbricos Bluetooth Córdoba",
+    "aro de luz profesional para streaming",
+    "e-commerce tecnología con envío a domicilio",
+    "soluciones digitales para el hogar",
+    "ofertas en tecnología Córdoba"
+  ];
+  // Título SEO optimizado
+  const seoTitle = `${productDetail.nombre} | ${productDetail.categoria.nombre} - CyE Tech Córdoba`;
+  const title = seoTitle.length > 60 ? seoTitle.slice(0, 57) + '...' : seoTitle;
+  // Descripción SEO optimizada
+  const beneficioClave = productDetail.descripcion.split('.')[0];
+  const descPromo = tienePromo ? ` ¡Aprovechá ${productDetail.promocion?.descuento}% OFF! Precio: ${formatPrice(precioPromo)}.` : "";
+  const descUbic = " Disponible en Córdoba Capital y envío a todo el país.";
+  let description = `${beneficioClave}.${descPromo}${descUbic}`;
+  // Añadir keywords long tail si hay espacio
+  if (description.length < 140) {
+    const extra = longTail.filter(k => description.indexOf(k) === -1).slice(0, 1).join('. ');
+    description += (extra ? ' ' + extra : '');
+  }
+  if (description.length > 160) description = description.slice(0, 157) + '...';
   return {
-    title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
-    description: productDetail.descripcion + (tienePromo ? ` ¡Aprovechá ${productDetail.promocion?.descuento}% OFF! Precio promocional: ${formatPrice(precioPromo)}.` : ""),
+    title,
+    description,
     openGraph: {
-      title: `${productDetail.nombre} | ${productDetail.marca.nombre} | ${productDetail.categoria.nombre} | CYE TECH`,
-      description: productDetail.descripcion + (tienePromo ? ` ¡Aprovechá ${productDetail.promocion?.descuento}% OFF! Precio promocional: ${formatPrice(precioPromo)}.` : ""),
+      title,
+      description,
       type: "website",
       images: [productDetail.imagenes ? productDetail.imagenes[0]?.url : ""],
       ...(tienePromo && {
@@ -54,7 +90,13 @@ export async function generateMetadata({
       "tecnología",
       "comprar",
       "accesorios",
+      "Córdoba",
+      "Córdoba Capital",
+      "Argentina",
+      "envío Córdoba",
+      "comprar tecnología Córdoba",
       ...(tienePromo ? ["descuento", "oferta", `${productDetail.promocion?.descuento}% OFF`] : []),
+      ...longTail
     ],
   };
 }
@@ -64,9 +106,10 @@ const ProductDetails = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
+
   const productDetail: ProductDetails | null = await getProductDetail(slug);
   if (!productDetail) notFound();
-
+  const { averageRating, reviewsCount } = await getProductAggregateRating(productDetail.id);
   // Variables para promoción y precio promocional
   const tienePromo = !!(productDetail.promocion && productDetail.promocion.descuento > 0);
   const precioPromo = tienePromo && productDetail.promocion
@@ -76,10 +119,12 @@ const ProductDetails = async ({
   return (
     <div>
       <div className="product-detail-container">
-        <ImagesDetails images={productDetail.imagenes} />
+  <ImagesDetails images={productDetail.imagenes} />
 
         <div className="product-detail-desc">
           <h1 className="font-extrabold text-2xl">{productDetail.nombre}</h1>
+          <h2 className="text-lg font-semibold mt-2">{productDetail.categoria.nombre} en Córdoba - {productDetail.marca.nombre}</h2>
+          <h3 className="text-base font-medium mt-1 text-gray-600">{productDetail.nombre} | {productDetail.categoria.nombre} | {productDetail.marca.nombre} | CyE Tech Córdoba</h3>
           <div className="!my-2 !flex !items-center !gap-4">
             <ProductReviews
               productId={productDetail.id}
@@ -164,6 +209,11 @@ const ProductDetails = async ({
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
             itemCondition: "https://schema.org/NewCondition",
+            seller: {
+              "@type": "Organization",
+              name: "CyE Tech",
+              url: process.env.NEXT_PUBLIC_APP_URL,
+            },
             hasMerchantReturnPolicy: {
               "@type": "MerchantReturnPolicy",
               applicableCountry: "AR",
@@ -171,7 +221,7 @@ const ProductDetails = async ({
                 "https://schema.org/MerchantReturnFiniteReturnWindow",
               merchantReturnDays: 10,
               returnMethod: "https://schema.org/ReturnByMail",
-              returnFees: "https://schema.org/ReturnShippingFees", // Indica que el cliente podría pagar el envío de la devolución, salvo fallas de fábrica.
+              returnFees: "https://schema.org/ReturnShippingFees",
             },
             shippingDetails: {
               "@type": "OfferShippingDetails",
@@ -186,20 +236,25 @@ const ProductDetails = async ({
                   minValue: 0,
                   maxValue: 1,
                   unitCode: "DAY",
-                }, // Tiempo de preparación: 0-1 día
+                },
                 transitTime: {
                   "@type": "QuantitativeValue",
                   minValue: 3,
                   maxValue: 7,
                   unitCode: "DAY",
-                }, // Tiempo de tránsito: 3-7 días
+                },
               },
-              // No se especifica un shippingRate porque el costo es variable.
             },
           },
-          // TODO: Descomentar y conectar a datos reales cuando tengas un sistema de reseñas.
-          // Google penaliza los datos estructurados falsos.
-          // "aggregateRating": { ... }
+          ...(typeof averageRating === "number" && reviewsCount > 0
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: averageRating.toFixed(1),
+                  reviewCount: reviewsCount,
+                }
+              }
+            : {}),
         })}
       </Script>
     </div>
