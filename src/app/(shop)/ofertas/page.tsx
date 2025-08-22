@@ -1,4 +1,6 @@
-// app/(shop)/ofertas/page.tsx
+
+// Revalidar la página cada 2 minutos (120 segundos) para mantenerla actualizada.
+export const revalidate = 120;
 
 
 import { AutoScrollableMarquee } from "@/components";

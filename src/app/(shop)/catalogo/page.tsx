@@ -8,8 +8,8 @@ import {  getProductsFiltered } from '@/actions';
 import Filters from "@/components/products/Filters";
 import ModalFilters from "@/components/products/ModalFilters";
 
-// Revalidar la página cada 10 minutos (600 segundos) para mantenerla actualizada sin sobrecargar la base de datos.
-export const revalidate = 600;
+// Revalidar la página cada 2 minutos (120 segundos) para mantenerla actualizada sin sobrecargar la base de datos.
+export const revalidate = 120;
 
 export async function generateMetadata({ searchParams }: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
