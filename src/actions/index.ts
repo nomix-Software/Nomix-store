@@ -1,3 +1,8 @@
+export * from "./product/getProductAggregateRating";
+export * from "./product/filters/PromoProductsByCategory";
+export * from "./promociones/getProductosDePromocion";
+export * from "./promociones/relacionarProductos";
+export * from "./promociones/deletePromocion";
 export * from "./product/ProductsItems";
 export * from "./product/ProductDetail";
 export * from "./product/UpdateProduct";
@@ -50,3 +55,8 @@ export * from "./sale/place-order";
 
 export * from "./reviews/getReviews";
 export * from "./reviews/createReview";
+
+export * from "./promociones/createPromocion";
+export * from "./promociones/getPromociones";
+export * from "./promociones/updatePromocion";
+export * from "./promociones/getPromocionById";

@@ -1,4 +1,8 @@
+
 "use client";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import {  saveDelivery } from "@/actions";
 import { createSale } from "@/actions/sale/createSale";
@@ -30,8 +34,8 @@ export type Venta = {
   }, 0);
 };
 export default function VentaForm() {
-  // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
-
+  const session = useSession();
+  const router = useRouter();
   const [metodosPago] = useState([
     { id: 1, nombre: "Efectivo" },
     { id: 2, nombre: "Tarjeta" },
@@ -52,6 +56,13 @@ export default function VentaForm() {
 
   const [errors, setErrors] = useState<Errors>({});
   const { allcuponsOptions }= useCupons()
+  if (session.status === "loading") return null;
+  if (session.status === "unauthenticated" || session.data?.user.role !== "ADMIN") {
+    if (typeof window !== "undefined") router.replace("/login");
+    return null;
+  }
+  // Estados iniciales simulados (reemplazar por fetch desde API si quieres)
+
   // Funciones para manejar cambios
   const productsValidos = venta.productos.filter((p) =>
     Boolean(p.producto)

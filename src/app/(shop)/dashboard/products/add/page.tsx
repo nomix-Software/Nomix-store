@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import {
   getCategories,
@@ -17,6 +19,17 @@ import Image from "next/image";
 import { FiTrash2 } from "react-icons/fi";
 
 const AddProductPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/auth/login");
+    } else if (session.user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [session, status, router]);
   const [product, setProduct] = useState({
     name: "",
     description: "",

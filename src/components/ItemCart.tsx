@@ -14,6 +14,8 @@ interface ItemCartProps {
   cantidad: number;
   imagen: string;
   stock: number;
+  precioOriginal?: number;
+  descuento?: number;
 }
 export const ItemCart = ({
   nombre,
@@ -23,6 +25,8 @@ export const ItemCart = ({
   stock,
   slug,
   id,
+  precioOriginal,
+  descuento,
 }: ItemCartProps) => {
   const { removeFromCart, substractOne, addOne } = useCartStore(
     (state) => state
@@ -62,9 +66,23 @@ export const ItemCart = ({
               {nombre}
             </h5>
           </Link>
-          <h4 className="!text-base !font-bold !text-[#222] !whitespace-nowrap">
-            {formatPrice(precio)}
-          </h4>
+          {precioOriginal && precioOriginal > precio ? (
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-gray-400 line-through">
+                {formatPrice(precioOriginal)}
+              </span>
+              <span className="!text-base !font-bold !text-[#f02d34] !whitespace-nowrap">
+                {formatPrice(precio)}
+              </span>
+              {descuento && descuento > 0 && (
+                <span className="text-xs bg-[#f02d34] text-white font-bold px-2 py-0.5 rounded mt-0.5">-{descuento}%</span>
+              )}
+            </div>
+          ) : (
+            <h4 className="!text-base !font-bold !text-[#222] !whitespace-nowrap">
+              {formatPrice(precio)}
+            </h4>
+          )}
         </div>
         <div className="flex items-center !gap-2 !mt-2">
           <Quantity

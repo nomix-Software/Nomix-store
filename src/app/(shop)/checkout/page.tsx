@@ -6,7 +6,7 @@ import OrderSummary from "@/components/checkout/OrderSummary";
 import { useCartStore } from "@/store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { calcularDistanciaKm } from '@/utils';
 import { validateCupon } from "@/actions/discount-coupons/validateCupon";
@@ -123,7 +123,6 @@ const opcionesRetiro = [
       toast.error(typeof res.message === 'string' ? res.message : "Ocurrió un error al validar el cupón");
     }
   };
-
   return (
     <div className="max-w-2xl !mx-auto !p-2 sm:!p-4">
       <h1 className="products-heading !text-start font-extrabold !text-3xl sm:!text-4xl !mb-2">Confirmá tu orden</h1>
@@ -341,10 +340,4 @@ const opcionesRetiro = [
     </div>
   );
 }
-
-const CheckoutPage = ()=>{
-  <Suspense fallback={<div>Cargando page...</div>}>
-    <SeleccionEntregaPage />
-  </Suspense>
-};
-export default CheckoutPage;
+export default SeleccionEntregaPage;

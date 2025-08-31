@@ -28,8 +28,9 @@ function generateWinningNumbers(): number[] {
  * @returns {Promise<{ numeros: number[]; premioReclamado: boolean; usuarioYaJugo: boolean; }>}
  */
 export async function getOrGenerateWinningNumbers() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalizamos a la medianoche para la consulta
+  // Normalizamos la fecha a UTC para evitar problemas de zona horaria y duplicados
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -105,8 +106,9 @@ export async function playRaspaGana(chosenNumbers: number[]) {
   const userId = session.user.id;
   const userEmail = session.user.email;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Normalizamos la fecha a UTC para evitar problemas de zona horaria y duplicados
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
   try {
     const result = await prisma.$transaction(async (tx) => {
